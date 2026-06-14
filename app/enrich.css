@@ -1,0 +1,145 @@
+/*
+ * Visual polish for the value-add sections rendered by lib/enrich/render.mjs.
+ * Scoped under .content-blocks; targets only new classes (or beats gogo's grid h3 rule
+ * with higher specificity). Uses the theme accent var (--acsent-color, #009f3c).
+ */
+
+/* ---- 4-up grids (process / scenarios / stats), responsive ---- */
+.content-blocks .enrich-cols-4 .grid-wrap { grid-template-columns: repeat(4, 1fr); }
+@media (max-width: 991px) { .content-blocks .enrich-cols-4 .grid-wrap { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 575px) { .content-blocks .enrich-cols-4 .grid-wrap { grid-template-columns: 1fr; } }
+
+/* ---- "How it works" — clean numbered badge (no solid green/blue fill) ---- */
+.content-blocks .enrich-step__num {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 24px;
+  border-radius: 50%;
+  border: 3px solid var(--acsent-color, #009f3c);
+  background: #fff;
+  color: var(--acsent-color, #009f3c);
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.content-blocks .step-time { color: var(--acsent-color, #009f3c); font-weight: 600; white-space: nowrap; }
+
+/* ---- Font Awesome icons inside the round icon box (scenarios / stats) ---- */
+.content-blocks .section-advantages .grid-wrap .grid-item .icon { display: flex; align-items: center; justify-content: center; }
+.content-blocks .section-advantages .grid-wrap .grid-item .icon i { font-size: 30px; color: #fff; line-height: 1; }
+
+/* ---- Stats: large accent number (beat gogo's deep .grid-item-top h3 rule) ---- */
+.content-blocks .section-advantages .grid-wrap .grid-item .grid-item-top h3.enrich-stat__num {
+  color: var(--acsent-color, #009f3c);
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1.1;
+  margin: 4px 0 0;
+}
+
+/* ---- Guides: accent headings, callout box, 2-column text, checklist, sub-cards ---- */
+.content-blocks .enrich-guide .post-content { max-width: 100%; }
+.content-blocks .enrich-guide .enrich-guide-block,
+.content-blocks .enrich-guide .enrich-callout { margin: 26px 0; }
+.content-blocks .enrich-guide h2.wp-block-heading {
+  border-inline-start: 4px solid var(--acsent-color, #009f3c);
+  padding-inline-start: 14px;
+  margin-bottom: 14px;
+}
+.content-blocks .enrich-callout {
+  background: rgba(0, 159, 60, 0.06);
+  border: 1px solid rgba(0, 159, 60, 0.25);
+  border-radius: 14px;
+  padding: 26px 30px;
+}
+.content-blocks .enrich-callout h2.wp-block-heading { border: 0; padding-inline-start: 0; }
+.content-blocks .enrich-2col { column-count: 2; column-gap: 34px; }
+@media (max-width: 767px) { .content-blocks .enrich-2col { column-count: 1; } }
+.content-blocks .enrich-checklist { list-style: none; padding-inline-start: 0; margin: 14px 0; }
+.content-blocks .enrich-checklist li { position: relative; padding-inline-start: 30px; margin: 10px 0; }
+.content-blocks .enrich-checklist li::before {
+  content: "\2713";
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0;
+  color: var(--acsent-color, #009f3c);
+  font-weight: 800;
+}
+.content-blocks .enrich-subgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 20px;
+}
+@media (max-width: 991px) { .content-blocks .enrich-subgrid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 575px) { .content-blocks .enrich-subgrid { grid-template-columns: 1fr; } }
+.content-blocks .enrich-subcard {
+  border: 1px solid #e6e8ee;
+  border-radius: 14px;
+  padding: 22px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(1, 21, 50, 0.05);
+}
+.content-blocks .enrich-subcard h3 { margin: 0 0 12px; color: var(--dark-font-color, #011532); font-size: 19px; }
+
+/* ---- FAQ: stick the right-column text/heading/CTA to the right edge ---- */
+.content-blocks .section-faq .row-faq .text-left { text-align: right; }
+.content-blocks .section-faq .row-faq .text-left .btn-row { justify-content: flex-start; }
+
+/* ---- Spec/comparison tables: light zebra striping ---- */
+.content-blocks .wp-block-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.03); }
+
+/* ============================================================================
+   Recolor "למה לבחור בנו" (.enrich-why) and "למה אנחנו" (.enrich-stats).
+   Selectors mirror gogo's depth (or add a class) so they win the cascade.
+   ============================================================================ */
+
+/* "למה לבחור בנו" — light, professional feature cards on a soft background. */
+.content-blocks .section-advantages.enrich-why {
+  background: #f4f7fb;
+  background-color: #f4f7fb;
+}
+.content-blocks .section-advantages.enrich-why h2,
+.content-blocks .section-advantages.enrich-why .text,
+.content-blocks .section-advantages.enrich-why .text p {
+  color: var(--dark-font-color, #011532);
+}
+.content-blocks .section-advantages.enrich-why .grid-wrap .grid-item .grid-item-top h3 {
+  color: var(--dark-font-color, #011532);
+}
+.content-blocks .section-advantages.enrich-why .grid-wrap .grid-item .description {
+  color: #5b6b82;
+}
+.content-blocks .section-advantages.enrich-why .section-caption span {
+  border-color: var(--acsent-color, #009f3c);
+  color: var(--acsent-color, #009f3c);
+}
+.content-blocks .section-advantages.enrich-why .grid-wrap .grid-item {
+  background: #ffffff;
+  border: 1px solid #e6eaf2;
+  box-shadow: 0 6px 24px rgba(1, 21, 50, 0.06);
+}
+.content-blocks .section-advantages.enrich-why .grid-wrap .grid-item:hover {
+  border-color: var(--acsent-color, #009f3c);
+  box-shadow: 0 12px 30px rgba(1, 21, 50, 0.10);
+}
+
+/* "למה אנחנו" — refined dark gradient band with subtle glass cards + green accents. */
+.content-blocks .section-advantages.enrich-stats {
+  background: linear-gradient(135deg, #011532 0%, #0a2649 100%);
+  background-color: #011532;
+}
+.content-blocks .section-advantages.enrich-stats .grid-wrap .grid-item {
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+.content-blocks .section-advantages.enrich-stats .grid-wrap .grid-item:hover {
+  border-color: var(--acsent-color, #009f3c);
+  background: rgba(255, 255, 255, 0.075);
+}
+.content-blocks .section-advantages.enrich-stats .grid-wrap .grid-item .icon {
+  background: rgba(0, 159, 60, 0.20);
+}

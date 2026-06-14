@@ -1,0 +1,14 @@
+/*
+ * Faithful 1:1 port — Tailwind's THEME and PREFLIGHT layers are intentionally NOT imported.
+ *
+ * Tailwind v4's preflight reset and `tailwindcss/theme.css` dump default design tokens onto
+ * :root (e.g. `--color-white:#fff`, `--color-black:#000`). Those leak globally and can OVERRIDE
+ * CSS variables / resets that the vendored WordPress theme relies on, breaking visual fidelity.
+ * For a 1:1 port the page is styled entirely by the vendored theme CSS, so we import ONLY the
+ * utilities layer (which emits nothing unless a utility class is actually used). This keeps
+ * Tailwind available without polluting the cascade.
+ *
+ * NOTE: carried over from the 3locksmiths port. Re-verify against the `zapo` theme once the
+ * snapshot runs — if `zapo` does not conflict, preflight/theme may be re-enabled.
+ */
+@import "tailwindcss/utilities.css" layer(utilities);
