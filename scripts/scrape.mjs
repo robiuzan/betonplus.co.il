@@ -270,11 +270,11 @@ async function processPage(meta, captureAssets) {
 }
 
 // ---- main -----------------------------------------------------------------
-// Every PUBLIC content type with frontend permalinks. Core WordPress exposes `pages`/`posts`;
-// a theme may register custom public post types too. Discover the full set for this site via
-//   GET /wp-json/wp/v2/types   (look for entries with a public `rest_base`)
-// and add each rest_base here so every themed page is captured for the 1:1 port.
-const CONTENT_TYPES = ["pages", "posts"];
+// Every PUBLIC content type with frontend permalinks. Discovered for betonplus (zapo theme)
+// via GET /wp-json/wp/v2/types: core `pages`/`posts` plus the custom public post types
+// `services`, `locations`, `step` (calculator), `coupon`, and `pages_automation` — each
+// renders a full themed page (header/footer), so all are captured for the 1:1 port.
+const CONTENT_TYPES = ["pages", "posts", "services", "locations", "step", "coupon", "pages_automation"];
 
 async function getAllContent() {
   const out = [];

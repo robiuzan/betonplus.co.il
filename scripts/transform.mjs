@@ -17,7 +17,7 @@ const FORM_ENDPOINT = "https://formsubmit.co/robiuzan@gmail.com";
 
 // FormSubmit config (hidden inputs) + a honeypot for spam. `email` field becomes reply-to.
 const HIDDEN =
-  `<input type="hidden" name="_subject" value="פנייה חדשה מהאתר – שלושה מנעולנים">` +
+  `<input type="hidden" name="_subject" value="פנייה חדשה מהאתר – בטון פלוס">` +
   `<input type="hidden" name="_template" value="table">` +
   `<input type="hidden" name="_captcha" value="false">` +
   `<input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden">`;

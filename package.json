@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "snapshot": "node scripts/scrape.mjs && node scripts/transform.mjs && node scripts/build-manifest.mjs && node scripts/enrich.mjs",
+    "snapshot": "node scripts/scrape.mjs && node scripts/transform.mjs",
     "enrich": "node scripts/build-manifest.mjs && node scripts/enrich.mjs"
   },
   "dependencies": {
