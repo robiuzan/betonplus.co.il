@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run snapshot:*)",
+      "Bash(npm run enrich:*)",
+      "Bash(npm run dev:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Skill(betonplus-architecture)",
+      "Skill(migration-fidelity)",
+      "Skill(content-enrichment)",
+      "Skill(nextjs-app-router)",
+      "Skill(react-components)",
+      "Skill(seo-metadata)",
+      "Skill(web-design-ui)",
+      "Skill(rtl-hebrew)",
+      "Skill(responsive-accessibility)",
+      "Skill(conversion-cro)",
+      "Skill(qa-build-gate)",
+      "Skill(performance-web-vitals)"
+    ]
+  }
+}
