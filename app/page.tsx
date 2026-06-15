@@ -1,14 +1,39 @@
 import type { Metadata } from "next";
-import SiteFrame from "@/components/SiteFrame";
-import { getFrontPage, buildMetadata } from "@/lib/content";
+import Hero from "@/components/Hero";
+import TrustBar from "@/components/TrustBar";
+import ServicesGrid from "@/components/ServicesGrid";
+import ProcessSteps from "@/components/ProcessSteps";
+import WhyUs from "@/components/WhyUs";
+import Reviews from "@/components/Reviews";
+import ServiceAreasSection from "@/components/ServiceAreasSection";
+import Faq from "@/components/Faq";
+import ContactSection from "@/components/ContactSection";
+import JsonLd from "@/components/JsonLd";
+import { pageMetadata, faqJsonLd } from "@/lib/seo";
+import { site } from "@/lib/site";
 
-// The WordPress front page (the page whose permalink is the site root "/").
 export const dynamic = "force-static";
 
-export function generateMetadata(): Metadata {
-  return buildMetadata(getFrontPage().seo);
-}
+export const metadata: Metadata = pageMetadata({
+  title: `${site.name} | ניסור בטון וקידוח יהלום מדויק`,
+  description: site.shortPitch,
+  path: "/",
+  absoluteTitle: true,
+});
 
 export default function HomePage() {
-  return <SiteFrame page={getFrontPage()} />;
+  return (
+    <>
+      <JsonLd data={faqJsonLd()} />
+      <Hero />
+      <TrustBar />
+      <ServicesGrid />
+      <ProcessSteps />
+      <WhyUs />
+      <Reviews />
+      <ServiceAreasSection />
+      <Faq />
+      <ContactSection tint="mist" />
+    </>
+  );
 }

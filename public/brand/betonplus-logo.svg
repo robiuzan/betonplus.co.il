@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 130" role="img" aria-label="בטון פלוס — דיוק של יהלום, ביצוע פלוס">
+  <title>בטון פלוס</title>
+  <!-- wordmark (Hebrew renders RTL automatically) -->
+  <text x="148" y="62" text-anchor="middle"
+        font-family="Heebo, Assistant, Arial, sans-serif" font-size="52" font-weight="800"
+        fill="#1F2A37" letter-spacing="-1">בטון פלוס</text>
+  <!-- tagline -->
+  <text x="148" y="93" text-anchor="middle"
+        font-family="Assistant, Heebo, Arial, sans-serif" font-size="16.5" font-weight="600"
+        fill="#475569" letter-spacing="0.5">דיוק של יהלום · ביצוע פלוס</text>
+
+  <!-- icon mark (scaled copy of betonplus-mark.svg), placed on the right (RTL) -->
+  <g transform="translate(286 10) scale(0.875)">
+    <circle cx="60" cy="60" r="54" fill="#1F2A37"/>
+    <circle cx="60" cy="60" r="54" fill="none" stroke="#2563EB" stroke-width="5" stroke-dasharray="5 7"/>
+    <circle cx="60" cy="60" r="44" fill="#28333F" stroke="#3B4654" stroke-width="1.5"/>
+    <rect x="53" y="24" width="14" height="72" rx="4" fill="#F59E0B"/>
+    <rect x="24" y="53" width="72" height="14" rx="4" fill="#F59E0B"/>
+    <rect x="49.5" y="49.5" width="21" height="21" rx="2" transform="rotate(45 60 60)" fill="#2563EB"/>
+    <rect x="54" y="54" width="12" height="12" rx="1" transform="rotate(45 60 60)" fill="#EAF1FF"/>
+  </g>
+</svg>
