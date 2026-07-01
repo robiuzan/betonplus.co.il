@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     siteName: site.name,
     url: site.url,
   },
-  // verification: { google: "<betonplus-gsc-token>" }, // add when available
+  verification: { google: "ozMzEyHFAfRd_siJREJ79bbkt-EPRpUTmn-Ln9XaBz0" },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
