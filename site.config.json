@@ -1,0 +1,41 @@
+{
+  "domain": "betonplus.co.il",
+  "url": "https://betonplus.co.il",
+  "brandName": "בטון פלוס",
+  "brandNameEn": "Beton Plus",
+  "legalName": "בטון פלוס",
+  "locale": "he-IL",
+  "dir": "rtl",
+  "foundedYear": 2005,
+  "tagline": "דיוק של יהלום · ביצוע פלוס",
+  "shortPitch": "חיתוך וקידוח בטון מדויק ביהלום — פותחים פתחים, מנסרים וקודחים בכל מבנה בלי לפגוע בו, בלוח זמנים ובבטיחות מלאה.",
+  "contact": {
+    "phoneDisplay": "055-6601006",
+    "phoneE164": "+972556601006",
+    "whatsappE164": "+972556601006",
+    "email": "info@betonplus.co.il",
+    "formAccessKey": "05db8b23-d9f8-4601-b168-e38d10a450f8",
+    "phoneOverride": false
+  },
+  "brand": {
+    "themeColor": "#1f2a37",
+    "primary": "#1f2a37",
+    "secondary": null,
+    "accent": null,
+    "fontHeading": "Heebo",
+    "fontBody": "Assistant"
+  },
+  "schema": {
+    "type": "GeneralContractor",
+    "priceRange": "₪₪",
+    "areaServed": "גוש דן והמרכז, ישראל",
+    "address": { "addressCountry": "IL", "addressRegion": "מרכז" },
+    "openingHours": [
+      { "days": ["Su", "Mo", "Tu", "We", "Th"], "opens": "07:00", "closes": "18:00" },
+      { "days": ["Fr"], "opens": "07:00", "closes": "13:00" }
+    ],
+    "sameAs": []
+  },
+  "analytics": { "gtmId": "GTM-KWGGH438", "googleSiteVerification": null },
+  "_needsConfirmation": ["brand.secondary", "brand.accent", "analytics.gtmId", "schema.address", "legalName", "silos-migrate-in-phase-2"]
+}

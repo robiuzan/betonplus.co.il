@@ -16,7 +16,7 @@ export default function Hero() {
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/85">{site.shortPitch}</p>
 
           <div className="mt-7 flex flex-wrap gap-3">
-            <Button href={telHref} variant="cta" className="text-base">
+            <Button href={telHref} data-cta="hero-call" variant="cta" className="text-base">
               <Icon name="phone" className="h-5 w-5" />
               התקשרו {site.phoneDisplay}
             </Button>

@@ -28,7 +28,7 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button href={telHref} variant="cta" className="px-4 py-2.5 text-sm" ariaLabel={`התקשרו ${site.phoneDisplay}`}>
+          <Button href={telHref} data-cta="header-call" variant="cta" className="px-4 py-2.5 text-sm" ariaLabel={`התקשרו ${site.phoneDisplay}`}>
             <Icon name="phone" className="h-4 w-4" />
             <span className="hidden sm:inline">{site.phoneDisplay}</span>
             <span className="sm:hidden">חייגו</span>

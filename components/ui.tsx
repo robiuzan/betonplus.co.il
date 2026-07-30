@@ -72,23 +72,26 @@ export function Button({
   className = "",
   children,
   ariaLabel,
+  "data-cta": dataCta,
 }: {
   href: string;
   variant?: ButtonVariant;
   className?: string;
   children: React.ReactNode;
   ariaLabel?: string;
+  /** GTM conversion hook — placement tag read by the shared container's click triggers. */
+  "data-cta"?: string;
 }) {
   const cls = `btn btn-${variant} ${className}`;
   if (isExternal(href)) {
     return (
-      <a href={href} className={cls} aria-label={ariaLabel}>
+      <a href={href} className={cls} aria-label={ariaLabel} data-cta={dataCta}>
         {children}
       </a>
     );
   }
   return (
-    <Link href={href} className={cls} aria-label={ariaLabel}>
+    <Link href={href} className={cls} aria-label={ariaLabel} data-cta={dataCta}>
       {children}
     </Link>
   );

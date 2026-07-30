@@ -9,34 +9,54 @@
  * Confirmed facts (name, phone, founded 2005) are unmarked. See brief.md.
  */
 
+import siteManifest from "@/site.config.json";
+import {
+  telHref as kitTelHref,
+  whatsappHref as kitWhatsappHref,
+  type SiteManifest,
+} from "@ishub/site-kit";
+
+/**
+ * Normalized, cross-site identity/NAP manifest (see `site.config.json`). This is the single
+ * source of truth for business facts and contact links; the shared `@ishub/site-kit` helpers
+ * derive the tel:/wa.me links from it so every site in the fleet stays consistent.
+ */
+export const manifest = siteManifest as unknown as SiteManifest;
+
+// The `site` object keeps EXACTLY the same field names, shapes and values it always had — only
+// its source changed (now read from `siteManifest`). Reads use the JSON-typed import for concrete
+// (non-nullable) types; `manifest` (same object) is what the kit helpers below consume.
 export const site = {
-  name: "בטון פלוס",
-  legalName: "בטון פלוס", // 🔶 confirm legal entity
-  domain: "betonplus.co.il",
-  url: "https://betonplus.co.il",
-  locale: "he_IL",
-  foundedYear: 2005,
+  name: siteManifest.brandName,
+  legalName: siteManifest.legalName, // 🔶 confirm legal entity
+  domain: siteManifest.domain,
+  url: siteManifest.url,
+  // og:locale is emitted with an underscore (he_IL); the manifest stores canonical BCP-47 (he-IL).
+  locale: siteManifest.locale.replace("-", "_"),
+  foundedYear: siteManifest.foundedYear,
   yearsLabel: "מעל 20 שנה",
-  tagline: "דיוק של יהלום · ביצוע פלוס",
-  shortPitch:
-    "חיתוך וקידוח בטון מדויק ביהלום — פותחים פתחים, מנסרים וקודחים בכל מבנה בלי לפגוע בו, בלוח זמנים ובבטיחות מלאה.",
-  // Contact
-  phoneDisplay: "055-6601006",
-  phoneTel: "+972556601006",
-  whatsapp: "972556601006",
-  email: "info@betonplus.co.il", // 🔶 confirm lead destination
+  tagline: siteManifest.tagline,
+  shortPitch: siteManifest.shortPitch,
+  // Contact — sourced from the shared manifest (E.164 + display), never hardcoded.
+  phoneDisplay: siteManifest.contact.phoneDisplay,
+  phoneTel: siteManifest.contact.phoneE164,
+  whatsapp: siteManifest.contact.whatsappE164.replace(/\D/g, ""),
+  email: siteManifest.contact.email, // 🔶 confirm lead destination
+  /** Web3Forms PUBLIC access key (per-site UUID). Delivery inbox = email. null until provisioned. */
+  formAccessKey: (siteManifest.contact as { formAccessKey?: string | null }).formAccessKey ?? null,
   // Operations
   hours: "א׳–ה׳ 07:00–18:00 · ו׳ 07:00–13:00", // 🔶 confirm
-  areaLabel: "גוש דן והמרכז + פריסה ארצית בתיאום", // 🔶 confirm
+  areaLabel: siteManifest.schema.areaServed, // 🔶 confirm
 } as const;
 
-/** Pre-filled WhatsApp deep link. */
-export const whatsappHref = `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(
+/** Pre-filled WhatsApp deep link (kit-generated; byte-identical to the previous const). */
+export const whatsappHref = kitWhatsappHref(
+  manifest,
   "היי, הגעתי דרך האתר ואשמח לקבל הצעת מחיר לניסור/קידוח בטון.",
-)}`;
+);
 
-/** Click-to-call link. */
-export const telHref = `tel:${site.phoneTel}`;
+/** Click-to-call link (kit-generated; byte-identical to the previous const). */
+export const telHref = kitTelHref(manifest);
 
 export interface NavItem {
   label: string;

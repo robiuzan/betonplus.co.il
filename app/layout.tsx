@@ -3,8 +3,9 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
-import { site } from "@/lib/site";
+import { site, manifest } from "@/lib/site";
 import { localBusinessJsonLd } from "@/lib/seo";
+import { gtmHeadSnippet, gtmNoScriptSrc } from "@ishub/site-kit/analytics";
 
 export const viewport: Viewport = { themeColor: "#1f2a37" };
 
@@ -24,12 +25,28 @@ export const metadata: Metadata = {
   verification: { google: "ozMzEyHFAfRd_siJREJ79bbkt-EPRpUTmn-Ln9XaBz0" },
 };
 
+/** Shared GTM loader — inert (renders nothing) until analytics.gtmId is set in the manifest. */
+const gtmHead = gtmHeadSnippet(manifest.analytics?.gtmId);
+const gtmNoScript = gtmNoScriptSrc(manifest.analytics?.gtmId);
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = JSON.stringify(localBusinessJsonLd()).replace(/</g, "\\u003c");
 
   return (
     <html lang="he-IL" dir="rtl">
       <body>
+        {gtmNoScript && (
+          <noscript>
+            <iframe
+              src={gtmNoScript}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+              title="gtm"
+            />
+          </noscript>
+        )}
+        {gtmHead && <script id="gtm-init" dangerouslySetInnerHTML={{ __html: gtmHead }} />}
         {/*
           Fonts via <link> rather than next/font: React 19 hoists these to <head>, and the
           static build never depends on a build-time network fetch (keeps the build gate

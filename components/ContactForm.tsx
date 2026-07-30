@@ -3,14 +3,19 @@
 import { useState } from "react";
 import Icon from "@/components/Icon";
 import { services, site } from "@/lib/site";
+import { trackEvent } from "@ishub/site-kit/analytics";
 
 type Status = "idle" | "submitting" | "success" | "error";
 
 /**
- * Lead/quote form. Posts to FormSubmit's AJAX endpoint so leads arrive by email with no
- * backend (static export). 🔶 site.email must be confirmed & activated in FormSubmit once
- * before submissions are delivered. Includes a honeypot field for spam protection.
+ * Lead/quote form. Delivers via Web3Forms (https://api.web3forms.com/submit) so leads arrive
+ * by email with no backend (static export). The PUBLIC access key comes from the manifest
+ * (site.formAccessKey), with a NEXT_PUBLIC_WEB3FORMS_KEY env override for local dev; the delivery
+ * inbox (site.email) is set in the Web3Forms dashboard. Includes a honeypot for spam protection.
  */
+const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
+const WEB3FORMS_KEY = site.formAccessKey ?? process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "";
+
 export default function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
 
@@ -20,22 +25,40 @@ export default function ContactForm() {
     const data = new FormData(form);
     if ((data.get("_honey") as string)?.length) return; // bot
     setStatus("submitting");
+
+    // No access key (local dev only): simulate so the form works without delivery. Production
+    // builds always ship a provisioned key, so an empty key in production is a misconfig -> error.
+    if (!WEB3FORMS_KEY) {
+      if (process.env.NODE_ENV !== "production") {
+        await new Promise((r) => setTimeout(r, 600));
+        setStatus("success");
+        form.reset();
+        return;
+      }
+      setStatus("error");
+      return;
+    }
+
     try {
-      const res = await fetch(`https://formsubmit.co/ajax/${site.email}`, {
+      const res = await fetch(WEB3FORMS_ENDPOINT, {
         method: "POST",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify({
-          _subject: "פנייה חדשה מאתר בטון פלוס",
-          _template: "table",
-          שם: data.get("name"),
-          טלפון: data.get("phone"),
-          "עיר/אזור": data.get("city"),
-          "סוג העבודה": data.get("service"),
-          הודעה: data.get("message"),
+          access_key: WEB3FORMS_KEY,
+          subject: "פנייה חדשה מאתר בטון פלוס",
+          from_name: site.name,
+          name: data.get("name"),
+          phone: data.get("phone"),
+          city: data.get("city"),
+          service: data.get("service"),
+          message: data.get("message"),
         }),
       });
-      if (!res.ok) throw new Error("request failed");
+      const result: { success?: boolean } = await res.json();
+      if (!res.ok || !result.success) throw new Error("request failed");
       setStatus("success");
+      // GTM conversion hook: fires only on a CONFIRMED send (the dev simulation above does not).
+      trackEvent("lead_submit", { form: "lead" });
       form.reset();
     } catch {
       setStatus("error");

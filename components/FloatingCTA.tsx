@@ -11,7 +11,7 @@ export default function FloatingCTA() {
       {/* Mobile: fixed bottom action bar */}
       <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 border-t border-line bg-white shadow-[0_-4px_20px_-8px_rgba(17,24,39,0.25)] lg:hidden">
         <a
-          href={telHref}
+          href={telHref} data-cta="sticky-call"
           className="flex items-center justify-center gap-2 bg-cta py-3.5 font-heading font-bold text-brand"
           aria-label={`התקשרו ${site.phoneDisplay}`}
         >
@@ -19,7 +19,7 @@ export default function FloatingCTA() {
           התקשרו
         </a>
         <a
-          href={whatsappHref}
+          href={whatsappHref} data-cta="sticky-whatsapp"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 bg-[#25d366] py-3.5 font-heading font-bold text-[#062e16]"
@@ -32,7 +32,7 @@ export default function FloatingCTA() {
 
       {/* Desktop: floating WhatsApp bubble */}
       <a
-        href={whatsappHref}
+        href={whatsappHref} data-cta="sticky-whatsapp"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-6 end-6 z-40 hidden h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-lg transition-transform hover:scale-105 lg:flex"

@@ -48,13 +48,13 @@ export default function Footer() {
           <h3 className="text-white text-base font-bold">צור קשר</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <a href={telHref} className="flex items-center gap-2 text-white/80 hover:text-white">
+              <a href={telHref} data-cta="footer-call" className="flex items-center gap-2 text-white/80 hover:text-white">
                 <Icon name="phone" className="h-4 w-4 text-cta" />
                 <span dir="ltr">{site.phoneDisplay}</span>
               </a>
             </li>
             <li>
-              <a href={whatsappHref} className="flex items-center gap-2 text-white/80 hover:text-white" target="_blank" rel="noopener noreferrer">
+              <a href={whatsappHref} data-cta="footer-whatsapp" className="flex items-center gap-2 text-white/80 hover:text-white" target="_blank" rel="noopener noreferrer">
                 <Icon name="whatsapp" className="h-4 w-4 text-cta" />
                 וואטסאפ
               </a>

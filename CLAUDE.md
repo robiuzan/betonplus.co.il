@@ -41,10 +41,6 @@ It shares the same stack and migration methodology as the sibling project `3lock
 - Until the snapshot runs, `content/site.json` is an empty stub and `npm run build` fails **by design**
   (no front page). Run `npm run snapshot` first to populate real content.
 
-## Primary Directive — Strict 1:1 Replication
-- Replicate the source WordPress site exactly: **design, content, layout, URL/permalink structure, metadata, and internal links.**
-- **No invented content, no creative liberties.** Preserve the exact **H1 → H2 → H3** heading hierarchy from the source.
-- Preserve **internal links** exactly (same slugs/paths as WordPress permalinks).
 
 ## RTL & Localization (mandatory)
 - Document root: `<html lang="he" dir="rtl">`.

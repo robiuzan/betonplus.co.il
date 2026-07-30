@@ -9,6 +9,9 @@ const wpHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // The shared @ishub/site-kit ships raw .ts sources, so Next must transpile it.
+  transpilePackages: ["@ishub/site-kit"],
+
   // Fully static, self-contained output (out/) for GitHub Pages / any static host.
   // The whole site is SSG, so this exports clean HTML + the vendored assets.
   output: "export",

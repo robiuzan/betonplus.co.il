@@ -17,11 +17,11 @@ export default function CtaBanner({
           <p className="mx-auto mt-3 max-w-xl text-lg text-white/85">{text}</p>
         </div>
         <div className="flex flex-wrap justify-center gap-3">
-          <Button href={telHref} variant="cta" className="text-base">
+          <Button href={telHref} data-cta="finalcta-call" variant="cta" className="text-base">
             <Icon name="phone" className="h-5 w-5" />
             התקשרו {site.phoneDisplay}
           </Button>
-          <Button href={whatsappHref} variant="whatsapp" className="text-base">
+          <Button href={whatsappHref} data-cta="finalcta-whatsapp" variant="whatsapp" className="text-base">
             <Icon name="whatsapp" className="h-5 w-5" />
             שלחו וואטסאפ
           </Button>
