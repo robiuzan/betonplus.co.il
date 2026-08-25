@@ -16,6 +16,12 @@
 # next.js
 /.next/
 /out/
+# Previous export, kept by ops/deploy-site.ps1 for one-command rollback. ~5 MB of
+# build output — never commit it.
+/out.prev/
+
+# Local backups of the roster-synced manifest.
+*.bak
 
 # production
 /build

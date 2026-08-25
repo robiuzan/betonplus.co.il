@@ -7,6 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "snapshot": "node scripts/scrape.mjs && node scripts/transform.mjs",
     "enrich": "node scripts/build-manifest.mjs && node scripts/enrich.mjs"
   },
@@ -28,6 +31,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "node-html-parser": "^7.1.0",
+    "prettier": "^3.3.3",
+    "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

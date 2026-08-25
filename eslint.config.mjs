@@ -12,6 +12,17 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Build artifacts and rollback copies.
+    "out.prev/**",
+    // Vendored third-party assets. public/cdn-cgi/** is Cloudflare's own minified
+    // JS and accounts for every error this config used to report; none of it is
+    // ours to fix, and linting it made `npm run lint` unusable as a release gate.
+    "public/**",
+    "vendor/**",
+    // The abandoned WordPress snapshot layer (CLAUDE.md section 2, rule 3).
+    // Frozen legacy, imported by nothing under app/.
+    "scripts/**",
+    "lib/enrich/**",
   ]),
 ]);
 
