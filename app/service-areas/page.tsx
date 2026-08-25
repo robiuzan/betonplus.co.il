@@ -6,7 +6,7 @@ import { Section, SectionHeading } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
 import { serviceAreaGroups, areaLogistics, services } from "@/lib/site";
-import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { pageMetadata, breadcrumbJsonLd, collectionPageJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -20,7 +20,16 @@ export const metadata: Metadata = pageMetadata({
 export default function ServiceAreasPage() {
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd([{ name: "אזורי שירות", path: "/service-areas/" }])} />
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([{ name: "אזורי שירות", path: "/service-areas/" }]),
+          collectionPageJsonLd(
+            "/service-areas/",
+            "אזורי שירות — ניסור בטון בגוש דן והמרכז",
+            "הערים שאנחנו עובדים בהן, ומה משתנה בין אתר לאתר בגישה, בסוג הבנייה ובשעות העבודה.",
+          ),
+        ]}
+      />
       <PageHero
         title="אזורי שירות"
         lead="פועלים בכל גוש דן והמרכז — ומגיעים עם כל הציוד לעבודה מדויקת במקום."

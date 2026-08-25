@@ -121,11 +121,38 @@ du -sh out                                            # ~3.9 MB baseline
 
 ## 11. Content floors
 
-Spot-check that no page regressed below `docs/content-standards.md` §1. Strip tags, subtract ~110 words
-of chrome, and check the thinnest routes — the 5 service pages (~200 words today, floor 450) and
-`/service-areas/`.
+Spot-check that no page regressed below `docs/content-standards.md` §1. Every content page cleared its
+floor in waves 2–4 (service pages 456–574, `/faq/` 850, `/pricing/` 602, `/about/` 525, `/service-areas/`
+434, `/services/` 377). Measure **unique-to-page** words — strip tags, then subtract the vocabulary
+common to every page — because raw counts flatter a shared template.
 
-## 12. Live checks after deploy
+## 12. Font preloads still match Google's current URLs
+
+`app/layout.tsx` preloads the **Hebrew subset** woff2 of Heebo and Assistant by version-pinned
+URL (`/v28/`, `/v24/`). Google eventually bumps those. A stale preload is harmless — the stylesheet
+still fetches the right file — but it stops helping, and the Hebrew `<h1>` is the LCP element.
+
+```bash
+# every preloaded URL must still appear in the live stylesheet
+CSS=$(curl -sS -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36" \
+  "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Heebo:wght@400;500;700;800;900&display=swap")
+for u in $(grep -o 'https://fonts.gstatic.com[^"]*\.woff2' out/index.html | sort -u); do
+  echo "$CSS" | grep -q "$u" && echo "ok    $u" || echo "STALE $u"
+done
+```
+
+Any `STALE` line: re-run the fetch, take the URLs from the `U+0590` (Hebrew) `@font-face` blocks,
+and update `HEBREW_FONT_FILES`.
+
+Also assert there is no duplication — React hoists a `<link rel="preload">` written in JSX _and_
+leaves the original, emitting each tag twice. The layout uses `preload()` from `react-dom` to avoid
+that; expect exactly **2** woff2 preloads per page:
+
+```bash
+grep -o '<link[^>]*rel="preload"[^>]*woff2[^>]*>' out/index.html | wc -l   # expect 2
+```
+
+## 13. Live checks after deploy
 
 ```bash
 curl -sSI https://betonplus.co.il/ | grep -iE 'strict-transport|content-security|x-frame|server'
@@ -136,7 +163,7 @@ curl -o /dev/null -w '%{http_code}\n' "https://www.googletagmanager.com/gtm.js?i
 The GTM check must return **200**. The `robots.txt` will show Cloudflare's managed AI-crawler block —
 that is expected and is a zone setting, not a repo bug (`/aeo-answer-content`).
 
-## 13. Auditor sweep
+## 14. Auditor sweep
 
 For a substantive change, run the relevant agents against the fresh `out/`:
 

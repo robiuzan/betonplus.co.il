@@ -8,7 +8,7 @@ import { Section, SectionHeading } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
 import { site, aboutAnswer, aboutSections, aboutPolicy } from "@/lib/site";
-import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { pageMetadata, breadcrumbJsonLd, aboutPageJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -31,7 +31,16 @@ const values = [
 export default function AboutPage() {
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd([{ name: "אודות", path: "/about/" }])} />
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([{ name: "אודות", path: "/about/" }]),
+          aboutPageJsonLd(
+            "/about/",
+            "אודות בטון פלוס",
+            "ניסור, קידוח והריסה מבוקרת של בטון ביהלום משנת 2005 בגוש דן והמרכז.",
+          ),
+        ]}
+      />
       <PageHero
         title="אודות בטון פלוס"
         lead="מעל 20 שנה מנסרים, קודחים ומפרקים בטון ביהלום — מדויק, נקי ובזמן."

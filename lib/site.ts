@@ -831,6 +831,33 @@ export const staticRoutes: string[] = [
 ];
 
 /**
+ * Real per-route content dates for `<lastmod>` (backlog §1.2), ISO yyyy-mm-dd.
+ *
+ * Hand-maintained ON PURPOSE. `new Date()` at build time would stamp every URL as
+ * freshly changed on every deploy, which makes the signal worthless — worse than
+ * omitting it. **Bump a route's date only when its CONTENT actually changes**, not for
+ * a styling tweak or a dependency bump. A route with no entry simply omits `lastmod`,
+ * which is valid.
+ */
+export const routeUpdated: Record<string, string> = {
+  "/": "2026-08-17",
+  "/services/": "2026-08-24",
+  "/pricing/": "2026-08-24",
+  "/service-areas/": "2026-08-24",
+  "/about/": "2026-08-24",
+  "/faq/": "2026-08-24",
+  "/contact/": "2026-08-17",
+  "/privacy/": "2026-06-15",
+  "/accessibility/": "2026-06-15",
+  // All five service pages were rewritten to depth in wave 2.
+  "/services/wall-sawing/": "2026-08-17",
+  "/services/core-drilling/": "2026-08-17",
+  "/services/floor-ceiling-sawing/": "2026-08-17",
+  "/services/wire-saw/": "2026-08-17",
+  "/services/demolition/": "2026-08-17",
+};
+
+/**
  * Service areas grouped by real geography, for `/service-areas/`.
  *
  * 🔶 The exact coverage list is unconfirmed (business-facts §E) and three sources still

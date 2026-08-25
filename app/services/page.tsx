@@ -7,7 +7,7 @@ import { Section, SectionHeading } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
 import { services, servicesAnswer, serviceChooser, getService } from "@/lib/site";
-import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import { pageMetadata, breadcrumbJsonLd, collectionPageJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -21,7 +21,16 @@ export const metadata: Metadata = pageMetadata({
 export default function ServicesIndexPage() {
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd([{ name: "שירותים", path: "/services/" }])} />
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([{ name: "שירותים", path: "/services/" }]),
+          collectionPageJsonLd(
+            "/services/",
+            "שירותי ניסור וקידוח בטון",
+            "חמישה שירותי ניסור, קידוח ופירוק בטון ביהלום, ואיך לבחור את המתאים לעבודה.",
+          ),
+        ]}
+      />
       <PageHero
         title="שירותי ניסור וקידוח בטון"
         lead="פתרון מלא לחיתוך, קידוח ופירוק בטון ביהלום — מדויק, נקי ובטוח, לכל סוגי הפרויקטים."

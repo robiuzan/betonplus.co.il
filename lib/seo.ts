@@ -98,3 +98,40 @@ export function faqJsonLd(items: { q: string; a: string }[] = faqs): JsonLd {
 export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]): JsonLd {
   return kit.breadcrumbJsonLd(manifest, crumbs);
 }
+
+/**
+ * Page-type nodes for the index and static routes (backlog §4.4). Hand-assembled —
+ * the kit has no builders for these. Each is tied to the business node's kit-emitted
+ * `@id` (`${url}/#business`) so nothing dangles, and `@id` follows the canonical.
+ *
+ * `isPartOf` points at the WebSite node, which only the homepage emits; that is a
+ * valid cross-page reference and is how schema.org expects the graph to link up.
+ */
+function pageNode(type: string, path: string, name: string, description: string): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": type,
+    "@id": `${absolute(path)}#page`,
+    url: absolute(path),
+    name,
+    description,
+    inLanguage: "he-IL",
+    isPartOf: { "@id": `${site.url}/#website` },
+    about: { "@id": `${site.url}/#business` },
+  };
+}
+
+/** CollectionPage — for index routes that list children (`/services/`, `/service-areas/`). */
+export function collectionPageJsonLd(path: string, name: string, description: string): JsonLd {
+  return pageNode("CollectionPage", path, name, description);
+}
+
+/** AboutPage — `/about/`. */
+export function aboutPageJsonLd(path: string, name: string, description: string): JsonLd {
+  return pageNode("AboutPage", path, name, description);
+}
+
+/** ContactPage — `/contact/`. */
+export function contactPageJsonLd(path: string, name: string, description: string): JsonLd {
+  return pageNode("ContactPage", path, name, description);
+}
