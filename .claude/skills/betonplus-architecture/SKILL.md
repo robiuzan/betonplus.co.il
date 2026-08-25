@@ -1,69 +1,134 @@
 ---
 name: betonplus-architecture
-description: Start-here orientation for the betonplus.co.il codebase — the snapshot→enrich→render pipeline, the key file map, the npm scripts, and the build gate. Use at the start of any task here, or when you are unsure where content/styles/routes/metadata come from.
+description: Start-here orientation for betonplus.co.il — the roster → site.config.json → lib/site.ts → routes data flow, the file map, the vestigial WordPress snapshot layer nothing imports, static-export constraints (no headers, redirects, middleware or API routes), Next 16's Promise params, the npm scripts, and the deploy truth. Use at the start of any task in this repo, or when unsure where content, routes, metadata or business facts come from. Triggers: "where does X live", "how is this site built", "orient me", "architecture", "why is this not working in production".
 user-invocable: true
 ---
 
-# betonplus.co.il — Architecture map
+# betonplus.co.il architecture
 
-This is a **strict 1:1 WordPress→Next.js migration** of `https://betonplus.co.il` (concrete cutting &
-coring — ניסור בטון, theme `zapo`). It is **NOT a redesign**. Read `/migration-fidelity` before changing
-any page output.
+בטון פלוס — diamond concrete cutting, coring and controlled demolition, גוש דן. Hebrew RTL marketing
+site, 14 content routes (+ a noindex `/thank-you/`), Next.js 16 App Router compiled to static HTML.
+Read this before changing
+anything.
 
-## The data flow (read this first)
+## The thing that will confuse you first
+
+This repo contains **two sites**. Only one of them is real.
+
+The original project was a strict 1:1 WordPress→Next port. That approach was abandoned and replaced by
+a brief-driven build (`brief.md`, commit "Build brief-driven betonplus marketing site"). The migration
+machinery was never deleted:
+
+| Vestigial — imported by nothing under `app/`                           | Live                  |
+| ---------------------------------------------------------------------- | --------------------- |
+| `scripts/scrape.mjs` `transform.mjs` `build-manifest.mjs` `enrich.mjs` | `app/**/page.tsx`     |
+| `content/site.json` (1.1 MB snapshot)                                  | `lib/site.ts` ⭐      |
+| `lib/content.ts` `lib/wp.ts` `lib/enrich/`                             | `lib/seo.ts`          |
+| `app/enrich.css`                                                       | `app/globals.css`     |
+| `components/SiteFrame.tsx` `SiteAssets.tsx` `ThemeScripts.tsx`         | every other component |
+| `npm run snapshot` · `npm run enrich`                                  | `npm run build`       |
+
+**`lib/site.ts` is the live content source. `lib/content.ts` is the dead snapshot reader.** The names
+are backwards relative to the rest of the fleet — check the import, not the filename.
+
+Don't build on the dead layer, and don't delete it without asking (it is the only record of the
+original WP content).
+
+## The stack, and what it forbids
+
+Next **16.2.9** · React **19** · TypeScript strict (**`noUncheckedIndexedAccess` is NOT on**) ·
+Tailwind **v4** (CSS-first `@theme` in `app/globals.css` — **there is no `tailwind.config.ts`**; the
+full framework including preflight is imported) · icons from the hand-rolled inline-SVG set in `components/Icon.tsx`
+(`lucide-react` is declared but unused) ·
+`@ishub/site-kit` (vendored tarball, ships raw TS, hence `transpilePackages`).
+
+```ts
+// next.config.ts
+output: "export",       trailingSlash: true,
+images: { unoptimized: true },
+transpilePackages: ["@ishub/site-kit"],
 ```
-WordPress (live)  ──scrape.mjs──▶  content/site.json  ──lib/content.ts──▶  app/* pages ──SiteFrame──▶ HTML
-   │                                      ▲
-   └ value-add: content/enriched/<id>.mjs ─┘  (build-manifest.mjs + enrich.mjs, optional layer)
-```
-- The **source of truth at build time is `content/site.json`**, not the live WP API. The scraper captures
-  each page's *rendered* HTML (the `zapo` theme renders from server-side meta the REST API does not
-  expose) and vendors every same-origin asset into `public/` at its original path.
-- Pages render captured HTML via `dangerouslySetInnerHTML`; there are **no hand-built header/nav/footer
-  components** — that chrome lives inside `page.bodyHtml`.
 
-## Key files
-| Path | Role |
-|------|------|
-| [scripts/scrape.mjs](scripts/scrape.mjs) | Fetch live HTML, vendor assets, rewrite links, extract SEO → writes `content/site.json` |
-| [scripts/transform.mjs](scripts/transform.mjs) | Post-scrape: rewrite Contact Form 7 → FormSubmit, strip CF7 JS |
-| [scripts/build-manifest.mjs](scripts/build-manifest.mjs) | Classify pages (service / brand-key / location / core), build related-link index → `content/enriched/_manifest.json` |
-| [scripts/enrich.mjs](scripts/enrich.mjs) | Inject authored `content/enriched/<id>.mjs` HTML + SEO + JSON-LD into pages |
-| [content/site.json](content/site.json) | The snapshot — single source of truth |
-| [content/enriched/](content/enriched/) | Authored value-add modules + `_manifest.json` |
-| [lib/content.ts](lib/content.ts) | `SiteData`/`SitePage`/`SeoData` types; `getFrontPage()`, `getContentPages()`, `getPageBySegments()`, `buildMetadata()` |
-| [lib/wp.ts](lib/wp.ts) | WordPress REST types (`WP_Page`, `WP_Post`, `WP_Rendered`) |
-| [lib/enrich/types.ts](lib/enrich/types.ts) | `EnrichedPage` interface (authoring schema) |
-| [lib/enrich/render.mjs](lib/enrich/render.mjs) | HTML block renderers for enriched sections |
-| [app/page.tsx](app/page.tsx) | Front page → `<SiteFrame page={getFrontPage()} />` |
-| [app/[...slug]/page.tsx](app/[...slug]/page.tsx) | Every other permalink; `generateStaticParams` + `dynamicParams=false` |
-| [app/sitemap.ts](app/sitemap.ts) / [app/robots.ts](app/robots.ts) | `/sitemap.xml`, `/robots.txt` |
-| [components/SiteFrame.tsx](components/SiteFrame.tsx) | Renders JSON-LD + `bodyHtml` + replays scripts |
-| [components/ThemeScripts.tsx](components/ThemeScripts.tsx) | `"use client"` — sequential script replay |
-| [app/globals.css](app/globals.css) | Tailwind v4 **utilities only** (preflight/theme intentionally NOT imported) |
-| [app/enrich.css](app/enrich.css) | Styling for authored value-add sections |
-| [next.config.ts](next.config.ts) | `output:"export"`, `trailingSlash`, `images.unoptimized` |
+`output: "export"` **forbids** `headers()`, `redirects()`, `rewrites()`, middleware, API routes, ISR
+and server actions. Response headers would come from `public/_headers` at the Cloudflare edge, redirects
+from `public/_redirects` — **neither file exists yet** (`/web-security-headers`). If a task seems to need
+one of the forbidden APIs, the answer is at the edge, not in Next.
 
-## npm scripts (verbatim)
-```
-dev      → next dev
-build    → next build
-start    → next start
-lint     → eslint
-snapshot → node scripts/scrape.mjs && node scripts/transform.mjs
-enrich   → node scripts/build-manifest.mjs && node scripts/enrich.mjs
-```
-Run **`npm run snapshot` first** on a fresh checkout — until then `content/site.json` is an empty stub and
-`npm run build` fails by design (no front page).
+**Next 16 specifics.** `params` is a `Promise` — `const { slug } = await params` in both
+`generateMetadata` and the page component. Every route sets `export const dynamic = "force-static"`.
+Read `node_modules/next/dist/docs/` before touching routing, metadata or image APIs (`/nextjs-app-router`).
 
-## Stack quick facts
-- Next.js 16 App Router, React 19, **TypeScript strict (no `any`)**, Tailwind v4 (CSS-first), static export.
-- `@/*` path alias → repo root. RTL Hebrew (`<html lang="he" dir="rtl">`).
-- ⚠️ Next 16 has breaking changes — **read `node_modules/next/dist/docs/` before touching routing/metadata/image APIs** (see `/nextjs-app-router`).
+## Data flow — the thing to internalise
+
+```
+Israeli services sites/roster/sites/betonplus.json   ← EDIT HERE for NAP, brand, schema, analytics
+        │  (ops sync)
+        ▼
+site.config.json          SiteManifest              ← NEVER edit directly
+        │
+        ▼
+lib/site.ts    manifest · site · services[5] · serviceAreas[16] · navItems
+        │      telHref · whatsappHref · faqs · reviews · trustStats · processSteps · differentiators
+        ├─► lib/seo.ts   pageMetadata() · localBusinessJsonLd() · serviceJsonLd()
+        │                faqJsonLd() · breadcrumbJsonLd()   (thin wrappers over @ishub/site-kit/seo)
+        ▼
+app/**/page.tsx  →  components/**
+```
+
+**Identity and NAP go up to the roster. Wording goes in `lib/site.ts`. Layout goes in components.**
+A phone number or service name typed into a component is a bug.
+
+## Routes
+
+| Route                                                                                                              | Source                                             | Count |
+| ------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------- | ----- |
+| `/`                                                                                                                | `app/page.tsx`                                     | 1     |
+| `/services/{slug}/`                                                                                                | `app/services/[slug]/page.tsx`                     | 5     |
+| `/services/` `/pricing/` `/service-areas/` `/about/` `/reviews/` `/faq/` `/contact/` `/privacy/` `/accessibility/` | own dirs under `app/`                              | 9     |
+| `/404`                                                                                                             | Next default                                       | —     |
+| `/sitemap.xml` `/robots.txt` `/opengraph-image`                                                                    | `app/sitemap.ts` `robots.ts` `opengraph-image.tsx` | —     |
+
+14 content routes, all ASCII slugs (`/reviews/` was removed 2026-08-17 — fabricated testimonials —
+and 301s via `public/_redirects`; `/thank-you/` is the noindex form-conversion target). **There is no
+location silo** — the 16 service areas are strings
+rendered as chips on `/service-areas/`, linking nowhere. That is the biggest structural gap
+(`/local-seo-il`, `/new-city`).
+
+## The two metadata mechanisms
+
+`app/layout.tsx` sets `title.template = "%s | בטון פלוס"`. Static pages pass a bare subject to
+`pageMetadata()` and let the template append the brand. **Service pages pass `absoluteTitle: true`**
+with a `metaTitle` that already carries the brand. Both are correct; mixing them produces a doubled
+suffix. See `/seo-metadata`.
+
+## What `@ishub/site-kit` gives you
+
+| Subpath        | Symbols                                                                 | Used here                                  |
+| -------------- | ----------------------------------------------------------------------- | ------------------------------------------ |
+| root           | `telHref`, `whatsappHref`, `ogImageMeta`, `SiteManifest`                | yes, via `lib/site.ts`                     |
+| `./seo`        | `localBusinessJsonLd`, `serviceJsonLd`, `faqJsonLd`, `breadcrumbJsonLd` | yes, via `lib/seo.ts`                      |
+| `./analytics`  | `gtmHeadSnippet`, `gtmNoScriptSrc`, `trackEvent`                        | yes                                        |
+| `./media`      | `mediaUrl`, `srcsetFor`, `preloadPropsFor`                              | **unused** — see `/performance-web-vitals` |
+| `./components` | `SiteImage` (Cloudflare `/cdn-cgi/image` srcset)                        | **unused**                                 |
+
+## Commands
+
+```
+npm run dev · build · lint · typecheck · format · format:check
+npm run snapshot · enrich       # the dead WordPress layer — do not run
+```
+
+Build gate: `npm run lint && npm run typecheck && npm run format:check && npm run build`.
+
+## Deploy
+
+**Cloudflare Pages, direct upload via wrangler. Pushing to `main` deploys nothing.**
+`.github/workflows/deploy.yml` still targets GitHub Pages and is a dead second origin; `public/CNAME`
+is its leftover. See `/deploy-betonplus`.
 
 ## Where to go next
-- Changing/verifying page output → `/migration-fidelity`
-- Authoring value-add sections → `/content-enrichment`
-- Routing/metadata APIs → `/nextjs-app-router`, `/seo-metadata`
-- Components → `/react-components`  •  Styles → `/web-design-ui`  •  RTL → `/rtl-hebrew`
-- Shipping → `/qa-build-gate`, `/performance-web-vitals`
+
+`/seo-metadata` · `/schema-structured-data` · `/rtl-hebrew` · `/local-seo-il` · `/new-service` ·
+`/new-city` · `/qa-build-gate` · `/deploy-betonplus`. The acceptance bars live in `docs/`:
+`optimization-backlog.md`, `content-standards.md`, `keyword-map.md`, `schema-graph.md`,
+`business-facts.md`.

@@ -1,43 +1,120 @@
 ---
 name: responsive-accessibility
-description: Responsive layout and accessibility for betonplus — breakpoints, no horizontal scroll, semantic heading order, alt text, keyboard/focus, and AA contrast, all within the 1:1 fidelity constraint. Use when adding markup/sections or verifying a page works on phone/tablet/desktop and for assistive tech.
+description: WCAG 2.1 AA and Israeli IS 5568 compliance for betonplus — the verified-passing brand contrast and the one pairing that would fail, the mobile menu with no focus trap or Escape handler, form labelling and error announcement, 44px tap targets, semantic landmarks and one H1, LTR isolation for phone numbers, reduced motion, and keeping /accessibility/ truthful. Use before shipping or when auditing accessibility. Triggers: "accessibility pass", "WCAG", "contrast check", "tap targets", "keyboard navigation", "נגישות", "IS 5568".
 ---
 
-# Responsive & accessibility
+# Accessibility — WCAG 2.1 AA + IS 5568
 
-Goal: the page works on every device and for assistive tech — **without** deviating from the live design
-(`/migration-fidelity`). Most responsiveness comes from the vendored `zapo` theme CSS; your job is to not
-break it and to keep authored sections (`/content-enrichment`) just as robust.
+This site **publishes an accessibility statement** at `/accessibility/` claiming ת״י 5568 / WCAG AA
+conformance. That raises the stakes: a failure here isn't just a bug, it makes a published statement
+false. Keep the statement and the site in sync in both directions.
 
-## Responsive
-- Test widths: **phone 375–414px, tablet 768–834px, desktop ≥1024px**. The enriched grids in
-  [app/enrich.css](app/enrich.css) already collapse via media queries — follow that pattern for new
-  sections.
-- **No horizontal scroll** at any width (common RTL offenders: fixed widths, negative margins, oversized
-  images, `100vw` + padding). Check both directions since layout is RTL (`/rtl-hebrew`).
-- Images scale (`max-width:100%`); tables (spec/pricing) stay readable or scroll within a container, not the
-  page.
+## Contrast — verified passing, with one trap
 
-## Accessibility (target WCAG AA)
-- **Headings:** one H1, no skipped levels — same hierarchy as the source. Authored sections continue the
-  order correctly.
-- **Alt text:** decorative images `alt=""`; meaningful images get descriptive Hebrew alt. Captured WP images
-  keep their original alt — don't strip it.
-- **Keyboard & focus:** interactive elements (FAQ accordion, nav, the floating call/WhatsApp buttons in
-  `/conversion-cro`) reachable and operable by keyboard with a visible focus state.
-- **Names:** links/buttons have discernible text or `aria-label` (esp. icon-only call/WhatsApp buttons).
-- **Contrast:** text vs background ≥ 4.5:1 (≥3:1 large). Watch the dark stats band and overlay text.
-- **Semantics:** prefer real `<a>`/`<button>`/`<nav>`/`<ul>` over `div` soup in authored markup.
+Computed from the `@theme` tokens in `app/globals.css` (2026-08-16). **Do not eyeball contrast —
+compute it from the actual hex values.**
 
-## How to verify
-- Resize / device emulation across the three widths; confirm no overflow.
-- Run axe or Lighthouse a11y on key templates (home, a service page, a location page).
-- Tab through the page; confirm focus order and visible focus.
-- Deeper pass → the `fidelity-auditor` (layout drift) and a Lighthouse a11y run.
+| Pairing                                              | Ratio       | Verdict      |
+| ---------------------------------------------------- | ----------- | ------------ |
+| `.btn-cta` — cta `#f59e0b` bg / brand `#1f2a37` text | **6.77:1**  | ✅ AA        |
+| `.eyebrow` — steel `#2563eb` on white                | **5.17:1**  | ✅ AA        |
+| muted `#4b5563` on white                             | **7.56:1**  | ✅ AA        |
+| ink `#111827` on white                               | **17.74:1** | ✅           |
+| brand `#1f2a37` on white                             | **14.54:1** | ✅           |
+| `.btn-whatsapp` — `#25d366` / `#062e16`              | **7.51:1**  | ✅ AA        |
+| footer — white on brand                              | **14.54:1** | ✅           |
+| ⚠️ **white on cta `#f59e0b`**                        | **2.15:1**  | ❌ never use |
+
+The last row is the trap. The amber CTA works _because_ it carries dark brand text. Anyone reaching for
+`text-white` on a `bg-cta` surface — or adding an amber banner with white copy — breaks AA immediately.
+The fleet's galbath site shipped exactly that mistake across 34 pages.
+
+Also watch **opacity modifiers**: `text-ink/90` on white is still fine, but `text-white/80` on a mid
+surface may not be. Recompute whenever you add one.
+
+Brand colours are roster tokens — a contrast fix belongs upstream in the manifest, not as a hex in JSX.
+
+## Semantics
+
+- **One `<h1>` per page** — currently correct on all 15 routes. Everything else `<h2>`/`<h3>`, no
+  skipped levels.
+- Landmarks: `header`, `nav`, `main`, `footer` — present. `app/layout.tsx:68` has a real skip link
+  (`דלגו לתוכן`) targeting `#main`. Keep it.
+- **Interposed wrappers break lists.** If you add an animation or reveal wrapper, it goes _inside_ the
+  `<li>`, never between the list and its items. The service page's process `<ol>` is currently clean.
+- Real `<button>` / `<a>`, never a clickable `div`. `components/ui.tsx` `Button` renders an `<a>` for
+  external/`tel:` hrefs and a `next/link` for internal ones — use it rather than hand-rolling.
+
+## Keyboard
+
+- Visible focus is defined globally in `app/globals.css` (`:focus-visible` → 3px steel outline with
+  offset). Don't remove it or override it per-component without an equivalent.
+- ✅ **The mobile menu is resolved (2026-08-17,** backlog §11.1): Escape closes it and returns focus
+  to the toggle; `aria-expanded`/`aria-controls` were already correct. It is a **non-modal
+  disclosure** — the page stays visible and scrollable — so a focus trap and scroll lock are not
+  required. If it ever becomes a full-screen overlay, that judgement flips: add both.
+- Tab order follows DOM order; in RTL that is still correct — don't reorder visually with CSS.
+
+## Forms
+
+✅ **Resolved 2026-08-17** (backlog §8.1, §11.2): every field has a real `<label>`, errors are
+per-field with `aria-invalid` + `aria-describedby` (`name-error`/`phone-error` ids), and focus moves
+to the first invalid field on submit. `noValidate` stays — the Hebrew messages are the point. Keep all
+of it; a regression to a single generic error is an accessibility bug, not a simplification.
+
+The honeypot is correctly `aria-hidden` with `tabIndex={-1}` — keep both attributes together.
+
+## LTR isolation
+
+Phone numbers, emails, prices and URLs inside Hebrew must be isolated or the bidi algorithm reorders
+them. ✅ Resolved 2026-08-17 (backlog §11.3): the `.ltr` helper exists in `app/globals.css` and the
+phone is isolated everywhere it renders. Every new occurrence must use it. See `/rtl-hebrew`.
+
+## Images and figures
+
+The site ships almost no imagery, so there is little to get wrong — which also means the rules should
+be established _before_ the photos in `docs/business-facts.md` §D arrive:
+
+- Meaningful Hebrew `alt` on every content image; `alt=""` only for genuinely decorative.
+- A before/after pair needs an accessible caption that conveys the comparison, not `aria-hidden`.
+- Icon-only controls get `aria-label` — `Button` already accepts `ariaLabel` and `Header` uses it.
+
+## Tap targets and mobile
+
+- 44×44px minimum for anything tappable. ⚠️ **`.btn` does not clear this on its own.**
+  `app/globals.css:68-83` sets `padding: 0.8rem 1.5rem` with `line-height: 1` and no `font-size`, so a
+  **text-only** button computes to 2 × 12.8 + 16 = **41.6px** tall. It only reaches 44px when it
+  contains an `h-5` (20px) icon. Text-only buttons — and the header button, which overrides the padding
+  to `py-2.5` — need an explicit `min-height: 44px`. Measure; don't assume the padding covers it.
+- Test at 360px, 768px and ≥1024px. **No horizontal scroll at any width** — common RTL offenders are
+  fixed widths, negative margins, oversized images and `100vw` plus padding.
+- Text must reflow to 320px without horizontal scroll; zoom to 200% without loss of content.
+- Tables (the pricing table) scroll inside their own container, not the page — the existing
+  `overflow-hidden rounded-2xl` wrapper needs `overflow-x-auto` on narrow screens.
+
+## Motion
+
+`app/globals.css` sets `scroll-behavior: smooth` on `html`. **Confirm a `prefers-reduced-motion` reset
+exists** — if it doesn't, add one; smooth scrolling is a vestibular trigger and this is the one motion
+behaviour the site currently has.
 
 ## Checklist
-- [ ] No horizontal scroll at 375 / 768 / 1024.
-- [ ] One H1, ordered headings; meaningful alt text.
-- [ ] Icon buttons have accessible names; keyboard-operable; visible focus.
-- [ ] AA contrast on text, incl. dark/overlay sections.
-- [ ] Matches the live layout at each breakpoint (`/qa-build-gate`).
+
+- [ ] Every text/background pair computed at ≥4.5:1 (≥3:1 for large text and UI boundaries).
+- [ ] No white text on `--color-cta`.
+- [ ] One `<h1>`; heading order unbroken; landmarks present; skip link intact.
+- [ ] No wrapper `<div>` between a list and its `<li>`s.
+- [ ] Every interactive element keyboard-reachable with visible focus.
+- [ ] Menus and dropdowns: Escape closes, focus returns, `aria-expanded` + `aria-controls` set.
+- [ ] Form errors tied via `aria-describedby` + `aria-invalid`, focus moved to the first invalid field.
+- [ ] Phone/email/price inside LTR islands.
+- [ ] 44px tap targets; no horizontal scroll at 360 / 768 / 1024; 200% zoom usable.
+- [ ] `prefers-reduced-motion` respected.
+- [ ] `/accessibility/` still describes reality.
+
+## Gotchas
+
+- `aria-hidden` on a caption removes it from the accessibility tree entirely; a visually hidden but
+  announced caption is usually what's wanted.
+- Don't duplicate text for screen readers — an `sr-only` label repeating visible text is heard twice.
+- Fixing contrast may change the visual brand. Flag it before shipping rather than after.

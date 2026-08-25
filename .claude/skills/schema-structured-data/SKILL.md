@@ -1,0 +1,138 @@
+---
+name: schema-structured-data
+description: Emit the JSON-LD graph with the lib/seo.ts wrappers over @ishub/site-kit/seo — GeneralContractor from the manifest, Service per service page, BreadcrumbList on every nested route, FAQPage matched to visible FAQs, OfferCatalog on pricing, WebSite on the homepage, and Review/AggregateRating only when genuinely sourced. Use when wiring or auditing structured data, or before a Rich Results Test. Triggers: "add schema", "JSON-LD", "BreadcrumbList", "structured data", "rich results", "Offer".
+---
+
+# Structured data
+
+Target graph: `docs/schema-graph.md`. This skill is how to emit it.
+
+## The builders
+
+```ts
+import { pageMetadata, serviceJsonLd, faqJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import JsonLd from "@/components/JsonLd";
+```
+
+`lib/seo.ts` wraps `@ishub/site-kit/seo` and injects the manifest, so you never pass business facts by
+hand. `components/JsonLd.tsx` renders one or many nodes:
+
+```tsx
+<JsonLd
+  data={[
+    serviceJsonLd(svc.slug) ?? {},
+    breadcrumbJsonLd([
+      { name: "שירותים", path: "/services/" },
+      { name: svc.title, path: `/services/${svc.slug}/` },
+    ]),
+  ]}
+/>
+```
+
+The site-wide `GeneralContractor` node is emitted once in `app/layout.tsx` — never repeat it on a page.
+
+**Never hand-assemble a node the builders cover, and never hardcode a value the manifest carries.**
+
+## What's already right — don't regress it
+
+- All 5 service pages emit `Service` + `BreadcrumbList`.
+- 14 of 15 routes emit `BreadcrumbList`; the homepage correctly does not (it is the root).
+- `/` and `/faq/` already emit `FAQPage`.
+- The breadcrumb JSON-LD is built from **the same crumb data `PageHero` renders**, so the markup and
+  the graph can't drift. Keep that coupling in any new page.
+- No `Review` or `AggregateRating` anywhere. This is correct and load-bearing — see the gating rules.
+
+## The gaps
+
+| Route                          | Missing                                     | Backlog |
+| ------------------------------ | ------------------------------------------- | ------- |
+| `/`                            | `WebSite` only — `FAQPage` already ships    | §4.1    |
+| `/pricing/`                    | `FAQPage` (the answers are visible)         | §4.2    |
+| `/pricing/`                    | `OfferCatalog` from the visible price table | §4.3    |
+| `/services/` `/service-areas/` | `CollectionPage`                            | §4.4    |
+| `/about/` `/contact/`          | `AboutPage` / `ContactPage`                 | §4.4    |
+
+`FAQPage` already ships on `/` and `/faq/` (`app/page.tsx:27`). The cheapest remaining win is the same
+call on `/pricing/`, which renders all six answers unconditionally via `components/Faq.tsx` but emits no
+markup for them — so the markup would match visible content exactly.
+
+```tsx
+<JsonLd data={faqJsonLd()} /> // defaults to the global faqs array
+```
+
+## Per route type
+
+| Route                 | Emit                                                                   |
+| --------------------- | ---------------------------------------------------------------------- |
+| `/`                   | `GeneralContractor` (layout) + `WebSite` + `FAQPage`                   |
+| `/services/{slug}/`   | `Service` + `BreadcrumbList` (+ `FAQPage` once per-service FAQs exist) |
+| `/services/`          | `CollectionPage` + `BreadcrumbList`                                    |
+| `/pricing/`           | `OfferCatalog` + `FAQPage` + `BreadcrumbList`                          |
+| `/faq/`               | `FAQPage` + `BreadcrumbList`                                           |
+| `/service-areas/`     | `CollectionPage` + `BreadcrumbList`                                    |
+| `/about/` `/contact/` | `AboutPage` / `ContactPage` + `BreadcrumbList`                         |
+| `/reviews/`           | **nothing** — see rule 1                                               |
+| `/locations/{slug}/`  | `Service` with `areaServed` + `BreadcrumbList` (silo not built)        |
+
+## Location pages, when the silo is built
+
+⚠️ **The builders can't express this yet.** The kit is
+`serviceJsonLd(m, { name, description?, slug?, url? })` — it derives `serviceType` from `name` and
+hardcodes `areaServed` from `m.schema.areaServed` as an `AdministrativeArea`
+(`@ishub/site-kit/src/seo/index.ts:118-134`); `lib/seo.ts:71-79` narrows it to a single `slug` string.
+A per-city `areaServed` means **extending the kit first** — not hand-assembling a node around it.
+Target once extended:
+
+```ts
+serviceJsonLd(manifest, {
+  name: `ניסור וקידוח בטון ב${loc.prefixed}`,
+  areaServed: { "@type": loc.kind === "region" ? "AdministrativeArea" : "City", name: loc.name },
+});
+```
+
+`גוש דן` and `השרון` are regions — typing a region as a `City` is a factual error in the graph.
+
+**Never emit a `GeneralContractor`/`LocalBusiness` node per location.** One operation means one node.
+Sixteen of them implies sixteen premises that don't exist and is a recognised local-spam pattern.
+
+## The gating rules — correctness, not preference
+
+1. **`Review` / `AggregateRating` ship only with a verifiable public source.** This is not theoretical
+   here: three **invented** testimonials once shipped on this site and were removed 2026-08-17
+   (backlog §7.1). Marking up anything like them would convert a content problem into a
+   structured-data policy violation and a Rich Results failure. Do not add the markup — not even to
+   "test it". Real reviews first (see `docs/business-facts.md` §B), schema after.
+2. **Schema must match visible content.** A `FAQPage` question not rendered on the page is a
+   violation. `Offer` values must equal the visible price table. Never mark up hidden content.
+3. **`FAQPage` only where FAQs are visible.** `/`, `/faq/` and `/pricing/` all render the full `faqs`
+   array unconditionally, so all three qualify — the first two already emit it. If `components/Faq.tsx` ever becomes a conditionally
+   rendering accordion, the markup stops qualifying — keep the answers in the DOM.
+4. **No dangling `@id`s.** `serviceJsonLd` wires `provider` to the business `@id`; don't invent refs.
+5. **`foundingDate` follows `foundedYear`.** The manifest says 2005, so the field is present. It is
+   never inferred from "מעל 20 שנה" in the copy, and if the roster ever nulls it, the field goes.
+6. **One business node, site-wide.** It lives in `app/layout.tsx`. Pages add nodes; they never repeat it.
+
+## Missing business fields and what blocks each
+
+`sameAs` (empty), `geo`, `hasMap`, `aggregateRating`, `founder`, `streetAddress` — all blocked on
+`docs/business-facts.md`. Add the row; don't fill the value. And they belong in the **roster manifest**
+(`Israeli services sites/roster/sites/betonplus.json`), never in `site.config.json` directly.
+
+## Checklist
+
+- [ ] Every nested route emits `BreadcrumbList` built from the same array the UI renders.
+- [ ] Every `FAQPage` question is visible on the page.
+- [ ] `Offer` values equal the rendered price table.
+- [ ] No `Review` or `AggregateRating` without a public source URL.
+- [ ] The business node appears exactly once, from the layout.
+- [ ] `@id`s match the canonical.
+
+## Verify
+
+```bash
+grep -rL 'application/ld+json' out --include=index.html          # pages with no schema
+grep -rl 'BreadcrumbList' out --include=index.html | wc -l       # expect 14
+grep -rl 'aggregateRating\|"@type": *"Review"' out --include=index.html   # expect none
+```
+
+Then run Google's Rich Results Test on one URL per route type. Zero errors is the bar.

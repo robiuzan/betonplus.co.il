@@ -1,26 +1,57 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm run build:*)",
-      "Bash(npm run lint:*)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run dev)",
+      "Bash(npm run format)",
+      "Bash(npm run format:check)",
       "Bash(npm run snapshot:*)",
       "Bash(npm run enrich:*)",
-      "Bash(npm run dev:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
+      "Edit(.claude/**)",
+      "Write(.claude/**)",
+      "Edit(docs/**)",
+      "Write(docs/**)",
+      "WebFetch(domain:betonplus.co.il)",
       "Skill(betonplus-architecture)",
-      "Skill(migration-fidelity)",
-      "Skill(content-enrichment)",
+      "Skill(seo-metadata)",
+      "Skill(schema-structured-data)",
+      "Skill(local-seo-il)",
+      "Skill(aeo-answer-content)",
+      "Skill(rtl-hebrew)",
+      "Skill(internal-linking)",
+      "Skill(conversion-cro)",
+      "Skill(tracking-analytics)",
+      "Skill(performance-web-vitals)",
+      "Skill(responsive-accessibility)",
+      "Skill(web-security-headers)",
+      "Skill(new-city)",
+      "Skill(new-service)",
+      "Skill(new-article)",
+      "Skill(qa-build-gate)",
+      "Skill(deploy-betonplus)",
       "Skill(nextjs-app-router)",
       "Skill(react-components)",
-      "Skill(seo-metadata)",
       "Skill(web-design-ui)",
-      "Skill(rtl-hebrew)",
-      "Skill(responsive-accessibility)",
-      "Skill(conversion-cro)",
-      "Skill(qa-build-gate)",
-      "Skill(performance-web-vitals)"
+      "Skill(legacy-wordpress-layer)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "powershell -NoProfile -ExecutionPolicy Bypass -File \"$CLAUDE_PROJECT_DIR/.claude/hooks/format-changed.ps1\"",
+            "statusMessage": "Formatting changed files with Prettier",
+            "async": true
+          }
+        ]
+      }
     ]
   }
 }
