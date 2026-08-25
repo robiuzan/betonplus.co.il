@@ -1,33 +1,36 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import PageHero from "@/components/PageHero";
 import Faq from "@/components/Faq";
 import CtaBanner from "@/components/CtaBanner";
-import { Section, SectionHeading } from "@/components/ui";
+import { Section, SectionHeading, Button } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
-import { services } from "@/lib/site";
-import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
+import {
+  services,
+  pricingAnswer,
+  pricingFactors,
+  pricingIncluded,
+  pricingExtra,
+  site,
+  whatsappHref,
+} from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
 export const metadata: Metadata = pageMetadata({
   title: "מחירון ניסור וקידוח בטון",
   description:
-    "מחירון ניסור בטון החל מ-₪150 למ״ר וקידוח החל מ-₪190 למ׳. המחיר הסופי לפי עובי הבטון, נגישות והיקף העבודה. הצעת מחיר ללא התחייבות — 055-6601006.",
+    "איך נקבע מחיר ניסור וקידוח בטון, מה כלול ומה מתומחר בנפרד, ומה משפיע על העלות — עובי, זיון, גישה והיקף. הצעת מחיר ללא התחייבות — 055-6601006.",
   path: "/pricing/",
 });
-
-const factors = [
-  "עובי וסוג הבטון (רגיל / מזוין)",
-  "נגישות לאתר ותנאי העבודה",
-  "היקף העבודה וכמות הפתחים/קידוחים",
-  "הציוד הנדרש (דיסק / כבל יהלום)",
-];
 
 export default function PricingPage() {
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd([{ name: "מחירון", path: "/pricing/" }])} />
+      {/* FAQPage qualifies here: the full faqs array is rendered visibly below. */}
+      <JsonLd data={[breadcrumbJsonLd([{ name: "מחירון", path: "/pricing/" }]), faqJsonLd()]} />
       <PageHero
         title="מחירון ניסור וקידוח בטון"
         lead="מחירי פתיחה שקופים, והצעת מחיר מדויקת לאחר בדיקת היקף העבודה — תמיד ללא התחייבות."
@@ -35,22 +38,45 @@ export default function PricingPage() {
       />
 
       <Section>
-        <div className="overflow-hidden rounded-2xl border border-line">
+        <div className="mx-auto max-w-3xl">
+          {/* Answer block — question-form h2, complete answer in the first sentence (AEO). */}
+          <h2 className="text-2xl">{pricingAnswer.q}</h2>
+          <p className="mt-4 text-lg leading-relaxed text-ink/90">{pricingAnswer.a}</p>
+        </div>
+
+        {/* overflow-x-auto: the table scrolls inside its own container on narrow screens,
+            never the page body (responsive-accessibility skill). */}
+        <div className="mt-10 overflow-x-auto rounded-2xl border border-line">
           <table className="w-full text-start">
             <thead>
               <tr className="bg-brand text-white">
-                <th className="p-4 text-start font-heading text-sm font-bold sm:text-base">שירות</th>
-                <th className="p-4 text-start font-heading text-sm font-bold sm:text-base">מחיר התחלתי</th>
+                <th
+                  scope="col"
+                  className="p-4 text-start font-heading text-sm font-bold sm:text-base"
+                >
+                  שירות
+                </th>
+                <th
+                  scope="col"
+                  className="p-4 text-start font-heading text-sm font-bold sm:text-base"
+                >
+                  מחיר התחלתי
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
               {services.map((s) => (
                 <tr key={s.slug} className="bg-white">
                   <td className="p-4">
-                    <span className="font-semibold text-brand">{s.title}</span>
+                    <Link
+                      href={`/services/${s.slug}/`}
+                      className="font-semibold text-brand underline decoration-line hover:decoration-steel"
+                    >
+                      {s.title}
+                    </Link>
                     <span className="mt-0.5 block text-sm text-muted">{s.teaser}</span>
                   </td>
-                  <td className="whitespace-nowrap p-4 font-heading font-bold text-steel">
+                  <td className="p-4 font-heading font-bold whitespace-nowrap text-steel">
                     {s.priceFrom ? `החל מ-${s.priceFrom}` : "הצעת מחיר"}
                   </td>
                 </tr>
@@ -59,29 +85,91 @@ export default function PricingPage() {
           </table>
         </div>
         <p className="mt-4 text-sm text-muted">
-          * המחירים הם מחירי התחלה להמחשה בלבד ואינם מהווים הצעת מחיר מחייבת. המחיר הסופי נקבע לאחר בדיקת
-          העבודה.
+          * המחירים הם מחירי התחלה להמחשה בלבד ואינם מהווים הצעת מחיר מחייבת. המחיר הסופי נקבע לאחר
+          בדיקת העבודה.
         </p>
 
-        <div className="mt-10">
+        <div className="mt-12">
           <SectionHeading
             align="start"
             eyebrow="מה משפיע על המחיר"
-            title="הגורמים שקובעים את העלות"
+            title="ששת הגורמים שקובעים את העלות"
+            lead="לפי סדר ההשפעה, מהמשמעותי ביותר."
           />
-          <ul className="mt-6 grid gap-3 sm:grid-cols-2">
-            {factors.map((f) => (
-              <li key={f} className="flex items-start gap-2.5 rounded-xl border border-line bg-white p-4 text-ink/90">
-                <Icon name="check" className="mt-0.5 h-5 w-5 shrink-0 text-steel" />
-                {f}
-              </li>
+          <div className="mt-8 grid gap-6 sm:grid-cols-2">
+            {pricingFactors.map((f) => (
+              <div key={f.title} className="flex gap-4">
+                <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-brand text-cta">
+                  <Icon name={f.icon} className="h-6 w-6" />
+                </span>
+                <div>
+                  <h3 className="text-lg">{f.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{f.text}</p>
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </Section>
 
-      <Faq tint="mist" title="שאלות נפוצות על מחירים" lead="כל מה שחשוב לדעת לפני שמתחילים." />
-      <CtaBanner title="רוצים מחיר מדויק לעבודה שלכם?" text="שלחו פרטים ונחזור עם הצעת מחיר ללא התחייבות." />
+      <Section tint="mist">
+        <SectionHeading
+          eyebrow="שקיפות"
+          title="מה כלול במחיר ומה מתומחר בנפרד"
+          lead="השאלה הנפוצה ביותר לפני שמזמינים — עדיף לדעת מראש."
+        />
+        <div className="mx-auto mt-10 grid max-w-4xl gap-6 sm:grid-cols-2">
+          <div className="card p-6">
+            <h3 className="text-lg">כלול במחיר</h3>
+            <ul className="mt-4 space-y-2.5">
+              {pricingIncluded.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-ink/90">
+                  <Icon name="check" className="mt-0.5 h-5 w-5 shrink-0 text-steel" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="card p-6">
+            <h3 className="text-lg">מתומחר בנפרד</h3>
+            <ul className="mt-4 space-y-2.5">
+              {pricingExtra.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-ink/90">
+                  <Icon name="arrow" className="mt-0.5 h-4 w-4 shrink-0 rotate-180 text-muted" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+
+        <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-cta/40 bg-cta/10 p-6">
+          <h3 className="text-lg">איך מקבלים הצעה מדויקת בשיחה אחת</h3>
+          <p className="mt-3 leading-relaxed text-ink/90">
+            ארבעה פרטים מספיקים לרוב: מה צריך לפתוח או לקדוח, עובי הקיר או הרצפה וסוג הבנייה, הקומה
+            ומצב הגישה, והאם יש תכנית או אישור מהנדס. תמונה של האזור בוואטסאפ חוסכת בדרך כלל ביקור
+            מקדים.
+          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Button href={whatsappHref} data-cta="pricing-whatsapp" variant="whatsapp">
+              <Icon name="whatsapp" className="h-5 w-5" />
+              שלחו תמונה בוואטסאפ
+            </Button>
+            <Button href="/contact/" data-cta="pricing-form" variant="outline">
+              טופס הצעת מחיר
+            </Button>
+          </div>
+          <p className="mt-4 text-sm text-muted">
+            או פשוט להתקשר: <span className="ltr font-semibold">{site.phoneDisplay}</span>
+          </p>
+        </div>
+      </Section>
+
+      <Faq tint={undefined} title="שאלות נפוצות על מחירים" lead="כל מה שחשוב לדעת לפני שמתחילים." />
+      <CtaBanner
+        title="רוצים מחיר מדויק לעבודה שלכם?"
+        text="שלחו פרטים ונחזור עם הצעת מחיר ללא התחייבות."
+      />
     </>
   );
 }

@@ -1,5 +1,9 @@
 /** Renders one or more JSON-LD objects as <script type="application/ld+json"> tags. */
-export default function JsonLd({ data }: { data: Record<string, unknown> | Record<string, unknown>[] }) {
+export default function JsonLd({
+  data,
+}: {
+  data: Record<string, unknown> | Record<string, unknown>[];
+}) {
   const items = Array.isArray(data) ? data : [data];
   return (
     <>

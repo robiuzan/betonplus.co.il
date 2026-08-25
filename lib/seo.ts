@@ -6,8 +6,7 @@ import type { Metadata } from "next";
 import * as kit from "@ishub/site-kit/seo";
 import { site, services, faqs, manifest } from "@/lib/site";
 
-const absolute = (path: string): string =>
-  `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
+const absolute = (path: string): string => `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
 
 // Build-time-generated share image (app/opengraph-image.tsx). Referenced explicitly so every
 // page — not just the root — emits a single, deterministic og:image / twitter:image.
@@ -28,12 +27,7 @@ interface PageMetaInput {
 }
 
 /** Build a Next.js Metadata object with canonical + Open Graph + Twitter for a page. */
-export function pageMetadata({
-  title,
-  description,
-  path,
-  absoluteTitle,
-}: PageMetaInput): Metadata {
+export function pageMetadata({ title, description, path, absoluteTitle }: PageMetaInput): Metadata {
   const url = absolute(path);
   return {
     title: absoluteTitle ? { absolute: title } : title,
@@ -58,6 +52,23 @@ export function pageMetadata({
 }
 
 type JsonLd = Record<string, unknown>;
+
+/**
+ * Site-wide WebSite node (homepage only). Hand-assembled deliberately —
+ * @ishub/site-kit/seo has no builder for it. `publisher` points at the business
+ * node's kit-emitted `@id` (`${url}/#business`); keep the two in sync.
+ */
+export function webSiteJsonLd(): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${site.url}/#website`,
+    url: `${site.url}/`,
+    name: site.name,
+    inLanguage: "he-IL",
+    publisher: { "@id": `${site.url}/#business` },
+  };
+}
 
 /** Site-wide LocalBusiness schema (rendered in the root layout). */
 export function localBusinessJsonLd(): JsonLd {

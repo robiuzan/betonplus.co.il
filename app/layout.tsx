@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { ogImageMeta } from "@ishub/site-kit";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -17,12 +18,17 @@ export const metadata: Metadata = {
   },
   description: site.shortPitch,
   openGraph: {
+    images: ogImageMeta(manifest.images),
     type: "website",
     locale: site.locale,
     siteName: site.name,
     url: site.url,
   },
-  verification: { google: "ozMzEyHFAfRd_siJREJ79bbkt-EPRpUTmn-Ln9XaBz0" },
+  // Search Console token comes from the roster manifest (analytics.googleSiteVerification),
+  // so a roster sync manages it and cloned sites don't inherit betonplus's token.
+  ...(manifest.analytics?.googleSiteVerification
+    ? { verification: { google: manifest.analytics.googleSiteVerification } }
+    : {}),
 };
 
 /** Shared GTM loader — inert (renders nothing) until analytics.gtmId is set in the manifest. */
@@ -55,6 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Fleet convention (deploy gate asserts it): preconnect to the manifest's media host. */}
+        {manifest.images?.mediaHost && (
+          <link rel="preconnect" href={`https://${manifest.images.mediaHost}`} />
+        )}
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
           rel="stylesheet"

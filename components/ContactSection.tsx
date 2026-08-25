@@ -4,9 +4,27 @@ import ContactForm from "@/components/ContactForm";
 import { site, telHref, whatsappHref } from "@/lib/site";
 
 const details = [
-  { icon: "phone" as const, label: "טלפון", value: site.phoneDisplay, href: telHref },
-  { icon: "whatsapp" as const, label: "וואטסאפ", value: site.phoneDisplay, href: whatsappHref },
-  { icon: "mail" as const, label: "אימייל", value: site.email, href: `mailto:${site.email}` },
+  {
+    icon: "phone" as const,
+    label: "טלפון",
+    value: site.phoneDisplay,
+    href: telHref,
+    cta: "contact-call",
+  },
+  {
+    icon: "whatsapp" as const,
+    label: "וואטסאפ",
+    value: site.phoneDisplay,
+    href: whatsappHref,
+    cta: "contact-whatsapp",
+  },
+  {
+    icon: "mail" as const,
+    label: "אימייל",
+    value: site.email,
+    href: `mailto:${site.email}`,
+    cta: "contact-email",
+  },
 ];
 
 export default function ContactSection({ tint = "mist" as const }: { tint?: "mist" }) {
@@ -25,6 +43,7 @@ export default function ContactSection({ tint = "mist" as const }: { tint?: "mis
               <li key={d.label}>
                 <a
                   href={d.href}
+                  data-cta={d.cta}
                   target={d.icon === "whatsapp" ? "_blank" : undefined}
                   rel={d.icon === "whatsapp" ? "noopener noreferrer" : undefined}
                   className="flex items-center gap-3 text-ink hover:text-steel"

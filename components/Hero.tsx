@@ -10,7 +10,7 @@ export default function Hero() {
       <Container className="grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr]">
         <div>
           <p className="eyebrow text-cta">ניסור וקידוח בטון ביהלום</p>
-          <h1 className="mt-3 text-4xl font-extrabold leading-[1.1] text-white sm:text-5xl">
+          <h1 className="mt-3 text-4xl leading-[1.1] font-extrabold text-white sm:text-5xl">
             ניסור בטון וקידוח יהלום — <span className="text-cta">מדויק, נקי ובטוח</span>
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-white/85">{site.shortPitch}</p>
@@ -18,9 +18,13 @@ export default function Hero() {
           <div className="mt-7 flex flex-wrap gap-3">
             <Button href={telHref} data-cta="hero-call" variant="cta" className="text-base">
               <Icon name="phone" className="h-5 w-5" />
-              התקשרו {site.phoneDisplay}
+              התקשרו <span className="ltr">{site.phoneDisplay}</span>
             </Button>
-            <Button href="/contact/" variant="outline" className="border-white/40 text-white hover:border-white">
+            <Button
+              href="/contact/"
+              variant="outline"
+              className="border-white/40 text-white hover:border-white"
+            >
               קבלו הצעת מחיר
             </Button>
           </div>

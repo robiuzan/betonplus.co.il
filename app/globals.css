@@ -64,6 +64,13 @@
     padding-inline: 1.25rem;
   }
 
+  /* LTR island for phone numbers, emails, URLs and prices inside Hebrew text —
+     without it the bidi algorithm reorders them (see the rtl-hebrew skill). */
+  .ltr {
+    direction: ltr;
+    unicode-bidi: isolate;
+  }
+
   /* Buttons */
   .btn {
     display: inline-flex;
@@ -74,6 +81,9 @@
     font-weight: 700;
     border-radius: 0.75rem;
     padding: 0.8rem 1.5rem;
+    /* 44px minimum tap target (WCAG / ת״י 5568) — text-only buttons computed to
+       41.6px from padding alone, and per-page py-* overrides went lower. */
+    min-height: 2.75rem;
     line-height: 1;
     transition:
       transform 0.12s ease,
@@ -149,4 +159,19 @@
   background:
     radial-gradient(60% 120% at 85% 0%, rgb(37 99 235 / 0.18), transparent 60%),
     linear-gradient(180deg, #1f2a37 0%, #28333f 100%);
+}
+
+/* Reduced motion: smooth scrolling is the site's one global motion behaviour and a
+   vestibular trigger — disable it (and decorative transitions) on request. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

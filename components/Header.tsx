@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { navItems, site, telHref } from "@/lib/site";
 import { Logo, Button } from "@/components/ui";
@@ -8,6 +8,21 @@ import Icon from "@/components/Icon";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  // Escape closes the menu and returns focus to the toggle. The menu is a non-modal
+  // disclosure (the page stays visible and scrollable), so no focus trap / scroll lock.
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-white/95 backdrop-blur">
@@ -28,14 +43,21 @@ export default function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
-          <Button href={telHref} data-cta="header-call" variant="cta" className="px-4 py-2.5 text-sm" ariaLabel={`התקשרו ${site.phoneDisplay}`}>
+          <Button
+            href={telHref}
+            data-cta="header-call"
+            variant="cta"
+            className="px-4 py-2.5 text-sm"
+            ariaLabel={`התקשרו ${site.phoneDisplay}`}
+          >
             <Icon name="phone" className="h-4 w-4" />
-            <span className="hidden sm:inline">{site.phoneDisplay}</span>
+            <span className="ltr hidden sm:inline">{site.phoneDisplay}</span>
             <span className="sm:hidden">חייגו</span>
           </Button>
 
           {/* Mobile menu toggle */}
           <button
+            ref={toggleRef}
             type="button"
             onClick={() => setOpen((v) => !v)}
             className="rounded-lg p-2 text-brand hover:bg-mist lg:hidden"

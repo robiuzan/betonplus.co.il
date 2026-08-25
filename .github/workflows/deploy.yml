@@ -1,20 +1,17 @@
-name: Deploy to GitHub Pages
+# CI only — this workflow deploys NOTHING.
+#
+# Production is Cloudflare Pages via wrangler direct upload
+# ("Israeli services sites/ops/deploy-site.ps1 -Domain betonplus.co.il"). The previous
+# GitHub Pages publish steps were removed 2026-08-17: they kept a stale second origin
+# alive. This job now just runs the repo's build gate on every push/PR.
+
+name: CI
 
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
-
-# Allow the workflow to publish to GitHub Pages via OIDC.
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Only one concurrent Pages deployment; don't cancel an in-progress one.
-concurrency:
-  group: pages
-  cancel-in-progress: false
 
 jobs:
   build:
@@ -26,21 +23,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - name: Build static export
-        run: npm run build
-        env:
-          NEXT_PUBLIC_WP_URL: https://betonplus.co.il
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: out
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run format:check
+      - run: npm run build

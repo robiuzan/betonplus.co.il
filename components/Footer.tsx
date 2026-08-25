@@ -17,7 +17,7 @@ export default function Footer() {
 
         {/* Services */}
         <nav aria-label="שירותים">
-          <h3 className="text-white text-base font-bold">שירותים</h3>
+          <h3 className="text-base font-bold text-white">שירותים</h3>
           <ul className="mt-4 space-y-2 text-sm">
             {services.map((s) => (
               <li key={s.slug}>
@@ -31,7 +31,7 @@ export default function Footer() {
 
         {/* Quick links */}
         <nav aria-label="קישורים מהירים">
-          <h3 className="text-white text-base font-bold">ניווט</h3>
+          <h3 className="text-base font-bold text-white">ניווט</h3>
           <ul className="mt-4 space-y-2 text-sm">
             {navItems.map((item) => (
               <li key={item.href}>
@@ -45,22 +45,36 @@ export default function Footer() {
 
         {/* Contact */}
         <div>
-          <h3 className="text-white text-base font-bold">צור קשר</h3>
+          <h3 className="text-base font-bold text-white">צור קשר</h3>
           <ul className="mt-4 space-y-3 text-sm">
             <li>
-              <a href={telHref} data-cta="footer-call" className="flex items-center gap-2 text-white/80 hover:text-white">
+              <a
+                href={telHref}
+                data-cta="footer-call"
+                className="flex items-center gap-2 text-white/80 hover:text-white"
+              >
                 <Icon name="phone" className="h-4 w-4 text-cta" />
                 <span dir="ltr">{site.phoneDisplay}</span>
               </a>
             </li>
             <li>
-              <a href={whatsappHref} data-cta="footer-whatsapp" className="flex items-center gap-2 text-white/80 hover:text-white" target="_blank" rel="noopener noreferrer">
+              <a
+                href={whatsappHref}
+                data-cta="footer-whatsapp"
+                className="flex items-center gap-2 text-white/80 hover:text-white"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <Icon name="whatsapp" className="h-4 w-4 text-cta" />
                 וואטסאפ
               </a>
             </li>
             <li>
-              <a href={`mailto:${site.email}`} className="flex items-center gap-2 text-white/80 hover:text-white">
+              <a
+                href={`mailto:${site.email}`}
+                data-cta="footer-email"
+                className="flex items-center gap-2 text-white/80 hover:text-white"
+              >
                 <Icon name="mail" className="h-4 w-4 text-cta" />
                 <span dir="ltr">{site.email}</span>
               </a>
