@@ -27,10 +27,14 @@ in schema) and `/service-areas/` (428 words, grouped areas, no longer a dead end
 Wave 4 (2026-08-24) cleared the last three pages under their floors — `/pricing/` 602, `/about/` 525,
 `/services/` 377 unique words — and single-sourced the prices.
 
-**Every content page now meets its floor.** The remaining problems are **proof and reach**, and almost
-all of them need the owner: there is no location silo, no dedicated editorial surface (`/faq/` is the
-interim host), no photography, no named human, `sameAs` is empty, GA4 doesn't exist yet, and every
-major AI crawler is blocked at the edge.
+Wave 5 (2026-08-25) closed the last repo-side technical items — page-type schema, GTM in `<head>`,
+real sitemap dates, Hebrew-subset font preloads. Wave 6 found Cloudflare's AI-crawler block **gone**
+and made the allow stance explicit in `app/robots.ts`.
+
+**Every content page meets its floor and the technical backlog is essentially exhausted.** What
+remains is **proof**, and nearly all of it needs the owner: no location silo, no dedicated editorial
+surface (`/faq/` is the interim host), no photography, no named human, `sameAs` empty, and no GA4
+property — so nothing is being measured.
 
 ---
 
@@ -101,14 +105,14 @@ major AI crawler is blocked at the edge.
 
 ## §6. AEO / GEO
 
-| #   | Item                                                                                                                                                                                                                                                                                                                                       | Sev |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- |
-| 6.1 | **Cloudflare's managed `robots.txt` blocks every major AI crawler** — ClaudeBot, GPTBot, Google-Extended, CCBot, Bytespider, Amazonbot, Applebot-Extended, meta-externalagent, plus `Content-Signal: ai-train=no`. Verified live. **No repo change overrides this**; it caps every item below. Owner action in the Cloudflare dashboard.   | 🟠  |
-| 6.2 | ✅ **Resolved 2026-08-24 (wave 4).** Answer blocks now open all 5 service pages plus `/faq/`, `/service-areas/`, `/pricing/`, `/about/` and `/services/` — every page targeting a question. `/` and `/contact/` don't need one (brand and transactional intent). _(Row previously read "No answer blocks anywhere" — stale since wave 2.)_ | ✅  |
-| 6.3 | No `datePublished` / `dateModified` / author on any page. Assistants discount undated, unattributed content.                                                                                                                                                                                                                               | 🟡  |
-| 6.4 | No `public/llms.txt`. Only worth adding once §6.1 is decided.                                                                                                                                                                                                                                                                              | ⚪  |
-| 6.5 | **Partially resolved 2026-08-17 (wave 3).** `/faq/` now carries two genuinely citable tables: **ניסור מול שבירה בפטישון** (8 criteria) and **method selection** (4 diamond methods, each with its limit). Still missing: a cost breakdown by thickness/reinforcement — blocked on confirmed pricing (§4.3, business-facts §C).             | 🟡  |
-| 6.6 | ✅ The FAQ answers ship in the DOM at first paint — extractable as-is. Preserve that property.                                                                                                                                                                                                                                             | ✅  |
+| #   | Item                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Sev |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- |
+| 6.1 | ✅ **Resolved 2026-08-25 (wave 6).** Cloudflare`s managed block is **gone** — the live robots.txt is now byte-identical to the export (verified cache-busted, `cf-cache-status: REVALIDATED`). Every AI crawler is allowed, and `app/robots.ts`now states that explicitly rather than relying on the`*`default, so the stance survives a Cloudflare default changing again. ⚠️ The edge can still prepend rules — always verify with`curl`, never from source. | ✅  |
+| 6.2 | ✅ **Resolved 2026-08-24 (wave 4).** Answer blocks now open all 5 service pages plus `/faq/`, `/service-areas/`, `/pricing/`, `/about/` and `/services/` — every page targeting a question. `/` and `/contact/` don't need one (brand and transactional intent). _(Row previously read "No answer blocks anywhere" — stale since wave 2.)_                                                                                                                     | ✅  |
+| 6.3 | No `datePublished` / `dateModified` / author on any page. Assistants discount undated, unattributed content.                                                                                                                                                                                                                                                                                                                                                   | 🟡  |
+| 6.4 | No `public/llms.txt`. **Now unblocked** — §6.1 is resolved and crawlers can reach the site, so a short factual pointer file is finally worth shipping.                                                                                                                                                                                                                                                                                                         | ⚪  |
+| 6.5 | **Partially resolved 2026-08-17 (wave 3).** `/faq/` now carries two genuinely citable tables: **ניסור מול שבירה בפטישון** (8 criteria) and **method selection** (4 diamond methods, each with its limit). Still missing: a cost breakdown by thickness/reinforcement — blocked on confirmed pricing (§4.3, business-facts §C).                                                                                                                                 | 🟡  |
+| 6.6 | ✅ The FAQ answers ship in the DOM at first paint — extractable as-is. Preserve that property.                                                                                                                                                                                                                                                                                                                                                                 | ✅  |
 
 ---
 

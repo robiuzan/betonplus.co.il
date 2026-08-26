@@ -22,14 +22,18 @@ owner.
 
 ## What to audit
 
-1. **Reachability — check this first, it gates everything else.** Fetch the live `/robots.txt`.
-   Cloudflare prepends a managed block that currently sends `Disallow: /` to ClaudeBot, GPTBot,
-   Google-Extended, CCBot, Bytespider, Amazonbot, Applebot-Extended, meta-externalagent and
-   CloudflareBrowserRenderingCrawler, plus `Content-Signal: search=yes, ai-train=no, use=reference`.
-   **No repo change overrides this** — it is injected at the edge. If it is still in place, say so as
-   the first finding and note that every other AEO recommendation is capped until it changes.
-2. **Answer blocks.** Does each service page open with a 40–60 word self-contained answer under a
-   question-form heading? Today: **none do**.
+1. **Reachability — check this first, it gates everything else.** Fetch the live `/robots.txt`
+   cache-busted; **never infer it from `app/robots.ts`**. Cloudflare can prepend a managed block at
+   the edge that no repo change overrides — it disallowed ClaudeBot, GPTBot, Google-Extended, CCBot,
+   Bytespider, Amazonbot, Applebot-Extended, meta-externalagent and
+   CloudflareBrowserRenderingCrawler until at least 2026-08-17. **As of 2026-08-25 it is gone** and
+   the live file matches the export, allowing everything. Confirm which state you are in before
+   writing a single other finding: if the block is back, every recommendation below is capped and
+   that is finding #1. If it is open, say so — the ceiling has lifted.
+2. **Answer blocks.** Does each page targeting a question open with a 40–60 word self-contained
+   answer under a question-form heading? Since waves 2–4: all 5 service pages plus `/faq/`,
+   `/service-areas/`, `/pricing/`, `/about/` and `/services/` do. Audit for regressions and for any
+   new page that skips it.
 3. **Extractability.** Is the answer in the HTML at first paint, not behind an accordion, a tab, or a
    client-side fetch? `components/Faq.tsx` passes — every answer ships in the DOM unconditionally.
    Check anything new against the same bar.

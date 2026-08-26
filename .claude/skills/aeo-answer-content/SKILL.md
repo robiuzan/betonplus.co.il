@@ -1,6 +1,6 @@
 ---
 name: aeo-answer-content
-description: Answer-engine and LLM-citability layer for betonplus — question-form H2s with a 40–60 word extractable answer first, comparison and spec tables for a trade that has none, llms.txt, the Cloudflare managed robots.txt that currently blocks every major AI crawler at the edge, and freshness/authorship signals. Use when optimizing a page to be quoted by AI Overviews, ChatGPT or Perplexity. Triggers: "AEO", "GEO", "AI Overviews", "llms.txt", "will an LLM cite this", "answer block", "AI crawlers".
+description: Answer-engine and LLM-citability layer for betonplus — question-form H2s with a 40–60 word extractable answer first, the comparison and spec tables on /faq/, llms.txt, verifying the live Cloudflare-managed robots.txt (which can prepend an AI-crawler block no repo change overrides), and freshness/authorship signals. Use when optimizing a page to be quoted by AI Overviews, ChatGPT or Perplexity. Triggers: "AEO", "GEO", "AI Overviews", "llms.txt", "will an LLM cite this", "answer block", "AI crawlers".
 ---
 
 # Answer-engine optimization
@@ -11,7 +11,11 @@ quote it?"** Three separate gates, in that order.
 ## Gate 1 — reachability. Check this first.
 
 `app/robots.ts` is **not what serves.** Cloudflare prepends a managed block at the edge. Verified live
-on betonplus.co.il:
+on betonplus.co.il. **As of 2026-08-25 this gate is OPEN** — the managed block is gone and the live
+file is byte-identical to the export, allowing every AI crawler. `app/robots.ts` now states the allow
+list explicitly so the stance is documented rather than implied.
+
+It was closed as recently as 2026-08-17, when Cloudflare prepended:
 
 ```
 User-agent: *
@@ -23,14 +27,15 @@ CloudflareBrowserRenderingCrawler, Google-Extended, GPTBot,
 meta-externalagent          →  Disallow: /
 ```
 
-**No repo change overrides this.** Every AEO recommendation below is capped until the zone setting
-changes (Cloudflare dashboard → the zone → AI Crawl Control / managed robots.txt). It is the owner's
-call and the owner's action — document it, never assume it was done, and always verify against the
-live file:
+**No repo change overrides an edge block** — it is prepended by Cloudflare (dashboard → the zone → AI
+Crawl Control / managed robots.txt) and is the owner's setting. It can come back without warning, so
+**never infer the live policy from `app/robots.ts`**. Check every time, cache-busted:
 
 ```bash
-curl -sS https://betonplus.co.il/robots.txt
+curl -sS -H 'Cache-Control: no-cache' "https://betonplus.co.il/robots.txt?cb=$RANDOM"
 ```
+
+If the output is longer than the ~250-byte export, the edge is injecting rules again.
 
 Understand the three permissions separately, because they have different consequences:
 
@@ -106,7 +111,7 @@ schema, the visible copy, and every off-site profile once they exist. See `/loca
 
 A plain-language map at `public/llms.txt` — who the business is, what it does, the service and area
 lists, canonical URLs for the key answers, and contact. Keep it short and factual; it is a pointer
-file, not a second website. It is only useful once Gate 1 is open.
+file, not a second website. Gate 1 is currently open, so this is now worth shipping (backlog §6.4).
 
 ## Checklist
 

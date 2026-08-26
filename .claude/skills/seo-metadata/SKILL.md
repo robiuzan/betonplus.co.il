@@ -102,9 +102,10 @@ URL would look freshly changed on every deploy. Use a real per-route date or lea
 
 ## Robots
 
-`app/robots.ts` emits a blanket allow plus the sitemap. **Be aware it is not what serves** —
-Cloudflare prepends a managed block at the edge that blocks every major AI crawler. See
-`/aeo-answer-content`. Changing `robots.ts` does not change the live policy.
+`app/robots.ts` emits a blanket allow, an explicit AI-crawler allow list and the sitemap. **Be aware
+it may not be what serves** — Cloudflare can prepend a managed block at the edge, and did until at
+least 2026-08-17; as of 2026-08-25 the live file matches the export. Changing `robots.ts` does not
+change an edge policy, so always verify with `curl`, never from source. See `/aeo-answer-content`.
 
 ## Verification and OG
 
