@@ -17,6 +17,7 @@ import {
   whatsappHref,
   updatedFor,
   formatDateIL,
+  priceLabel,
 } from "@/lib/site";
 import { pageMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from "@/lib/seo";
 
@@ -198,7 +199,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                 <>
                   <p className="text-sm text-muted">מחיר</p>
                   <p className="font-heading text-2xl font-extrabold text-brand">
-                    החל מ-{svc.priceFrom}
+                    {priceLabel(svc.priceFrom)}
                   </p>
                   <p className="mt-1 text-xs text-muted">
                     המחיר הסופי לפי היקף העבודה — הצעת מחיר ללא התחייבות.

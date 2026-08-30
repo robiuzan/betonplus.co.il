@@ -49,6 +49,27 @@ export const site = {
   areaLabel: siteManifest.schema.areaServed, // 🔶 confirm
 } as const;
 
+/**
+ * Opening hours split so each time range can be LTR-isolated when rendered.
+ *
+ * ⚠️ Do NOT render `site.hours` directly in the page. In an RTL paragraph the bidi
+ * algorithm reorders `07:00–18:00`: the en-dash is a neutral sitting between two
+ * European Numbers, so under rule N1 it takes the paragraph direction, and the reorder
+ * produces **`18:00–07:00`**. Every visitor was reading the opening hours backwards on
+ * every route until 2026-08-31. Use `<Hours />`, which wraps each range in `.ltr`.
+ *
+ * `site.hours` is kept as the plain-string form for non-visual use.
+ */
+export interface HoursLine {
+  days: string;
+  time: string;
+}
+
+export const hoursLines: HoursLine[] = [
+  { days: "א׳–ה׳", time: "07:00–18:00" },
+  { days: "ו׳", time: "07:00–13:00" },
+];
+
 /** Pre-filled WhatsApp deep link (kit-generated; byte-identical to the previous const). */
 export const whatsappHref = kitWhatsappHref(
   manifest,
@@ -810,6 +831,20 @@ export interface Faq {
  * same page (backlog §7.7). One source now: `services[].priceFrom`.
  */
 const priceOf = (slug: string): string => getService(slug)?.priceFrom ?? "הצעת מחיר";
+
+/**
+ * The price as it should actually read on the page.
+ *
+ * `priceFrom` holds two different kinds of value: a real starting price (`₪150 למ״ר`) and
+ * a "this one gets quoted" phrase (`הצעת מחיר לפי פרויקט`). Three call sites blindly
+ * prefixed `החל מ-` to both, so three of the five rows on `/pricing/` — and the matching
+ * service sidebars — shipped reading **"החל מ-הצעת מחיר לפי פרויקט"**. Only a value that
+ * names a currency amount takes the prefix.
+ */
+export function priceLabel(priceFrom: string | undefined): string {
+  if (!priceFrom) return "הצעת מחיר";
+  return priceFrom.startsWith("₪") ? `החל מ-${priceFrom}` : priceFrom;
+}
 
 export const faqs: Faq[] = [
   {

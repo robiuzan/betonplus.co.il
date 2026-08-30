@@ -123,8 +123,10 @@ export default function ContactForm() {
     }
   }
 
+  // No `outline-none`: it suppressed the global 3px :focus-visible ring from globals.css
+  // on every field, leaving a border-colour change as the only focus cue (WCAG 2.4.7).
   const fieldCls =
-    "w-full rounded-xl border border-line bg-white px-4 py-3 text-ink outline-none transition-colors focus:border-steel";
+    "w-full rounded-xl border border-line bg-white px-4 py-3 text-ink transition-colors focus:border-steel";
   const fieldErrCls = "border-red-400 focus:border-red-500";
 
   return (

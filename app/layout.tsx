@@ -112,10 +112,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           דלגו לתוכן
         </a>
         <Header />
-        <main id="main" className="pb-16 lg:pb-0">
-          {children}
-        </main>
-        <Footer />
+        {/*
+          The mobile clearance for the fixed FloatingCTA bar must sit at the BOTTOM of the
+          document, not on <main>. With pb-16 on <main> the padding landed above the
+          footer, so the sticky bar covered the footer's bottom row — making the
+          מדיניות פרטיות and הצהרת נגישות links unclickable on every route at mobile
+          widths. Those two links in particular have to stay reachable.
+        */}
+        <main id="main">{children}</main>
+        <div className="pb-16 lg:pb-0">
+          <Footer />
+        </div>
         <FloatingCTA />
       </body>
     </html>

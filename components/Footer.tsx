@@ -2,6 +2,7 @@ import Link from "next/link";
 import { navItems, services, site, telHref, whatsappHref } from "@/lib/site";
 import { Logo } from "@/components/ui";
 import Icon from "@/components/Icon";
+import Hours from "@/components/Hours";
 
 export default function Footer() {
   const year = 2026; // static export — avoid runtime Date for stable output
@@ -85,7 +86,7 @@ export default function Footer() {
             </li>
             <li className="flex items-start gap-2 text-white/70">
               <Icon name="clock" className="mt-0.5 h-4 w-4 shrink-0 text-cta" />
-              {site.hours}
+              <Hours />
             </li>
           </ul>
         </div>

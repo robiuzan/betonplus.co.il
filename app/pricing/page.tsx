@@ -12,7 +12,9 @@ import {
   pricingFactors,
   pricingIncluded,
   pricingExtra,
+  priceLabel,
   site,
+  telHref,
   whatsappHref,
 } from "@/lib/site";
 import { pageMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
@@ -77,7 +79,7 @@ export default function PricingPage() {
                     <span className="mt-0.5 block text-sm text-muted">{s.teaser}</span>
                   </td>
                   <td className="p-4 font-heading font-bold whitespace-nowrap text-steel">
-                    {s.priceFrom ? `החל מ-${s.priceFrom}` : "הצעת מחיר"}
+                    {priceLabel(s.priceFrom)}
                   </td>
                 </tr>
               ))}
@@ -160,7 +162,16 @@ export default function PricingPage() {
             </Button>
           </div>
           <p className="mt-4 text-sm text-muted">
-            או פשוט להתקשר: <span className="ltr font-semibold">{site.phoneDisplay}</span>
+            או פשוט להתקשר:{" "}
+            {/* Was a bare <span> — the highest-intent moment on the page printed the
+                number as untappable text. It is a click-to-call link now. */}
+            <a
+              href={telHref}
+              data-cta="pricing-call"
+              className="ltr font-semibold text-steel underline hover:text-brand"
+            >
+              {site.phoneDisplay}
+            </a>
           </p>
         </div>
       </Section>

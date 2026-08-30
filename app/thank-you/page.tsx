@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Section, Button } from "@/components/ui";
 import Icon from "@/components/Icon";
+import Hours from "@/components/Hours";
 import { site, telHref, whatsappHref } from "@/lib/site";
 import { pageMetadata } from "@/lib/seo";
 
@@ -30,8 +31,8 @@ export default function ThankYouPage() {
         </span>
         <h1 className="mt-6 text-3xl">תודה, הפנייה נשלחה בהצלחה!</h1>
         <p className="mt-3 text-lg text-muted">
-          נחזור אליכם בהקדם בשעות הפעילות ({site.hours}). לעניין דחוף — אנחנו זמינים כבר עכשיו
-          בטלפון ובוואטסאפ:
+          נחזור אליכם בהקדם בשעות הפעילות (<Hours />
+          ). לעניין דחוף — אנחנו זמינים כבר עכשיו בטלפון ובוואטסאפ:
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Button href={telHref} data-cta="thankyou-call" variant="cta">

@@ -1,6 +1,7 @@
 import { Section, SectionHeading } from "@/components/ui";
 import Icon from "@/components/Icon";
 import ContactForm from "@/components/ContactForm";
+import Hours from "@/components/Hours";
 import { site, telHref, whatsappHref } from "@/lib/site";
 
 const details = [
@@ -66,7 +67,9 @@ export default function ContactSection({ tint = "mist" as const }: { tint?: "mis
               </span>
               <span>
                 <span className="block text-xs text-muted">שעות פעילות</span>
-                <span className="font-heading font-bold">{site.hours}</span>
+                <span className="font-heading font-bold">
+                  <Hours />
+                </span>
               </span>
             </li>
           </ul>

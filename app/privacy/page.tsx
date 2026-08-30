@@ -44,7 +44,13 @@ export default function PrivacyPage() {
 
           <h2>העברת מידע לצדדים שלישיים</h2>
           <p>
-            טופס הפנייה נשלח באמצעות שירות צד שלישי (FormSubmit) לכתובת הדוא״ל שלנו. איננו מוכרים או
+            {/*
+              The processor MUST match components/ContactForm.tsx. This said FormSubmit
+              while the form posted to Web3Forms — naming the wrong processor in a privacy
+              notice is a disclosure defect, not a typo. If the endpoint ever changes,
+              change this sentence in the same commit.
+            */}
+            טופס הפנייה נשלח באמצעות שירות צד שלישי (Web3Forms) לכתובת הדוא״ל שלנו. איננו מוכרים או
             משכירים את המידע שלכם. ייתכן שימוש בכלי ניתוח תנועה (כגון Google Analytics) למטרות
             סטטיסטיות.
             {/* 🔶 confirm analytics provider / GA4 */}

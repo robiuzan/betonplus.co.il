@@ -6,7 +6,7 @@ import CtaBanner from "@/components/CtaBanner";
 import { Section, SectionHeading } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
-import { services, servicesAnswer, serviceChooser, getService } from "@/lib/site";
+import { services, servicesAnswer, serviceChooser, getService, priceLabel } from "@/lib/site";
 import { pageMetadata, breadcrumbJsonLd, collectionPageJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
@@ -107,7 +107,7 @@ export default function ServicesIndexPage() {
                 <div>
                   <h3 className="text-xl">{s.title}</h3>
                   {s.priceFrom && (
-                    <p className="mt-1 text-sm font-bold text-steel">החל מ-{s.priceFrom}</p>
+                    <p className="mt-1 text-sm font-bold text-steel">{priceLabel(s.priceFrom)}</p>
                   )}
                 </div>
               </div>
