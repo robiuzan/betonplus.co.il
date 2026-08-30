@@ -261,3 +261,22 @@ caches under `.next/`), gates the output, preserves `out.prev/` for rollback, an
 - Don't put PII in `dataLayer`.
 - Cloudflare zone settings (AI crawler policy, Scrape Shield, cache rules) are **the owner's to
   change**. Document the exact toggle; never assume it was done.
+
+---
+
+## 13. The docs set
+
+[docs/README.md](docs/README.md) is the index: which file owns which standard, and which agent or skill
+enforces it. Start there rather than guessing.
+
+**Registers** (what is true now): [business-facts.md](docs/business-facts.md) ·
+[optimization-backlog.md](docs/optimization-backlog.md).
+
+**Standards** (what good means): [content-standards.md](docs/content-standards.md) ·
+[keyword-map.md](docs/keyword-map.md) · [schema-graph.md](docs/schema-graph.md) ·
+[seo-geo-aeo-strategy.md](docs/seo-geo-aeo-strategy.md) · [eeat-and-trust.md](docs/eeat-and-trust.md) ·
+[ux-cro-security.md](docs/ux-cro-security.md) ·
+[performance-guidelines.md](docs/performance-guidelines.md) ·
+[accessibility-and-i18n.md](docs/accessibility-and-i18n.md) ·
+[mobile-ux-and-personalization.md](docs/mobile-ux-and-personalization.md) ·
+[data-tracking-infrastructure.md](docs/data-tracking-infrastructure.md).

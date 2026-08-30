@@ -15,20 +15,38 @@ identity/NAP/schema field, sync, and remove the marker.
 
 ## A. Identity & history
 
-| Fact               | Current value                      | Source                          | Status                              |
-| ------------------ | ---------------------------------- | ------------------------------- | ----------------------------------- |
-| Brand name         | בטון פלוס                          | roster manifest                 | ✅ confirmed                        |
-| Legal entity / ח.פ | `legalName: "בטון פלוס"`           | roster, echoed `lib/site.ts:31` | 🔶 is this the registered entity?   |
-| Founded            | 2005                               | roster `foundedYear`            | 🔶 owner-asserted, never evidenced  |
-| "מעל 20 שנה"       | `lib/site.ts:37` `yearsLabel`      | derived from 2005               | ✅ consistent **if** 2005 is right  |
-| Owner / founder    | —                                  | nowhere                         | 🔶 nobody is named anywhere on site |
-| Address            | region only (`מרכז`, `IL`)         | roster `schema.address`         | 🔶 street address? or deliberate?   |
-| Hours              | א׳–ה׳ 07:00–18:00 · ו׳ 07:00–13:00 | `lib/site.ts:48`                | 🔶 marked confirm in code           |
+| Fact               | Current value                      | Source                          | Status                                         |
+| ------------------ | ---------------------------------- | ------------------------------- | ---------------------------------------------- |
+| Brand name         | בטון פלוס                          | roster manifest                 | ✅ confirmed                                   |
+| Legal entity / ח.פ | `legalName: "בטון פלוס"`           | roster, echoed `lib/site.ts:31` | 🔶 is this the registered entity?              |
+| Founded            | 2005                               | roster `foundedYear`            | 🔶 owner-asserted, never evidenced             |
+| "מעל 20 שנה"       | `lib/site.ts:37` `yearsLabel`      | derived from 2005               | ✅ consistent **if** 2005 is right             |
+| Named person       | **אור שוורץ** — בעלים              | owner-supplied 2026-08-30       | ✅ name + photo consent given                  |
+| His biography      | `owner` in `lib/site.ts`           | his own words, 2026-08-30       | ✅ published on `/about/`                      |
+| His years in trade | "למעלה מעשור" (his phrasing)       | owner-supplied 2026-08-30       | 🔶 **held back — conflicts with "מעל 20 שנה"** |
+| Address            | region only (`מרכז`, `IL`)         | roster `schema.address`         | 🔶 street address? or deliberate?              |
+| Hours              | א׳–ה׳ 07:00–18:00 · ו׳ 07:00–13:00 | `lib/site.ts:48`                | 🔶 marked confirm in code                      |
 
-**Why it matters:** `foundedYear: 2005` drives `foundingDate` in the JSON-LD and the "מעל 20 שנה" claim
-in four places. Unlike the rest of the fleet these two agree with each other — but they agree about a
-number nobody has verified. Not naming a single human is the other half of the problem: for a trade
-that enters occupied buildings and cuts structural concrete, an anonymous provider is a hard sell.
+**✅ The anonymity problem is solved (2026-08-30).** אור שוורץ, בעלים, is named on `/about/` in his own
+words, with a `Person` node in the graph (`#owner`, `worksFor` the business — deliberately **not**
+`founder`, see below). He consented to publishing his name and photographs. His four biographical
+paragraphs are first-person claims by a real, identifiable person: **nothing in them may be
+embellished, extended or "improved".**
+
+**🔴 One open conflict, and it needs the owner.** He describes himself as being in construction
+**"למעלה מעשור"**, while the site claims the business has run **"מעל 20 שנה"** (from
+`foundedYear: 2005`, which drives `foundingDate` in the JSON-LD plus the `yearsLabel` claim in four
+places). Both appear on `/about/`. That sentence is therefore **held back from the published bio** —
+shipping both would put a visible contradiction on a single page, which is worse for trust than either
+claim alone. Three ways it resolves:
+
+1. The business really has run since 2005 and אור came to it later — then both are true and the
+   sentence can ship once the relationship is stated.
+2. The business is roughly a decade old — then `foundedYear` is wrong and must change in the **roster**,
+   which also corrects `foundingDate` and all four `yearsLabel` sites.
+3. He has more years in the trade than "עשור" conveys — then the number simply gets restated.
+
+Until one of those is confirmed, neither figure gains evidence and the bio ships without the claim.
 
 ---
 
@@ -100,39 +118,51 @@ reviews.
 
 ## E. Coverage
 
-| Fact                  | Current value                     | Source            | Status            |
-| --------------------- | --------------------------------- | ----------------- | ----------------- |
-| `schema.areaServed`   | `גוש דן והמרכז, ישראל`            | roster            | ✅                |
-| Area list (16 cities) | תל אביב … ירושלים                 | `lib/site.ts:362` | 🔶 marked confirm |
-| FAQ coverage claim    | "מגיעים לפריסה ארצית בתיאום מראש" | `lib/site.ts:324` | 🔶                |
-| Travel / minimum job  | —                                 | nowhere           | 🔶                |
+| Fact                  | Current value                       | Source        | Status                         |
+| --------------------- | ----------------------------------- | ------------- | ------------------------------ |
+| `schema.areaServed`   | `גוש דן והמרכז, ישראל`              | roster        | ✅                             |
+| Area list (14 cities) | תל אביב … ראש העין                  | `lib/site.ts` | ✅ confirmed 2026-08-30        |
+| Area groups           | 3 groups, all inside גוש דן והמרכז  | `lib/site.ts` | ✅ confirmed 2026-08-30        |
+| FAQ coverage answer   | names the real area, no wider claim | `lib/site.ts` | ✅ confirmed 2026-08-30        |
+| Hero coverage stat    | `גוש דן` / אזור הפעילות             | `Hero.tsx`    | ✅ confirmed 2026-08-30        |
+| Travel / minimum job  | —                                   | nowhere       | 🔶 is there a callout minimum? |
 
-Two things to resolve before any location page is built (`/new-city`):
+**✅ Resolved 2026-08-30 (owner decision).** The service area is **גוש דן והמרכז**, matching
+`schema.areaServed` exactly. All four surfaces were aligned in one pass:
 
-1. **ירושלים and מודיעין are not גוש דן.** They sit in the visible list while `areaServed` says
-   גוש דן והמרכז. Either the list is too wide or the manifest is too narrow.
-2. **"פריסה ארצית" contradicts "גוש דן והמרכז".** An `areaServed` the business can't actually service
-   produces leads it can't serve and a claim it can't defend.
+1. **ירושלים and מודיעין removed** from `serviceAreas` (16 → 14 cities), and the fourth area group
+   ("מחוץ לגוש דן — בתיאום מראש") was deleted.
+2. **"פריסה ארצית" removed** from the FAQ answer, replaced by the real city list.
+3. **The hero stat "ארצי" replaced** with `גוש דן`.
+
+Rationale, recorded so it is not silently re-widened: a coverage claim wider than the business can
+service does nothing for proximity-weighted local ranking, and it generates leads that have to be
+declined. Re-widening requires an owner decision and an update to this row.
+
+**Still open:** whether there is a minimum job size or a callout/travel fee. That one matters for the
+location silo (`/new-city`) and for `/pricing/`.
 
 ---
 
 ## F. Infrastructure — owner-only changes
 
-| Item                             | State                                                                                                                                                     |
-| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GTM container                    | ✅ `GTM-KWGGH438` — verified 200, live in production                                                                                                      |
-| GA4 property for betonplus.co.il | 🔶 `analytics.ga4MeasurementId: null` in the roster                                                                                                       |
-| Search Console verification      | ✅ resolved 2026-08-17 — token lives in the roster manifest (`analytics.googleSiteVerification`), synced down, read from the manifest in `app/layout.tsx` |
-| Google עסק שלי (GBP)             | 🔶 unknown whether one exists                                                                                                                             |
-| Cloudflare AI-crawler policy     | ⚠️ managed `robots.txt` blocks ClaudeBot, GPTBot, Google-Extended, CCBot, Bytespider, Amazonbot, Applebot-Extended, meta-externalagent                    |
-| Security headers                 | ⚠️ no HSTS / X-Frame-Options / Permissions-Policy / CSP                                                                                                   |
+| Item                             | State                                                                                                                                                                            |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GTM container                    | ✅ `GTM-KWGGH438` — verified 200, live in production                                                                                                                             |
+| GA4 property for betonplus.co.il | ✅ `G-VMVP7XQKMG` — supplied 2026-08-30, recorded in the roster. ⚠️ **No data flows until** the GTM container carries a GA4 tag gated on a `betonplus.co.il` hostname condition. |
+| Search Console verification      | ✅ resolved 2026-08-17 — token lives in the roster manifest (`analytics.googleSiteVerification`), synced down, read from the manifest in `app/layout.tsx`                        |
+| Google עסק שלי (GBP)             | 🔶 unknown whether one exists                                                                                                                                                    |
+| Cloudflare AI-crawler policy     | ✅ **verified live 2026-08-30** — `robots.txt` matches `app/robots.ts` exactly; the managed block is gone. Still a zone setting: re-verify with `curl`, never infer from source. |
+| Security headers                 | ✅ **verified live 2026-08-30** — HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy and the report-only CSP all present on the origin response. |
 
-The verification token drift matters: the value works, but it lives in the wrong place, so a roster
-sync can't manage it and the next site cloned from this one inherits betonplus's token. Move it to the
-manifest.
+_(The Search Console token drift was resolved 2026-08-17 — the value now lives in the roster manifest,
+so a sync manages it and cloned sites no longer inherit betonplus's token.)_
 
-The AI-crawler block is a **zone setting**, changed only in the Cloudflare dashboard by the owner. No
-repo change overrides it. Document the toggle; never assume it was flipped. See `/aeo-answer-content`.
+The AI-crawler policy is a **zone setting**, changed only in the Cloudflare dashboard by the owner. No
+repo change overrides it — which is why `app/robots.ts` being correct proves nothing on its own.
+Verified allowing on 2026-08-30 (`curl https://betonplus.co.il/robots.txt` matched the source exactly),
+but a zone change could silently reverse it. **Re-verify against the live file, never against source.**
+See `/aeo-answer-content`.
 
 ---
 

@@ -665,6 +665,39 @@ export const aboutAnswer: Faq = {
   a: "בטון פלוס עוסקת בניסור, קידוח והריסה מבוקרת של בטון בטכנולוגיית יהלום, ופועלת משנת 2005 באזור גוש דן והמרכז. אנחנו לא קבלני שיפוץ ולא קבלני בנייה — אנחנו הגורם שנקרא כשצריך לפתוח, לקדוח או להסיר בטון בצורה מדויקת, בלי לפגוע במה שנשאר עומד.",
 };
 
+/**
+ * The named human behind the business — the site's single largest E-E-A-T gap until
+ * 2026-08-30 (backlog §7.3). Every sentence here is **his own**, supplied by the owner
+ * on that date together with consent to publish his name and photographs.
+ *
+ * Nothing in this object may be embellished, extended or "improved" with a plausible
+ * detail. It is a first-person claim by a real, identifiable person: if he did not say
+ * it, it does not go here. New facts go through the owner and `docs/business-facts.md`.
+ *
+ * 🔶 Held back pending confirmation: his own "למעלה מעשור בענף הבנייה". It sits oddly
+ * beside the site-wide `foundedYear: 2005` / "מעל 20 שנה" claim on this very page, and
+ * shipping both would put a visible contradiction on `/about/`. See business-facts §A.
+ */
+export interface Owner {
+  name: string;
+  role: string;
+  intro: string;
+  paras: string[];
+}
+
+export const owner: Owner = {
+  name: "אור שוורץ",
+  role: "בעלים, בטון פלוס",
+  intro:
+    "אני מוביל את בטון פלוס — ניסור וקידוח יהלום בגוש דן והמרכז, בבנייני מגורים מאוכלסים ובאתרי בנייה פעילים.",
+  paras: [
+    "התחלתי את דרכי בעבודות שלד ובשיפוצים מורכבים, ושם ראיתי את הצורך באנשי מקצוע שיודעים לבצע הריסות ופתיחות בבטון בצורה כירורגית, נקייה ובטוחה. ההתמקצעות בטכנולוגיית ניסור היהלום הייתה מבחינתי הצעד הטבעי.",
+    "אני איש שטח, לא מנהל מרחוק. אני עובד באופן שוטף עם מסורי דיסק על מסילות לפתיחת פתחים בקירות, מתפעל מקדחי ליבה בכל הקטרים לתשתיות ולצנרת, ומפעיל מסור כבל יהלום כשמדובר באלמנטים עבים ומורכבים במיוחד — פירי מעליות או חומות הדף.",
+    "העבודות שאני מוזמן אליהן הכי הרבה הן פתיחת חלונות ודלתות בקירות בטון, כולל ממ״דים, בבתים שעוברים שיפוץ; ניסור תקרות להוספת מדרגות; וקידוחים מדויקים להעברת תשתיות תקשורת, אינסטלציה ומיזוג אוויר בבניינים קיימים.",
+    "לפני שנוגעים בקיר צריך להבין מה הוא מחזיק. ברגע שיש ספק קל שבקלים לגבי עמוד, קורה תומכת או קיר נושא — ובכל שינוי מבני בממ״ד — אני לא לוקח הימורים על יציבות המבנה. אם אין ודאות מוחלטת בתוכנית, אני עוצר ומחכה לתוכנית הנדסית חתומה בידי מהנדס לפני שמפעילים את המסור. זה לא עיכוב, זו העבודה.",
+  ],
+};
+
 export interface AboutSection {
   title: string;
   paras: string[];
@@ -796,7 +829,7 @@ export const faqs: Faq[] = [
   },
   {
     q: "האם אתם מגיעים לאזור שלי?",
-    a: "אנחנו פועלים בכל גוש דן והמרכז, ומגיעים לפריסה ארצית בתיאום מראש. התקשרו ונשמח לבדוק זמינות לאזור שלכם.", // 🔶 confirm
+    a: "אנחנו פועלים בכל גוש דן והמרכז — מתל אביב, רמת גן וגבעתיים ועד פתח תקווה, הרצליה, כפר סבא, נתניה וראשון לציון. התקשרו ונבדוק זמינות לאזור שלכם.",
   },
   {
     q: "יש לכם ביטוח?",
@@ -840,12 +873,13 @@ export const staticRoutes: string[] = [
  * which is valid.
  */
 export const routeUpdated: Record<string, string> = {
-  "/": "2026-08-17",
+  // Coverage narrowed to גוש דן והמרכז 2026-08-30 — hero stat, area list and the FAQ answer.
+  "/": "2026-08-30",
   "/services/": "2026-08-24",
   "/pricing/": "2026-08-24",
-  "/service-areas/": "2026-08-24",
-  "/about/": "2026-08-24",
-  "/faq/": "2026-08-24",
+  "/service-areas/": "2026-08-30",
+  "/about/": "2026-08-30",
+  "/faq/": "2026-08-30",
   "/contact/": "2026-08-17",
   "/privacy/": "2026-06-15",
   "/accessibility/": "2026-06-15",
@@ -860,11 +894,13 @@ export const routeUpdated: Record<string, string> = {
 /**
  * Service areas grouped by real geography, for `/service-areas/`.
  *
- * 🔶 The exact coverage list is unconfirmed (business-facts §E) and three sources still
- * disagree: `schema.areaServed` says גוש דן והמרכז, this list includes ירושלים and מודיעין,
- * and `faqs` says פריסה ארצית בתיאום. The grouping below is deliberately consistent with
- * BOTH manifest and FAQ — core areas are stated plainly, anything outside גוש דן sits under
- * "בתיאום מראש" — but it does not resolve the contradiction. Owner must confirm the list.
+ * ✅ Coverage resolved 2026-08-30 (owner): the service area is **גוש דן והמרכז**, matching
+ * `schema.areaServed` exactly. ירושלים and מודיעין were removed from the list and the
+ * "פריסה ארצית" claim was removed from `faqs` — all three sources now agree.
+ *
+ * A wider claim than the business can actually service costs more than it wins: it does
+ * nothing for proximity-weighted local ranking, and it generates leads that have to be
+ * declined. Do not re-widen this without an owner decision and a business-facts §E update.
  */
 export interface AreaGroup {
   title: string;
@@ -887,11 +923,6 @@ export const serviceAreaGroups: AreaGroup[] = [
     title: "דרום גוש דן והשפלה",
     note: "עבודות שיפוץ ותשתית בערים הגדולות שמדרום וממזרח לתל אביב.",
     areas: ["ראשון לציון"],
-  },
-  {
-    title: "מחוץ לגוש דן — בתיאום מראש",
-    note: "מגיעים גם מחוץ לאזור הפעילות השוטף, בתיאום מוקדם ולפי היקף העבודה. התקשרו ונבדוק יחד.", // 🔶 confirm
-    areas: ["מודיעין", "ירושלים"],
   },
 ];
 
@@ -1079,6 +1110,4 @@ export const serviceAreas: string[] = [
   "כפר סבא",
   "נתניה",
   "ראש העין",
-  "מודיעין",
-  "ירושלים",
 ];

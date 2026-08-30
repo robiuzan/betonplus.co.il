@@ -1,16 +1,16 @@
 ---
 name: local-seo-il
-description: Israeli local-SEO doctrine for בטון פלוס — NAP consistency across site, schema and Google עסק שלי; the missing location silo and the 5-service × 16-area matrix with its expansion cap; the coverage contradiction between areaServed, the visible city list and the FAQ; Hebrew ב+city grammar; geo signals; and the non-negotiable doorway-page policy. Use when populating locations or services for local ranking, or auditing local visibility. Triggers: "local SEO", "NAP", "city pages", "Google עסק שלי", "doorway pages", "areaServed", "add a city".
+description: Israeli local-SEO doctrine for בטון פלוס — NAP consistency across site, schema and Google עסק שלי; the missing location silo and the 5-service × 14-area matrix with its expansion cap; Hebrew ב+city grammar; geo signals; and the non-negotiable doorway-page policy. Use when populating locations or services for local ranking, or auditing local visibility. Triggers: "local SEO", "NAP", "city pages", "Google עסק שלי", "doorway pages", "areaServed", "add a city".
 ---
 
 # Local SEO — Israel
 
-One mobile operation, no published street address, 16 named service areas and **zero location pages**.
+One mobile operation, no published street address, 14 named service areas and **zero location pages**.
 Everything below follows from that.
 
 ## 1. The structural gap
 
-`lib/site.ts:362` holds 16 area names as plain strings. `components/ServiceAreasSection.tsx` renders
+`lib/site.ts` holds 14 area names as plain strings. `components/ServiceAreasSection.tsx` renders
 them as chips. **The chips link nowhere and no page targets `<service> ב<city>`** (backlog §5.1).
 
 For a trade chosen almost entirely by proximity — a contractor in בני ברק wants someone who can be
@@ -52,7 +52,7 @@ Once supplied: URLs go in the **roster manifest** `schema.sameAs`, then sync.
 > Replace the city name with another city name. Is the page now correct and publishable for that other
 > city? If yes, it is a doorway page.
 
-Betonplus has the rare advantage of **not having shipped 16 doorway pages yet**. Don't create them.
+Betonplus has the rare advantage of **not having shipped 14 doorway pages yet**. Don't create them.
 
 To pass, a location page needs **three or more** true, specific items:
 
@@ -71,31 +71,36 @@ lands on the domain, not the page.
 
 ## 5. The expansion cap
 
-5 services × 16 areas = 80 possible cells. **Do not build them.** Order of operations
+5 services × 14 areas = 70 possible cells. **Do not build them.** Order of operations
 (`docs/keyword-map.md` §6):
 
-1. The 5 **service** pages reach the 450-word bar. They are at ~200 today (backlog §3.1).
-2. Resolve the coverage contradiction in §6 below.
+1. ✅ The 5 **service** pages reached the 450-word bar in wave 2 (456–574 unique words each).
+2. ✅ Coverage resolved 2026-08-30 — see §6 below.
 3. Build a **first tier** of location pages only for areas with real substance — realistically תל אביב,
    רמת גן, גבעתיים, בני ברק, פתח תקווה, ראשון לציון, חולון, בת ים.
 4. Only then consider service × location cells, and only for the two heads (ניסור קירות,
    קידוח יהלום). Nobody searches "ניסור בכבל יהלום בגבעתיים".
 
-No location page while the service pages are thin. Scaling a thin pattern multiplies risk, not reach.
+Both gates are now met. Scaling a thin pattern still multiplies risk, not reach — the doorway test in §4 is what governs from here.
 
-## 6. Coverage honesty — resolve this first
+## 6. Coverage honesty — settled
 
-Three sources disagree (backlog §5.2):
+✅ **Resolved 2026-08-30 (owner decision).** All four sources now agree:
 
-| Source                      | Says                      |
-| --------------------------- | ------------------------- |
-| `schema.areaServed`         | גוש דן והמרכז, ישראל      |
-| `serviceAreas` visible list | includes ירושלים, מודיעין |
-| `faqs` (`lib/site.ts:324`)  | "פריסה ארצית בתיאום מראש" |
+| Source                      | Says                                  |
+| --------------------------- | ------------------------------------- |
+| `schema.areaServed`         | גוש דן והמרכז, ישראל                  |
+| `serviceAreas` visible list | 14 cities, all inside גוש דן והמרכז   |
+| `serviceAreaGroups`         | 3 groups, no "outside the area" tier  |
+| `faqs` coverage answer      | names the real cities, no wider claim |
+| Hero stat                   | `גוש דן` / אזור הפעילות               |
 
-ירושלים is not גוש דן. An `areaServed` the business cannot actually service produces leads it can't
-serve and a claim it can't defend. Pick one truth, put it in the roster, and make the copy follow.
-Confirm via `docs/business-facts.md` §E.
+ירושלים and מודיעין were removed; the "פריסה ארצית" claim is gone.
+
+**Do not re-widen this.** An `areaServed` the business cannot actually service produces leads it can't
+serve and a claim it can't defend — and a wider claim does nothing for proximity-weighted local
+ranking. Any change goes to the owner first, then the roster, then the copy, then
+`docs/business-facts.md` §E.
 
 ## 7. Hebrew grammar per location
 
@@ -121,13 +126,13 @@ never a fake pin on a street.
 
 ## 9. Internal equity
 
-The 16 area chips are a dead end (backlog §9.3). No service page mentions a city; no city page exists
+The 14 area chips are a dead end (backlog §9.3). No service page mentions a city; no city page exists
 to link back. When the silo lands, wire both directions in the same pass — see `/internal-linking` §3.
 
 ## Checklist
 
 - [ ] NAP renders from the manifest — no literals anywhere.
-- [ ] The coverage contradiction is resolved before any location page is built.
+- [ ] The §6 coverage table still holds — all five surfaces agree.
 - [ ] Every location has `kind` and `prefixed`; no template interpolates a bare `ב${name}`.
 - [ ] Every location page passes the doorway test.
 - [ ] Location pages emit `Service` + `areaServed` with the correct area type.

@@ -16,7 +16,7 @@ but nothing is _contextually_ linked either.
 | ✅ Breadcrumbs                     | render **and** emit `BreadcrumbList` from the same crumb data on every nested route                          |
 | ✅ Header + footer                 | 8 nav items reach every static page; the footer also lists all 5 services                                    |
 | ⚠️ Related services by array order | `services.filter(≠self).slice(0, 3)` (`app/services/[slug]/page.tsx:40`) — the first three absorb the equity |
-| ⚠️ Service-area chips              | 16 chips linking **nowhere** — a dead-end page                                                               |
+| ⚠️ Service-area chips              | 14 chips linking **nowhere** — a dead-end page                                                               |
 | ❌ Contextual in-copy links        | **zero**. Every internal link is a nav item, a card or a chip                                                |
 | ❌ Service ↔ location              | no silo exists yet                                                                                           |
 
@@ -44,11 +44,11 @@ the wire-saw page is far likelier to want הריסה מבוקרת than a generic
 `/service-areas/` renders 16 area names that link nowhere. Two honest options:
 
 - **Build the silo** (`/new-city`) and link each chip to its page — but only after the service pages
-  clear the depth bar and the coverage contradiction is resolved (`/local-seo-il` §5–§6).
+  clear the depth bar — both now done (depth in wave 2, coverage 2026-08-30). See `/local-seo-il` §5–§6.
 - **Until then**, keep them as plain text and give the page a real introduction (250-word index floor,
   `docs/content-standards.md` §1) that links contextually into the service pages instead.
 
-What you must not do is link 16 chips to 16 thin pages generated from a template. That is the doorway
+What you must not do is link 14 chips to 14 thin pages generated from a template. That is the doorway
 pattern, and the penalty lands on the domain.
 
 ## 3. Service ↔ location cross-links (when the silo lands)

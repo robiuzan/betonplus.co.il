@@ -119,7 +119,7 @@ Rules:
 
 ## 6. The service × location matrix
 
-5 services × 16 areas = 80 possible cells. **Do not build them.** Order of operations:
+5 services × 14 areas = 70 possible cells. **Do not build them.** Order of operations:
 
 1. The 5 **service** pages reach the 450-word bar in [content-standards.md](content-standards.md) §1.
 2. Resolve the coverage contradiction in [business-facts.md](business-facts.md) §E — ירושלים and

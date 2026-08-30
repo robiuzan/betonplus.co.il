@@ -7,8 +7,8 @@ import CtaBanner from "@/components/CtaBanner";
 import { Section, SectionHeading } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
-import { site, aboutAnswer, aboutSections, aboutPolicy } from "@/lib/site";
-import { pageMetadata, breadcrumbJsonLd, aboutPageJsonLd } from "@/lib/seo";
+import { site, aboutAnswer, aboutSections, aboutPolicy, owner } from "@/lib/site";
+import { pageMetadata, breadcrumbJsonLd, aboutPageJsonLd, personJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -39,6 +39,7 @@ export default function AboutPage() {
             "אודות בטון פלוס",
             "ניסור, קידוח והריסה מבוקרת של בטון ביהלום משנת 2005 בגוש דן והמרכז.",
           ),
+          personJsonLd(),
         ]}
       />
       <PageHero
@@ -66,6 +67,33 @@ export default function AboutPage() {
               מה שמנחה אותנו לא השתנה: איכות הביצוע, עמידה בלוחות זמנים, שמירה קפדנית על כללי
               הבטיחות, ויחסי אמון והערכה עם הלקוח.
             </p>
+          </div>
+
+          {/*
+            The owner, in his own words. First-person and attributed — this is the site's
+            only first-hand voice, and every sentence came from him (business-facts §A).
+            A photo goes in the avatar slot when he supplies one; until then the initial
+            stands in rather than a stock portrait.
+          */}
+          <div className="mt-12 rounded-2xl border border-line bg-mist/60 p-6 sm:p-8">
+            <div className="flex items-center gap-4">
+              <span
+                aria-hidden="true"
+                className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-brand font-heading text-xl font-extrabold text-cta"
+              >
+                {owner.name.charAt(0)}
+              </span>
+              <div>
+                <h2 className="text-xl">{owner.name}</h2>
+                <p className="text-sm font-semibold text-steel">{owner.role}</p>
+              </div>
+            </div>
+            <p className="mt-5 text-lg leading-relaxed text-ink/90">{owner.intro}</p>
+            <div className="mt-4 space-y-4 leading-relaxed text-muted">
+              {owner.paras.map((p) => (
+                <p key={p}>{p}</p>
+              ))}
+            </div>
           </div>
 
           {aboutSections.map((sec) => (

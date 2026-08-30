@@ -56,7 +56,7 @@ export default function Hero() {
                 { v: "₪150", l: "ניסור מ-/מ״ר" },
                 { v: "₪190", l: "קידוח מ-/מ׳" },
                 { v: "2005", l: "פעילים משנת" },
-                { v: "ארצי", l: "פריסת שירות" },
+                { v: "גוש דן", l: "אזור הפעילות" },
               ].map((s) => (
                 <div key={s.l} className="rounded-xl bg-white/5 p-4">
                   <p className="font-heading text-2xl font-extrabold text-cta">{s.v}</p>

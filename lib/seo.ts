@@ -4,7 +4,7 @@
  */
 import type { Metadata } from "next";
 import * as kit from "@ishub/site-kit/seo";
-import { site, services, faqs, manifest } from "@/lib/site";
+import { site, services, faqs, manifest, owner } from "@/lib/site";
 
 const absolute = (path: string): string => `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -76,6 +76,25 @@ export function localBusinessJsonLd(): JsonLd {
     image: "/brand/betonplus-logo.svg",
     logo: "/brand/betonplus-mark.svg",
   });
+}
+
+/**
+ * The named owner as a `Person` node, linked to the business.
+ *
+ * Deliberately **not** `founder`: `foundedYear: 2005` is owner-asserted and unevidenced
+ * (business-facts §A), so asserting he founded the business in that year would be a claim
+ * nobody has made. `jobTitle` + `worksFor` says exactly what is confirmed and no more.
+ */
+export function personJsonLd(): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "@id": `${site.url}/#owner`,
+    name: owner.name,
+    jobTitle: owner.role.split(",")[0]?.trim() ?? owner.role,
+    worksFor: { "@id": `${site.url}/#business` },
+    url: absolute("/about/"),
+  };
 }
 
 /** Service schema for a single service page. */

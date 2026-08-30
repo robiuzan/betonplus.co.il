@@ -1,26 +1,26 @@
 ---
 name: new-city
-description: Build or extend the location silo that doesn't exist yet — turn the 16 flat serviceAreas strings in lib/site.ts into typed entries with kind and prefixed, author genuinely unique per-city content, and add the /locations/[city]/ route so schema, links and the sitemap follow. Use when expanding local coverage or when asked for city pages. Triggers: "add a city", "new location page", "cover <city>", "city pages", "doorway", "local landing pages".
+description: Build or extend the location silo that doesn't exist yet — turn the 14 flat serviceAreas strings in lib/site.ts into typed entries with kind and prefixed, author genuinely unique per-city content, and add the /locations/[city]/ route so schema, links and the sitemap follow. Use when expanding local coverage or when asked for city pages. Triggers: "add a city", "new location page", "cover <city>", "city pages", "doorway", "local landing pages".
 ---
 
 # Build or extend the location silo
 
 **Read this first — two gates before any of this ships:**
 
-1. **The 5 service pages are at ~200 words against a 450 floor** (backlog §3.1). Location pages built
-   on top of thin service pages multiply the thinness. Depth first (`/new-service`).
-2. **The coverage story contradicts itself** (backlog §5.2): `schema.areaServed` says גוש דן והמרכז,
-   the visible list includes ירושלים and מודיעין, and the FAQ claims פריסה ארצית. Resolve it in
-   `docs/business-facts.md` §E before deciding which cities get a page.
+1. ✅ **The 5 service pages cleared the 450-word floor** in wave 2 (456–574 unique words each). This
+   prerequisite is met — location pages no longer sit on top of thin service pages.
+2. ✅ **The coverage story was resolved 2026-08-30** (owner): the area is **גוש דן והמרכז**, ירושלים
+   and מודיעין are out, and all four surfaces agree. `serviceAreas` holds 14 cities.
+   `docs/business-facts.md` §E records the decision.
 
-Betonplus has the rare advantage of not having shipped 16 doorway pages. Don't create them.
+Betonplus has the rare advantage of not having shipped 14 doorway pages. Don't create them.
 
 ## Where things stand
 
-`lib/site.ts:362` holds 16 area names as flat strings:
+`lib/site.ts` holds 14 area names as flat strings:
 
 ```ts
-export const serviceAreas: string[] = ["תל אביב", "רמת גן", …]; // 🔶 confirm exact coverage list
+export const serviceAreas: string[] = ["תל אביב", "רמת גן", …]; // coverage confirmed 2026-08-30: גוש דן והמרכז
 ```
 
 `components/ServiceAreasSection.tsx` renders them as chips that link nowhere. There is no
@@ -118,7 +118,7 @@ Pick one and apply it to the whole silo. Never rename a slug after launch withou
 
 ## Checklist
 
-- [ ] Service pages clear the 450-word bar; the coverage contradiction is resolved.
+- [ ] Both gates at the top of this file still hold (depth ✅ wave 2, coverage ✅ 2026-08-30).
 - [ ] `kind` and `prefixed` set; no template interpolates a bare `ב${name}`.
 - [ ] ≥350 unique words; three or more genuinely local items.
 - [ ] Passes the doorway substitution test.
@@ -133,5 +133,5 @@ Pick one and apply it to the whole silo. Never rename a slug after launch withou
 
 - Never invent a neighbourhood, a landmark, an access detail or a local job. Unverified →
   `// 🔶 confirm` + `docs/business-facts.md`.
-- Don't ship 16 pages in one pass. Ship two that pass the doorway test, then judge.
-- ירושלים and מודיעין are outside the stated `areaServed` — don't build them until §5.2 is settled.
+- Don't ship 14 pages in one pass. Ship two that pass the doorway test, then judge.
+- ירושלים and מודיעין are **out of the service area** as of 2026-08-30 — never build pages for them.

@@ -47,8 +47,8 @@ the domain. You are read-only and you never invent a fact to close a gap.
 8. **Internal contradictions.** Check `faqs` price statements (`lib/site.ts:308` restates ₪150/₪190 as
    literals) against `services[].priceFrom` and against the `/pricing/` table. They **agree today** —
    report the duplication as a drift risk, not as a live contradiction. Then check the coverage story:
-   `schema.areaServed` (גוש דן והמרכז) vs the visible 16-area list (includes ירושלים, מודיעין) vs the
-   FAQ ("פריסה ארצית") — those three **do** contradict each other.
+   `schema.areaServed` (גוש דן והמרכז) vs the visible 14-area list vs the FAQ coverage answer vs the
+   hero stat — these were reconciled 2026-08-30 and **should now agree**. Any disagreement is drift.
 9. **Structural honesty.** For this trade specifically: does any page imply that opening a structural
    wall can skip engineering approval? Absence of a קונסטרוקטור note on service pages is a trust _and_
    liability gap.
