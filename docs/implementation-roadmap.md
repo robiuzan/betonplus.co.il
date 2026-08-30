@@ -76,21 +76,32 @@ source, or the claim has been removed from `lib/site.ts`.
 
 ---
 
-## Sprint 2 — Technical foundations & the link mesh 🔧 (unblocked — start now)
+## Sprint 2 — Technical foundations & the link mesh ✅ DONE (2026-08-31)
 
 **Goal:** close every repo-side item that needs no owner input, and prepare the data shapes the later
 sprints depend on.
 
-| #   | Task                                                                                                                                                                                                                                                                                 | Pri | Est |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | --- |
-| 2.1 | **Type the service areas.** Convert `serviceAreas: string[]` into typed entries with `kind` (city/region) and `prefixed` so `ב${name}` produces correct Hebrew. Backlog §5.5. **Do this before Sprint 4, not during it.**                                                            | 🟠  | ½ d |
-| 2.2 | **Header reaches every service in one hop.** A services dropdown/section in `Header`. Currently the five services sit one level behind `/services/`.                                                                                                                                 | 🟠  | ½ d |
-| 2.3 | **Kill the dead ends.** The 14 area chips on `/service-areas/` link nowhere. Until Sprint 4 lands they link to `/services/` + a contact anchor; after it, to their city page.                                                                                                        | 🟠  | ¼ d |
-| 2.4 | **Contextual in-copy links.** There are currently **zero**. Add 2–3 per content page with descriptive Hebrew anchors, per `/internal-linking`.                                                                                                                                       | 🟠  | 1 d |
-| 2.5 | **Ship `public/llms.txt`.** Short, factual, no unconfirmed claim. Backlog §6.4 — now unblocked because crawlers can reach us.                                                                                                                                                        | ⚪  | ¼ d |
-| 2.6 | **Surface `dateModified`** visibly on service pages and in the page-type schema, sourced from `routeUpdated`. Half of backlog §6.3; the author half waits on 1.3.                                                                                                                    | 🟡  | ½ d |
-| 2.7 | **Delete the dead weight.** The snapshot layer (`scripts/*.mjs`, `content/site.json` 1.1 MB, `lib/content.ts`, `lib/wp.ts`, `lib/enrich/`, `app/enrich.css`, `SiteFrame`/`SiteAssets`/`ThemeScripts`) plus the Next-starter SVGs in `public/` that ship for no reason. Backlog §1.5. | 🟡  | ½ d |
-| 2.8 | **Guard the title mechanism.** Add a `/qa-build-gate` assertion that no rendered title contains the brand twice, so a new page copying the wrong sibling fails the build rather than the SERP. Backlog §2.3.                                                                         | 🟡  | ¼ d |
+All eight items shipped on branch `sprint-2-technical-foundations`. Gate green: lint, typecheck,
+format:check and build all clean, 21 routes, 14 sitemap URLs, one `<h1>` per page, canonicals on every
+content route, no fabricated-review strings. **Not yet deployed** — deploying is a production mutation
+and needs the owner's go-ahead.
+
+> **One correction worth recording.** 2.2 was first built as `{servicesOpen && <ul>…}`, which renders
+> the dropdown only after a click. The menu worked for a user and was **invisible to a crawler** — the
+> five service links were absent from the static export, so the crawl-depth half of the task silently
+> did not happen. It now always renders and toggles with `hidden`. Verified: all five services appear
+> in `/privacy/index.html`, a page with no services grid. **Check the export, not the component.**
+
+| #   | Task                                                                                                                                                                                                                                                                            | Pri | Est |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| 2.1 | ✅ **Done.** `serviceAreas` is `ServiceArea[]` (`slug`, `name`, `kind`, `prefixed`), moved above `serviceAreaGroups`, which resolves members through `area()` — an unknown name fails the build. `slug` is reserved for sprint 4 and **nothing links to it yet**.               | ✅  | ½ d |
+| 2.2 | ✅ **Done.** Services disclosure in `Header` — desktop dropdown (Escape + click-outside) and an inline nested list on mobile. Always rendered, toggled with `hidden`, so the links are in the static export. All five services now appear in `/privacy/index.html`.             | ✅  | ½ d |
+| 2.3 | ✅ **Done — differently than specified.** The chips stay unlinked (backlog §9.3 settled that: linking them to non-existent pages is the doorway trap). The actual dead end was that the homepage area section had **no onward link at all**; it now links to `/service-areas/`. | ✅  | ¼ d |
+| 2.4 | ✅ **Mostly pre-existing — the "zero" was stale.** Backlog §9.2 resolved this in wave 4; only `/contact/` had none. It now carries three descriptive links, placed **below** the form so they don't compete with the primary conversion.                                        | ✅  | 1 d |
+| 2.5 | ✅ **Done.** `public/llms.txt` → `/llms.txt`. Omits every 🔶 claim and states the site carries no ratings, so an assistant cannot invent one.                                                                                                                                   | ✅  | ¼ d |
+| 2.6 | ✅ **Date half done.** `dateModified` in every page node from `routeUpdated`; service pages gained a `WebPage` node to carry it (`Service` has no date property); visible `עודכן:` line in an LTR-isolated `<time>`. Author half → sprint 5.3, now unblocked by 1.3.            | ✅  | ½ d |
+| 2.7 | ✅ **Done.** Whole snapshot layer deleted (1.2 MB `content/site.json` included), plus the starter SVGs, the `snapshot`/`enrich` npm scripts, and five dependencies only that layer used.                                                                                        | ✅  | ½ d |
+| 2.8 | ✅ **Done.** `scripts/check-titles.mjs` runs as `postbuild` — doubled brand, missing `<title>` and unexpected duplicates all fail `npm run build`. Proven by injecting a doubled brand into the export and watching it exit 1.                                                  | ✅  | ¼ d |
 
 **Exit gate:** `npm run lint && npm run typecheck && npm run format:check && npm run build` clean ·
 `/qa-build-gate` passes including the new title assertion · `seo-auditor` and `ts-react-reviewer` report
@@ -98,7 +109,7 @@ no new findings · zero orphans and zero dead-end links.
 
 ---
 
-## Sprint 3 — AEO & the guides hub 🔧 (unblocked; depends on 2.4)
+## Sprint 3 — AEO & the guides hub 🔧 (unblocked; 2.4 satisfied 2026-08-31) ← **next**
 
 **Goal:** own the question axis. This is the highest-value _content_ work available without the owner,
 and it is what makes the site citable by AI assistants.
@@ -118,7 +129,7 @@ question-form `<h2>` · `aeo-geo-strategist` and `eeat-trust-auditor` clean · e
 
 ---
 
-## Sprint 4 — The location silo 🟢 (unblocked 2026-08-30; depends on 2.1, 2.3)
+## Sprint 4 — The location silo 🟢 (fully unblocked — 2.1 and 2.3 shipped 2026-08-31)
 
 **Goal:** own the place axis — the single largest untapped tier for a trade chosen by proximity.
 
@@ -240,11 +251,12 @@ page, `/contact/` and `/thank-you/` · GTM and the form still work under enforce
 
 ## If you only have one week
 
-1. **Send the owner the five Sprint 1 questions today.** They cost nothing and unblock five sprints.
-2. **Sprint 2 in full** — the link mesh, the typed areas, `llms.txt`, the dead-code deletion. All
-   unblocked, all compounding.
-3. **Sprint 3.1–3.2** — the guides hub and the first two articles. This is the largest ranking and AEO
-   gain available without the owner.
+1. ✅ **Sprint 1 questions sent** — 1.1, 1.3 and 1.4 answered; **1.2 (photos) and 1.5 (GBP) still open
+   and still blocking sprints 5 and 6.** Chase those two.
+2. ✅ **Sprint 2 shipped in full 2026-08-31** — typed areas, header one-hop, `llms.txt`, the date
+   signal, the title guard, and 1.2 MB of dead code gone. Awaiting deploy approval.
+3. **Sprint 3.1–3.2 — the guides hub and the first two articles.** Now the largest ranking and AEO
+   gain available without the owner, and the next thing to start.
 
 Do **not** start the location silo in that week. It is the biggest opportunity on the site and the
 easiest thing to get badly wrong.

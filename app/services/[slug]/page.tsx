@@ -15,8 +15,10 @@ import {
   site,
   telHref,
   whatsappHref,
+  updatedFor,
+  formatDateIL,
 } from "@/lib/site";
-import { pageMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { pageMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -46,6 +48,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   const svc = getService(slug);
   if (!svc) notFound();
   const depth = getServiceDepth(svc.slug);
+  const updated = updatedFor(`/services/${svc.slug}/`);
 
   // Relevance-based related services (adjacency map), falling back to array order.
   const relatedSlugs = relatedServices[svc.slug] ?? [];
@@ -59,6 +62,9 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
       <JsonLd
         data={[
           serviceJsonLd(svc.slug) ?? {},
+          // Carries dateModified — `Service` has no date property, so the freshness
+          // signal needs a page node alongside it.
+          webPageJsonLd(`/services/${svc.slug}/`, svc.metaTitle, svc.metaDescription),
           breadcrumbJsonLd([
             { name: "שירותים", path: "/services/" },
             { name: svc.title, path: `/services/${svc.slug}/` },
@@ -80,6 +86,20 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
           {/* Main content */}
           <div className="max-w-3xl">
+            {/*
+              Visible freshness signal to match `dateModified` in the schema. The machine
+              date alone is worth little if a reader can't see the page is maintained.
+              <time> carries the ISO value; the text carries the Israeli dd/mm/yyyy form.
+            */}
+            {updated && (
+              <p className="mb-6 text-sm text-muted">
+                עודכן:{" "}
+                <time className="ltr" dateTime={updated}>
+                  {formatDateIL(updated)}
+                </time>
+              </p>
+            )}
+
             {depth && (
               <>
                 {/* Answer block — question-form h2, self-contained answer first (AEO). */}

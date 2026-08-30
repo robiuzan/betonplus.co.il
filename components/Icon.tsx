@@ -100,6 +100,8 @@ const PATHS: Record<IconName, React.ReactNode> = {
   menu: <path d="M4 7h16M4 12h16M4 17h16" />,
   close: <path d="m6 6 12 12M18 6 6 18" />,
   arrow: <path d="M14 6l-6 6 6 6" />,
+  // Direction-agnostic: a disclosure caret points down in both LTR and RTL.
+  chevronDown: <path d="m6 9 6 6 6-6" />,
 };
 
 export default function Icon({ name, className }: IconProps) {

@@ -4,7 +4,7 @@
  */
 import type { Metadata } from "next";
 import * as kit from "@ishub/site-kit/seo";
-import { site, services, faqs, manifest, owner } from "@/lib/site";
+import { site, services, faqs, manifest, owner, updatedFor } from "@/lib/site";
 
 const absolute = (path: string): string => `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -127,6 +127,7 @@ export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]): Json
  * valid cross-page reference and is how schema.org expects the graph to link up.
  */
 function pageNode(type: string, path: string, name: string, description: string): JsonLd {
+  const updated = updatedFor(path);
   return {
     "@context": "https://schema.org",
     "@type": type,
@@ -135,9 +136,17 @@ function pageNode(type: string, path: string, name: string, description: string)
     name,
     description,
     inLanguage: "he-IL",
+    // Real content dates from `routeUpdated`, never build time — a date that moves on
+    // every deploy is a freshness signal that means nothing (backlog §6.3).
+    ...(updated ? { dateModified: updated } : {}),
     isPartOf: { "@id": `${site.url}/#website` },
     about: { "@id": `${site.url}/#business` },
   };
+}
+
+/** WebPage — for leaf content routes that are not an index, an about or a contact page. */
+export function webPageJsonLd(path: string, name: string, description: string): JsonLd {
+  return pageNode("WebPage", path, name, description);
 }
 
 /** CollectionPage — for index routes that list children (`/services/`, `/service-areas/`). */

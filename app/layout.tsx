@@ -102,7 +102,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {manifest.images?.mediaHost && (
           <link rel="preconnect" href={`https://${manifest.images.mediaHost}`} />
         )}
-        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link rel="stylesheet" href={FONT_CSS} precedence="default" />
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
 

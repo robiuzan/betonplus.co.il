@@ -5,32 +5,26 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "postbuild": "node scripts/check-titles.mjs",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "format:check": "prettier --check .",
-    "snapshot": "node scripts/scrape.mjs && node scripts/transform.mjs",
-    "enrich": "node scripts/build-manifest.mjs && node scripts/enrich.mjs"
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@ishub/site-kit": "file:vendor/ishub-site-kit-0.0.0.tgz",
-    "he": "^1.2.0",
-    "html-react-parser": "^6.1.3",
-    "lucide-react": "^1.17.0",
     "next": "16.2.9",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
-    "@types/he": "^1.2.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
-    "node-html-parser": "^7.1.0",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.8",
     "tailwindcss": "^4",

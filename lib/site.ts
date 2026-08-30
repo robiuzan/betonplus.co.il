@@ -90,7 +90,8 @@ export type IconName =
   | "mail"
   | "menu"
   | "close"
-  | "arrow";
+  | "arrow"
+  | "chevronDown";
 
 export interface Service {
   slug: string;
@@ -891,38 +892,105 @@ export const routeUpdated: Record<string, string> = {
   "/services/demolition/": "2026-08-17",
 };
 
+/** The ISO date a route's content last changed, or `null` if it is not tracked. */
+export function updatedFor(path: string): string | null {
+  return routeUpdated[path] ?? null;
+}
+
 /**
- * Service areas grouped by real geography, for `/service-areas/`.
+ * ISO `yyyy-mm-dd` → Israeli `dd/mm/yyyy` (CLAUDE.md §6).
+ *
+ * Deliberately string surgery rather than `Date`: `new Date("2026-08-17")` parses as UTC
+ * midnight and can render as the previous day west of Greenwich. These are content dates,
+ * not instants — they must not shift with the reader's timezone.
+ */
+export function formatDateIL(iso: string): string {
+  const [y, m, d] = iso.split("-");
+  return y && m && d ? `${d}/${m}/${y}` : iso;
+}
+
+/**
+ * The areas we actually work in, typed rather than bare strings.
  *
  * ✅ Coverage resolved 2026-08-30 (owner): the service area is **גוש דן והמרכז**, matching
  * `schema.areaServed` exactly. ירושלים and מודיעין were removed from the list and the
- * "פריסה ארצית" claim was removed from `faqs` — all three sources now agree.
+ * "פריסה ארצית" claim was removed from `faqs` — all sources now agree.
  *
  * A wider claim than the business can actually service costs more than it wins: it does
  * nothing for proximity-weighted local ranking, and it generates leads that have to be
  * declined. Do not re-widen this without an owner decision and a business-facts §E update.
+ *
+ * `prefixed` carries the ב־ preposition already applied, because interpolating a bare
+ * `ב${name}` is wrong the moment a name takes a definite article or an אזור qualifier
+ * (`/local-seo-il` §7). `kind` drives the schema type when the silo lands — `City` for a
+ * city, `AdministrativeArea` for a region.
+ *
+ * `slug` is the canonical URL form reserved for `/locations/[city]/` (roadmap sprint 4).
+ * **No location page exists yet, so nothing may link to it.** It lives here so the names
+ * have one agreed form when the silo is built — not because a route is waiting.
  */
+export interface ServiceArea {
+  slug: string;
+  name: string;
+  kind: "city" | "region";
+  prefixed: string;
+}
+
+export const serviceAreas: ServiceArea[] = [
+  { slug: "תל-אביב", name: "תל אביב", kind: "city", prefixed: "בתל אביב" },
+  { slug: "רמת-גן", name: "רמת גן", kind: "city", prefixed: "ברמת גן" },
+  { slug: "גבעתיים", name: "גבעתיים", kind: "city", prefixed: "בגבעתיים" },
+  { slug: "בני-ברק", name: "בני ברק", kind: "city", prefixed: "בבני ברק" },
+  { slug: "פתח-תקווה", name: "פתח תקווה", kind: "city", prefixed: "בפתח תקווה" },
+  { slug: "גבעת-שמואל", name: "גבעת שמואל", kind: "city", prefixed: "בגבעת שמואל" },
+  { slug: "חולון", name: "חולון", kind: "city", prefixed: "בחולון" },
+  { slug: "בת-ים", name: "בת ים", kind: "city", prefixed: "בבת ים" },
+  { slug: "ראשון-לציון", name: "ראשון לציון", kind: "city", prefixed: "בראשון לציון" },
+  { slug: "הרצליה", name: "הרצליה", kind: "city", prefixed: "בהרצליה" },
+  { slug: "רעננה", name: "רעננה", kind: "city", prefixed: "ברעננה" },
+  { slug: "כפר-סבא", name: "כפר סבא", kind: "city", prefixed: "בכפר סבא" },
+  { slug: "נתניה", name: "נתניה", kind: "city", prefixed: "בנתניה" },
+  { slug: "ראש-העין", name: "ראש העין", kind: "city", prefixed: "בראש העין" },
+];
+
+const areaIndex = new Map(serviceAreas.map((a) => [a.name, a]));
+
+/**
+ * Resolve an area by name, failing the build if the name is unknown.
+ *
+ * The groups below used to repeat the city names as loose strings, so a typo rendered a
+ * chip for a city we do not serve and nothing caught it. Now it stops `npm run build`.
+ */
+export function area(name: string): ServiceArea {
+  const found = areaIndex.get(name);
+  if (!found) {
+    throw new Error(`Unknown service area "${name}" — add it to serviceAreas or fix the name.`);
+  }
+  return found;
+}
+
+/** Service areas grouped by real geography, for `/service-areas/`. */
 export interface AreaGroup {
   title: string;
   note: string;
-  areas: string[];
+  areas: ServiceArea[];
 }
 
 export const serviceAreaGroups: AreaGroup[] = [
   {
     title: "תל אביב וגוש דן",
     note: "ליבת אזור הפעילות שלנו — הגעה שוטפת, כולל עבודה בבנייני מגורים מאוכלסים ובמשרדים פעילים.",
-    areas: ["תל אביב", "רמת גן", "גבעתיים", "בני ברק", "חולון", "בת ים"],
+    areas: ["תל אביב", "רמת גן", "גבעתיים", "בני ברק", "חולון", "בת ים"].map(area),
   },
   {
     title: "מזרח גוש דן והשרון",
     note: "אזור עם שילוב של שכונות ותיקות ובנייה חדשה — לכל אחת מהן מאפייני בטון וגישה שונים.",
-    areas: ["פתח תקווה", "גבעת שמואל", "ראש העין", "הרצליה", "רעננה", "כפר סבא", "נתניה"],
+    areas: ["פתח תקווה", "גבעת שמואל", "ראש העין", "הרצליה", "רעננה", "כפר סבא", "נתניה"].map(area),
   },
   {
     title: "דרום גוש דן והשפלה",
     note: "עבודות שיפוץ ותשתית בערים הגדולות שמדרום וממזרח לתל אביב.",
-    areas: ["ראשון לציון"],
+    areas: ["ראשון לציון"].map(area),
   },
 ];
 
@@ -1094,20 +1162,4 @@ export const faqGroups: FaqGroup[] = [
   },
 ];
 
-// 🔶 confirm exact coverage list.
-export const serviceAreas: string[] = [
-  "תל אביב",
-  "רמת גן",
-  "גבעתיים",
-  "בני ברק",
-  "פתח תקווה",
-  "גבעת שמואל",
-  "חולון",
-  "בת ים",
-  "ראשון לציון",
-  "הרצליה",
-  "רעננה",
-  "כפר סבא",
-  "נתניה",
-  "ראש העין",
-];
+// serviceAreas moved above serviceAreaGroups (which now resolves through it) — see §areas.
