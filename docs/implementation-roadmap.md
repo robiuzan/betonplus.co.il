@@ -81,10 +81,17 @@ source, or the claim has been removed from `lib/site.ts`.
 **Goal:** close every repo-side item that needs no owner input, and prepare the data shapes the later
 sprints depend on.
 
-All eight items shipped on branch `sprint-2-technical-foundations`. Gate green: lint, typecheck,
-format:check and build all clean, 21 routes, 14 sitemap URLs, one `<h1>` per page, canonicals on every
-content route, no fabricated-review strings. **Not yet deployed** — deploying is a production mutation
-and needs the owner's go-ahead.
+All eight items shipped on branch `sprint-2-technical-foundations`, merged `--ff-only` to `main`
+(`58d0749`) and pushed. Gate green: lint, typecheck, format:check and build all clean, 21 routes,
+14 sitemap URLs, one `<h1>` per page, canonicals on every content route, no fabricated-review strings.
+
+✅ **DEPLOYED 2026-08-31** — `deploy-site.ps1 -Confirm`, wrangler → Pages project `betonplus`,
+deployment `381b06de.betonplus.pages.dev`, script gate passed at 161 files. Live-verified on the
+production origin: HSTS / XFO / Permissions-Policy / Referrer-Policy / report-only CSP all present ·
+`robots.txt` byte-matches the export with **no Cloudflare managed AI-crawler block** · sitemap 14 ·
+GTM `gtm.js` 200 · `/llms.txt` 200 `text/plain` · all five services reachable from `/privacy/`
+(the header-one-hop proof) · `dateModified` and the visible `עודכן:` line on service pages ·
+title carries the brand exactly once.
 
 > **One correction worth recording.** 2.2 was first built as `{servicesOpen && <ul>…}`, which renders
 > the dropdown only after a click. The menu worked for a user and was **invisible to a crawler** — the

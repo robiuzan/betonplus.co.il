@@ -86,7 +86,7 @@ curl -o /dev/null -w '%{http_code}\n' "https://www.googletagmanager.com/gtm.js?i
 
 Check: the page is the new build; the title carries the brand exactly once; `robots.txt` matches the
 intended AI-crawler stance (**Cloudflare prepends a managed block** — see `/aeo-answer-content`); the
-sitemap lists 15 URLs; GTM returns 200; and any new `public/_headers` entries actually appear in the
+sitemap lists 14 URLs; GTM returns 200; and any new `public/_headers` entries actually appear in the
 response (`/web-security-headers`).
 
 ## Rollback
