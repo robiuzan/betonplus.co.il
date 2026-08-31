@@ -66,6 +66,48 @@ Then use it for phone numbers, emails, URLs, prices with `₪`, and any Latin st
 **Write the plain value in `lib/site.ts`** — `055-6601006`, `₪150 למ״ר`. The component adds the
 isolation. Never put markup in the content file.
 
+### 🔴 Digit RANGES are the trap this rule keeps missing
+
+The list above says "phone, email, URL, price" and that framing is what let the **opening hours ship
+reversed on all 15 routes for months**, through six deploys and every prior audit. `site.hours` was
+interpolated bare:
+
+```tsx
+{
+  site.hours;
+} // "א׳–ה׳ 07:00–18:00" → renders "א׳–ה׳ 18:00–07:00"
+```
+
+**Why.** `07:00` and `18:00` are European Numbers. The `–` between them is a _neutral_. Bidi rule N1:
+a neutral between two runs that both act as R takes the paragraph direction — and numbers act as R for
+this purpose. So the dash resolves RTL, the two number runs sit at level 2, and the reorder swaps
+them. The result is a plausible-looking time range that is **backwards**, which is why nobody caught
+it by eye.
+
+This applies to **any two numbers joined by a neutral**, not just times:
+
+| Pattern           | Example       | Renders as    |
+| ----------------- | ------------- | ------------- |
+| Time range        | `07:00–18:00` | `18:00–07:00` |
+| Date range        | `2024–2026`   | `2026–2024`   |
+| Measurement range | `5–10 ס״מ`    | `10–5 ס״מ`    |
+| Price range       | `₪150–₪300`   | `₪300–₪150`   |
+| Ratio / dimension | `20/40`       | `40/20`       |
+
+**Rule: isolate the range itself, not the whole string.** Wrapping the entire `"א׳–ה׳ 07:00–18:00"` in
+`.ltr` would flip the Hebrew day letters instead. Split the data and isolate only the numeric part —
+see `hoursLines` in `lib/site.ts` and `components/Hours.tsx`:
+
+```tsx
+{
+  line.days;
+}
+<span className="ltr">{line.time}</span>;
+```
+
+**Verify by rendering, not by reading the source.** The source looks correct in both the broken and
+the fixed case; only the rendered order differs.
+
 ## Israeli formats
 
 - Phone: `055-6601006` displayed; `+972556601006` in `tel:` (both from the manifest via `lib/site.ts`).
@@ -122,6 +164,8 @@ Skipping it works in dev and 404s in production. `app/sitemap.ts` would then nee
 
 - [ ] No banned physical-direction utility, or an exception with a comment.
 - [ ] Every phone, email, URL and price is inside an LTR island.
+- [ ] Every **digit range** (times, dates, measurements, prices, ratios) is isolated — and the
+      isolation wraps only the numeric part, never the surrounding Hebrew.
 - [ ] Hebrew abbreviations use `׳` / `״`.
 - [ ] Trade terms match the table above.
 - [ ] Layout checked at 360px and at desktop, in RTL.
