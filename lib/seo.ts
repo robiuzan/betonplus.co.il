@@ -114,8 +114,20 @@ export function faqJsonLd(items: { q: string; a: string }[] = faqs): JsonLd {
 }
 
 /** BreadcrumbList schema. Pass [{name, path}] from home to the current page. */
+/**
+ * BreadcrumbList for a nested route.
+ *
+ * Prepends the **בית** root here rather than at the call sites, because `PageHero` renders
+ * that first crumb itself. Before this, the two surfaces disagreed on every page: the trail
+ * read `בית / מחירון` while the schema emitted a **one-item list** containing only מחירון —
+ * no hierarchy for Google to render, and on the service pages a two-item list that
+ * understated the depth of the silo whose depth is the whole point.
+ *
+ * Callers pass only their own crumbs. If `PageHero` ever stops rendering בית, drop it here
+ * in the same commit — the rule is that the visible trail and the markup match exactly.
+ */
 export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]): JsonLd {
-  return kit.breadcrumbJsonLd(manifest, crumbs);
+  return kit.breadcrumbJsonLd(manifest, [{ name: "בית", path: "/" }, ...crumbs]);
 }
 
 /**
