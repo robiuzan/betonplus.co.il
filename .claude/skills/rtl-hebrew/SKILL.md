@@ -73,9 +73,8 @@ reversed on all 15 routes for months**, through six deploys and every prior audi
 interpolated bare:
 
 ```tsx
-{
-  site.hours;
-} // "א׳–ה׳ 07:00–18:00" → renders "א׳–ה׳ 18:00–07:00"
+// "א׳–ה׳ 07:00–18:00" in the data → renders "א׳–ה׳ 18:00–07:00" on the page
+<li>{site.hours}</li>
 ```
 
 **Why.** `07:00` and `18:00` are European Numbers. The `–` between them is a _neutral_. Bidi rule N1:
@@ -99,10 +98,9 @@ This applies to **any two numbers joined by a neutral**, not just times:
 see `hoursLines` in `lib/site.ts` and `components/Hours.tsx`:
 
 ```tsx
-{
-  line.days;
-}
-<span className="ltr">{line.time}</span>;
+<span>
+  {line.days} <span className="ltr">{line.time}</span>
+</span>
 ```
 
 **Verify by rendering, not by reading the source.** The source looks correct in both the broken and
@@ -114,7 +112,9 @@ the fixed case; only the rendered order differs.
 - Currency: `₪` — this site writes it **before** the number (`₪150 למ״ר`), which is the existing
   convention here. Be consistent with `services[].priceFrom`; don't mix positions across pages.
 - Dates: `dd/mm/yyyy`.
-- Ranges: en dash, no spaces — `2–4 שעות`, `07:00–18:00`.
+- Ranges: en dash, no spaces — `2–4 שעות`, `07:00–18:00`. ⚠️ Writing the range correctly is only half
+  the job — a numeric range **must also be LTR-isolated when rendered**, or it displays reversed. See
+  the digit-range section above.
 - Thousands separator: comma — `+1,000`.
 
 ## Hebrew punctuation
