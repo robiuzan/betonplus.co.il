@@ -2,10 +2,13 @@ import type { Metadata } from "next";
 import PageHero from "@/components/PageHero";
 import { Section } from "@/components/ui";
 import JsonLd from "@/components/JsonLd";
-import { site } from "@/lib/site";
+import { site, formatDateIL } from "@/lib/site";
 import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
+
+/** Date the claims on this page were last checked against the shipped site. */
+const ACCESSIBILITY_UPDATED = "2026-08-31";
 
 export const metadata: Metadata = pageMetadata({
   title: "הצהרת נגישות",
@@ -30,30 +33,62 @@ export default function AccessibilityPage() {
             5568 המבוסס על הנחיות WCAG 2.0 ברמת AA.
           </p>
 
+          {/*
+            Every line below must be TRUE of the shipped site. This list previously claimed
+            "ניווט מלא באמצעות מקלדת" and blanket alt-text coverage, neither of which held —
+            an accessibility statement that overstates is a compliance problem in itself, not
+            just inaccurate copy. If a claim here stops being true, change the site or change
+            the claim, in the same commit.
+          */}
           <h2>מה הונגש באתר</h2>
           <ul>
-            <li>מבנה כותרות סמנטי והיררכי לניווט בעזרת קורא מסך.</li>
-            <li>ניווט מלא באמצעות מקלדת וסימון מיקוד (focus) ברור.</li>
-            <li>טקסט חלופי לתמונות ולסמלים, וניגודיות צבעים מספקת.</li>
-            <li>קישור ״דלגו לתוכן״ ותמיכה בכיווניות עברית (RTL).</li>
-            <li>טפסים עם תוויות (labels) ברורות.</li>
+            <li>מבנה כותרות סמנטי והיררכי, עם כותרת ראשית אחת בכל עמוד, לניווט בעזרת קורא מסך.</li>
+            <li>ניווט במקלדת עם סימון מיקוד (focus) גלוי בכל רכיב אינטראקטיבי, כולל שדות הטופס.</li>
+            <li>קישור ״דלגו לתוכן״ בראש כל עמוד, ותמיכה בכיווניות עברית (RTL).</li>
+            <li>
+              טפסים עם תוויות (labels) מקושרות, הודעות שגיאה מילוליות וקישור בין השדה לשגיאתו.
+            </li>
+            <li>ניגודיות צבעים בהתאם לרמה AA בטקסט הגוף, בכותרות ובכפתורי הפעולה.</li>
+            <li>טקסט חלופי לסמלים ולנכסי המותג, ותיאור מילולי לקישורים ולכפתורים.</li>
           </ul>
 
-          <h2>הסתייגויות</h2>
-          <p>
-            ייתכן שחלקים מסוימים באתר טרם הונגשו במלואם. אנו ממשיכים לשפר את הנגישות באופן שוטף,
-            ונשמח לקבל פניות במקרה של תקלה.
-          </p>
+          <h2>הסתייגויות — מה עדיין לא נגיש</h2>
+          <p>אנחנו מעדיפים לפרט מה חסר במקום להסתפק בנוסח כללי. נכון למועד העדכון שלהלן:</p>
+          <ul>
+            <li>
+              שתי טבלאות ההשוואה בעמוד השאלות הנפוצות נגללות לרוחב במסכים צרים, והגלילה שלהן אינה
+              נגישה במלואה באמצעות מקלדת בכל הדפדפנים.
+            </li>
+            <li>
+              בגלישה בנייד, סרגל הפעולה הקבוע בתחתית המסך עלול להסתיר רכיב שקיבל מיקוד בעת ניווט
+              במקלדת.
+            </li>
+            <li>באתר אין כרגע צילומים של עבודות. כשיתווספו, כל תמונה תקבל טקסט חלופי בעברית.</li>
+          </ul>
+          <p>אנחנו ממשיכים לשפר את הנגישות באופן שוטף, ונשמח לקבל פנייה על כל תקלה שנתקלתם בה.</p>
 
           <h2>פנייה בנושא נגישות</h2>
           <p>
             נתקלתם בבעיית נגישות? נשמח שתעדכנו אותנו ונטפל בהקדם. ניתן לפנות לרכז הנגישות שלנו
-            בטלפון {site.phoneDisplay} או בדוא״ל {site.email}.{" "}
+            בטלפון <span className="ltr">{site.phoneDisplay}</span> או בדוא״ל{" "}
+            <span className="ltr">{site.email}</span>.{" "}
             {/* 🔶 confirm accessibility coordinator details */}
           </p>
 
           <h2>תאריך עדכון</h2>
-          <p>הצהרת נגישות זו עודכנה בשנת 2026.</p>
+          {/*
+            A specific date, not a year — the regulations expect one, and "בשנת 2026" tells a
+            reader nothing about whether the statement predates the site they are looking at.
+            Static export, so no runtime Date: bump this by hand whenever the claims above
+            change.
+          */}
+          <p>
+            הצהרת נגישות זו עודכנה בתאריך{" "}
+            <time className="ltr" dateTime={ACCESSIBILITY_UPDATED}>
+              {formatDateIL(ACCESSIBILITY_UPDATED)}
+            </time>
+            .
+          </p>
         </article>
       </Section>
     </>

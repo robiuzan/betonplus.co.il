@@ -32,10 +32,16 @@ export default function FloatingCTA() {
         </a>
       </div>
 
-      {/* Desktop: floating WhatsApp bubble */}
+      {/*
+        Desktop: floating WhatsApp bubble.
+        Its own data-cta id — it shared "sticky-whatsapp" with the mobile bar above, so both
+        rendered on every page and GA4 could not tell a desktop bubble click from a mobile
+        bar click. Renaming now is free: GA4 is not collecting yet (roadmap 7.x), so there is
+        no historical series to break.
+      */}
       <a
         href={whatsappHref}
-        data-cta="sticky-whatsapp"
+        data-cta="bubble-whatsapp"
         target="_blank"
         rel="noopener noreferrer"
         className="fixed end-6 bottom-6 z-40 hidden h-14 w-14 items-center justify-center rounded-full bg-[#25d366] text-white shadow-lg transition-transform hover:scale-105 lg:flex"

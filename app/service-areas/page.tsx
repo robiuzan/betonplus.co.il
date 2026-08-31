@@ -41,9 +41,16 @@ export default function ServiceAreasPage() {
           {/* Answer block — question-form h2, complete answer in the first sentence (AEO). */}
           <h2 className="text-2xl">לאן אתם מגיעים לניסור וקידוח בטון?</h2>
           <p className="mt-4 text-lg leading-relaxed text-ink/90">
-            אזור הפעילות השוטף שלנו הוא גוש דן והמרכז — מתל אביב, רמת גן, גבעתיים ובני ברק, דרך פתח
-            תקווה, חולון, בת ים וראשון לציון, ועד ערי השרון. מחוץ לאזור הזה אנחנו מגיעים בתיאום
-            מראש, לפי היקף העבודה. אם העיר שלכם לא מופיעה ברשימה עדיין שווה להתקשר — לרוב יש פתרון.
+            {/*
+              Do NOT re-add an out-of-area promise here. business-facts §E records the owner's
+              2026-08-30 decision: the service area is גוש דן והמרכז, and the earlier
+              "מחוץ לגוש דן — בתיאום מראש" claim was deliberately removed from all four
+              surfaces. This block had quietly reintroduced it. Re-widening needs an owner
+              decision and a business-facts update, not a copy edit.
+            */}
+            אזור הפעילות שלנו הוא גוש דן והמרכז — מתל אביב, רמת גן, גבעתיים ובני ברק, דרך פתח תקווה,
+            גבעת שמואל וראש העין, חולון, בת ים וראשון לציון, ועד הרצליה, רעננה, כפר סבא ונתניה. אלה
+            הערים שאנחנו עובדים בהן באופן שוטף, וזה גם האזור שבו אנחנו יכולים להתחייב לזמני הגעה.
           </p>
 
           <div className="mt-6 space-y-4 leading-relaxed text-muted">

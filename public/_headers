@@ -5,3 +5,14 @@
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
   Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com; connect-src 'self' https://api.web3forms.com https://www.google-analytics.com https://*.googletagmanager.com; img-src 'self' data: https://www.googletagmanager.com https://www.google-analytics.com https://imgquarry.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; frame-src https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://api.web3forms.com
+
+# The build-time share card is emitted as an EXTENSIONLESS file (out/opengraph-image), so
+# Cloudflare types it application/octet-stream. Combined with the nosniff above, no crawler
+# or social platform will render it — every OG/Twitter preview was blank. The bytes are a
+# real 1200x630 PNG; this tells the edge what they are.
+# Placed after /* deliberately: the later matching rule wins for a repeated header.
+# Verify after any deploy that touches it:
+#   curl -sSI https://betonplus.co.il/opengraph-image | grep -i content-type   # want image/png
+/opengraph-image
+  Content-Type: image/png
+  Cache-Control: public, max-age=86400
