@@ -141,6 +141,12 @@ export default function ContactForm() {
         aria-hidden="true"
       />
 
+      {/* The asterisk on required fields had no legend, so its meaning was conventional
+          rather than stated — and a screen-reader user hears "כוכבית" with no explanation. */}
+      <p className="mb-3 text-sm text-muted">
+        <span aria-hidden="true">* </span>שדות המסומנים בכוכבית הם שדות חובה.
+      </p>
+
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block">
           <span className="mb-1.5 block text-sm font-semibold text-ink">שם מלא *</span>

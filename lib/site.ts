@@ -816,7 +816,12 @@ export const differentiators: Differentiator[] = [
   {
     icon: "star",
     title: "מעל 20 שנה ניסיון",
-    text: "משנת 2005 — יחס אישי, אמינות, וביצוע מקצועי שהלקוחות חוזרים אליו וממליצים.",
+    // The clause "שהלקוחות חוזרים אליו וממליצים" was removed 2026-09-01: it asserts repeat
+    // custom and recommendations with nothing behind it. That is social proof, the same
+    // category as the three fabricated testimonials removed on 2026-08-17 — and this site
+    // has a permanent stop-ship on unsourced customer claims. It may return only as a real,
+    // attributed quote. "משנת 2005" itself is still 🔶 (business-facts §A, roadmap 1.8).
+    text: "משנת 2005 — יחס אישי, אמינות וביצוע מקצועי, עם עמידה בלוח הזמנים שסוכם.", // 🔶 confirm
   },
 ];
 
@@ -844,6 +849,20 @@ const priceOf = (slug: string): string => getService(slug)?.priceFrom ?? "הצע
 export function priceLabel(priceFrom: string | undefined): string {
   if (!priceFrom) return "הצעת מחיר";
   return priceFrom.startsWith("₪") ? `החל מ-${priceFrom}` : priceFrom;
+}
+
+/**
+ * Just the currency amount from a service's price — `"₪150 למ״ר"` → `"₪150"` — for compact
+ * display like the hero stat tiles, where the unit lives in the tile's own label.
+ *
+ * Returns `null` for a quote-only service so the caller can drop the tile instead of
+ * printing a sentence where a number belongs. Exists so nothing has to retype a price:
+ * the hero had `₪150`/`₪190` as string literals, re-introducing the very duplication bug
+ * `priceOf()` was written to kill (backlog §7.7).
+ */
+export function priceAmount(slug: string): string | null {
+  const match = getService(slug)?.priceFrom?.match(/^₪[\d,]+/);
+  return match ? match[0] : null;
 }
 
 export const faqs: Faq[] = [

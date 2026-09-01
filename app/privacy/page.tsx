@@ -64,14 +64,16 @@ export default function PrivacyPage() {
 
           <h2>זכויותיכם</h2>
           <p>
-            אתם רשאים לפנות אלינו בבקשה לעיין במידע שנאסף עליכם, לתקנו או למחקו, בכתובת {site.email}{" "}
-            או בטלפון {site.phoneDisplay}.
+            אתם רשאים לפנות אלינו בבקשה לעיין במידע שנאסף עליכם, לתקנו או למחקו, בכתובת{" "}
+            <span className="ltr">{site.email}</span> או בטלפון{" "}
+            <span className="ltr">{site.phoneDisplay}</span>.
           </p>
 
           <h2>יצירת קשר</h2>
           <p>
-            בכל שאלה בנוגע למדיניות זו ניתן לפנות אל {site.name} בטלפון {site.phoneDisplay} או
-            בדוא״ל {site.email}.
+            בכל שאלה בנוגע למדיניות זו ניתן לפנות אל {site.name} בטלפון{" "}
+            <span className="ltr">{site.phoneDisplay}</span> או בדוא״ל{" "}
+            <span className="ltr">{site.email}</span>.
           </p>
         </article>
       </Section>

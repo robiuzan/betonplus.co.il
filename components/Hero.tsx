@@ -1,10 +1,27 @@
 import { Container, Button } from "@/components/ui";
 import Icon from "@/components/Icon";
-import { site, telHref } from "@/lib/site";
+import { site, telHref, priceAmount } from "@/lib/site";
 
+// 🔶 confirm — "מעל 20 שנה ניסיון" (foundedYear 2005) and "ביטוח צד ג׳" are both
+// UNCONFIRMED (business-facts §A/§B, roadmap 1.6–1.8) and render above the fold on the
+// highest-traffic page. Kept pending the owner's answer, but marked so the register and the
+// copy agree; each either becomes a sourced trust asset or comes out.
 const chips = ["מעל 20 שנה ניסיון", "ביטוח צד ג׳", "עמידה בלוחות זמנים", "חיתוך נקי ושקט"];
 
 export default function Hero() {
+  // Derived, never retyped — the hero used to hard-code ₪150/₪190 as string literals, which
+  // is exactly the bug `priceOf()` was written to eliminate for the FAQ: a price edit in
+  // lib/site.ts would silently leave the homepage contradicting /pricing/.
+  const wallPrice = priceAmount("wall-sawing");
+  const corePrice = priceAmount("core-drilling");
+
+  const stats = [
+    ...(wallPrice ? [{ v: wallPrice, l: "ניסור מ-/מ״ר" }] : []),
+    ...(corePrice ? [{ v: corePrice, l: "קידוח מ-/מ׳" }] : []),
+    { v: "2005", l: "פעילים משנת" }, // 🔶 confirm — see the chips note above
+    { v: "גוש דן", l: "אזור הפעילות" },
+  ];
+
   return (
     <section className="hero-grad text-white">
       <Container className="grid items-center gap-10 py-16 sm:py-20 lg:grid-cols-[1.1fr_0.9fr]">
@@ -20,8 +37,12 @@ export default function Hero() {
               <Icon name="phone" className="h-5 w-5" />
               התקשרו <span className="ltr">{site.phoneDisplay}</span>
             </Button>
+            {/* The above-the-fold path to the form on the highest-traffic page, and the
+                only lead route GTM could not see — it was the site's single CTA with no
+                data-cta. */}
             <Button
               href="/contact/"
+              data-cta="hero-form"
               variant="outline"
               className="border-white/40 text-white hover:border-white"
             >
@@ -52,12 +73,7 @@ export default function Hero() {
               </div>
             </div>
             <div className="mt-6 grid grid-cols-2 gap-4">
-              {[
-                { v: "₪150", l: "ניסור מ-/מ״ר" },
-                { v: "₪190", l: "קידוח מ-/מ׳" },
-                { v: "2005", l: "פעילים משנת" },
-                { v: "גוש דן", l: "אזור הפעילות" },
-              ].map((s) => (
+              {stats.map((s) => (
                 <div key={s.l} className="rounded-xl bg-white/5 p-4">
                   <p className="font-heading text-2xl font-extrabold text-cta">{s.v}</p>
                   <p className="text-xs text-white/70">{s.l}</p>

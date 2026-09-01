@@ -8,7 +8,7 @@ import ServiceAreasSection from "@/components/ServiceAreasSection";
 import Faq from "@/components/Faq";
 import ContactSection from "@/components/ContactSection";
 import JsonLd from "@/components/JsonLd";
-import { pageMetadata, faqJsonLd, webSiteJsonLd } from "@/lib/seo";
+import { pageMetadata, webSiteJsonLd } from "@/lib/seo";
 import { site } from "@/lib/site";
 
 export const dynamic = "force-static";
@@ -28,7 +28,13 @@ export const metadata: Metadata = pageMetadata({
 export default function HomePage() {
   return (
     <>
-      <JsonLd data={[webSiteJsonLd(), faqJsonLd()]} />
+      {/*
+        No FAQPage here. The same six Q&A pairs render on /, /faq/ and /pricing/, and all
+        three used to emit their own FAQPage — three competing entities for identical
+        content. /faq/ is the canonical home (it carries all 16 questions); the visible
+        accordion stays on this page for readers, just without duplicate markup.
+      */}
+      <JsonLd data={[webSiteJsonLd()]} />
       <Hero />
       <TrustBar />
       <ServicesGrid />

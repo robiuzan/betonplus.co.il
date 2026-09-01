@@ -17,7 +17,7 @@ import {
   telHref,
   whatsappHref,
 } from "@/lib/site";
-import { pageMetadata, breadcrumbJsonLd, faqJsonLd } from "@/lib/seo";
+import { pageMetadata, breadcrumbJsonLd } from "@/lib/seo";
 
 export const dynamic = "force-static";
 
@@ -32,7 +32,13 @@ export default function PricingPage() {
   return (
     <>
       {/* FAQPage qualifies here: the full faqs array is rendered visibly below. */}
-      <JsonLd data={[breadcrumbJsonLd([{ name: "מחירון", path: "/pricing/" }]), faqJsonLd()]} />
+      {/*
+        No FAQPage here either — see the note on app/page.tsx. This page was the worst of
+        the three: it emitted the general FAQ array under a "שאלות נפוצות על מחירים"
+        heading, so four of the six questions marked up as pricing FAQs were not about
+        price at all. /faq/ owns the entity.
+      */}
+      <JsonLd data={[breadcrumbJsonLd([{ name: "מחירון", path: "/pricing/" }])]} />
       <PageHero
         title="מחירון ניסור וקידוח בטון"
         lead="מחירי פתיחה שקופים, והצעת מחיר מדויקת לאחר בדיקת היקף העבודה — תמיד ללא התחייבות."

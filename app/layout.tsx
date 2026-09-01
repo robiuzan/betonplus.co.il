@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { preload } from "react-dom";
 import { ogImageMeta } from "@ishub/site-kit";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -39,32 +38,28 @@ const gtmNoScript = gtmNoScriptSrc(manifest.analytics?.gtmId);
 const FONT_CSS =
   "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Heebo:wght@400;500;700;800;900&display=swap";
 
-/**
- * The **Hebrew subset** of each family — one variable file per family, covering every
- * weight we request. Preloading these removes a full round trip from the font critical
- * path: without it the browser only discovers them after fetching and parsing the Google
- * stylesheet. The page's LCP element is the Hebrew `<h1>`, so this is the LCP path.
+/*
+ * Font preloads REMOVED 2026-09-01.
  *
- * ⚠️ These URLs are version-pinned by Google (`/v28/`, `/v24/`) and will eventually go
- * stale. A stale preload is harmless — the stylesheet still loads the correct file, we
- * just waste one request — but it stops helping. `/qa-build-gate` §12 re-checks them
- * against the live stylesheet; refresh when it reports a miss.
- * Verified 200 on 2026-08-25: 12,036 B (Heebo) + 7,312 B (Assistant).
+ * Two hard-coded gstatic URLs used to be preloaded here. Google Fonts serves a **different
+ * file per user-agent class**, so a hard-coded pair can only ever match one class: measured
+ * live, the pair matched desktop Chrome and matched nothing on Android Chrome or iOS Safari.
+ * On every mobile browser the preload therefore downloaded ~19.3 KB that was parsed, found
+ * unreferenced, and discarded — pure waste on the majority of this site's traffic — while the
+ * stylesheet went on to fetch the real files anyway.
+ *
+ * It also never protected what it claimed to. The doc premise was "the LCP element is the
+ * Hebrew <h1>"; measurement says the LCP element is a **paragraph in Assistant** on every
+ * route (see docs/performance-guidelines.md §2 and backlog §10.4).
+ *
+ * Deleting is strictly better than a stale preload, but it is not the fix. The durable fix
+ * is self-hosting two Hebrew subset woff2 files, which removes the UA-splitting problem and a
+ * third-party origin from the critical path — pending an owner decision on adding font
+ * binaries to the repo. Do NOT reinstate a hard-coded gstatic preload in the meantime.
  */
-const HEBREW_FONT_FILES = [
-  "https://fonts.gstatic.com/s/heebo/v28/NGS6v5_NC0k9P9H0TbFzsQ.woff2",
-  "https://fonts.gstatic.com/s/assistant/v24/2sDcZGJYnIjSi6H75xkzamW5O7w.woff2",
-];
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = JSON.stringify(localBusinessJsonLd()).replace(/</g, "\\u003c");
-
-  // React 19's resource API rather than a <link rel="preload"> in JSX: React hoists such a
-  // link into <head> but ALSO leaves the original where it was rendered, emitting every
-  // tag twice (observed here — 4 tags for 2 fonts). preload() registers each resource once.
-  HEBREW_FONT_FILES.forEach((href) =>
-    preload(href, { as: "font", type: "font/woff2", crossOrigin: "anonymous" }),
-  );
 
   return (
     <html lang="he-IL" dir="rtl">

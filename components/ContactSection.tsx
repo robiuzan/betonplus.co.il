@@ -54,9 +54,7 @@ export default function ContactSection({ tint = "mist" as const }: { tint?: "mis
                   </span>
                   <span>
                     <span className="block text-xs text-muted">{d.label}</span>
-                    <span className="font-heading font-bold" dir="ltr">
-                      {d.value}
-                    </span>
+                    <span className="ltr font-heading font-bold">{d.value}</span>
                   </span>
                 </a>
               </li>
