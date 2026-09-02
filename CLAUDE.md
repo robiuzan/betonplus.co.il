@@ -203,7 +203,10 @@ See the `rtl-hebrew` skill for the full rule set.
 - **Images:** the site ships almost none — `public/brand/` plus the CSS gradient hero. There is no
   photography of real work, which is the largest trust gap on the site. `images.unoptimized` is on, so
   any content imagery added needs a real `srcset` strategy (see `/performance-web-vitals`). Every
-  meaningful image needs a Hebrew `alt`; decorative gets `alt=""`.
+  meaningful image needs a Hebrew `alt`; decorative gets `alt=""`. The measured slot inventory is the
+  `page-imagery` skill; the `image-art-director` agent briefs the shots into
+  [docs/photo-briefs/](docs/photo-briefs/). **Work photography is owner-supplied and real — never
+  stock, never generated** ([docs/eeat-and-trust.md](docs/eeat-and-trust.md) §6).
 
 ---
 

@@ -51,11 +51,14 @@ them, not the other way round. When a doc and the code disagree, fix the code. W
 | Security                | `security-auditor`       | `/web-security-headers`                                     |
 | Code correctness        | `ts-react-reviewer`      | `/react-components`, `/nextjs-app-router`, `/web-design-ui` |
 | Hebrew / RTL copy       | —                        | `/rtl-hebrew`, `hebrew-copywriter` (writes)                 |
+| Imagery                 | —                        | `/page-imagery`, `image-art-director` (writes briefs)       |
 | Multilingual            | —                        | `/i18n-multilingual`                                        |
 | Tracking                | —                        | `/tracking-analytics`                                       |
 | Release                 | —                        | `/qa-build-gate`, `/deploy-betonplus`                       |
 
-Building UI is `rtl-frontend-engineer`; writing Hebrew copy is `hebrew-copywriter`. Every other agent
+Building UI is `rtl-frontend-engineer`; writing Hebrew copy is `hebrew-copywriter`; briefing
+photography is `image-art-director`, which writes into [photo-briefs/](photo-briefs/) and never into
+the site. Every other agent
 listed above is **read-only by design** — an auditor that edits its own findings cannot be trusted to
 report them.
 
