@@ -35,51 +35,51 @@ The site-wide `GeneralContractor` node is emitted once in `app/layout.tsx` — n
 
 ## What's already right — don't regress it
 
-- All 5 service pages emit `Service` + `BreadcrumbList`.
-- 14 of 15 routes emit `BreadcrumbList`; the homepage correctly does not (it is the root).
-- `/` and `/faq/` already emit `FAQPage`.
-- The breadcrumb JSON-LD is built from **the same crumb data `PageHero` renders**, so the markup and
-  the graph can't drift. Keep that coupling in any new page.
+- The site-wide `GeneralContractor` node from the manifest (layout), the `WebSite` node on `/`, and
+  page-type nodes everywhere: `CollectionPage` (`/services/`, `/service-areas/`, `/guides/`),
+  `AboutPage` (`/about/`, with the owner's `Person` `#owner`), `ContactPage` (`/contact/`),
+  `WebPage` with `dateModified` on the service pages.
+- All 5 service pages emit `Service` + `WebPage` (`author: {@id #owner}` + the `Person` node on the
+  same page, matching the visible `<Byline>`) + `BreadcrumbList` + their own `FAQPage`.
+- Every article emits `Article` (author, publisher, dates from the article's own fields) + `Person` +
+  `BreadcrumbList` + `FAQPage` derived from its `faq` block (`lib/articles`).
+- `BreadcrumbList` on every nested route (18 of 19 content routes; the homepage correctly does not).
+  `breadcrumbJsonLd()` prepends בית itself, because `PageHero` renders that crumb outside the
+  `crumbs` prop — the two surfaces cannot drift.
+- `FAQPage` on exactly the routes that own a distinct Q&A set: `/faq/` (16), the 5 service pages, the
+  articles. **Not** on `/` or `/pricing/` — removed 2026-09-01 because three URLs marking up the same
+  six Q&As competed for one entity.
 - No `Review` or `AggregateRating` anywhere. This is correct and load-bearing — see the gating rules.
 
 ## The gaps
 
-| Route                          | Missing                                     | Backlog |
-| ------------------------------ | ------------------------------------------- | ------- |
-| `/`                            | `WebSite` only — `FAQPage` already ships    | §4.1    |
-| `/pricing/`                    | `FAQPage` (the answers are visible)         | §4.2    |
-| `/pricing/`                    | `OfferCatalog` from the visible price table | §4.3    |
-| `/services/` `/service-areas/` | `CollectionPage`                            | §4.4    |
-| `/about/` `/contact/`          | `AboutPage` / `ContactPage`                 | §4.4    |
-
-`FAQPage` already ships on `/` and `/faq/` (`app/page.tsx:27`). The cheapest remaining win is the same
-call on `/pricing/`, which renders all six answers unconditionally via `components/Faq.tsx` but emits no
-markup for them — so the markup would match visible content exactly.
-
-```tsx
-<JsonLd data={faqJsonLd()} /> // defaults to the global faqs array
-```
+| Route       | Missing                                                                                  | Backlog |
+| ----------- | ---------------------------------------------------------------------------------------- | ------- |
+| `/pricing/` | `OfferCatalog` — deliberately withheld while two prices are 🔶 and three are non-numeric | §4.3    |
+| site-wide   | `sameAs` is `[]` — needs the Google Business Profile URL in the roster                   | §4.5    |
+| site-wide   | `Review`/`AggregateRating` — only after real, publicly verifiable reviews exist          | §7      |
 
 ## Per route type
 
-| Route                 | Emit                                                                   |
-| --------------------- | ---------------------------------------------------------------------- |
-| `/`                   | `GeneralContractor` (layout) + `WebSite` + `FAQPage`                   |
-| `/services/{slug}/`   | `Service` + `BreadcrumbList` (+ `FAQPage` once per-service FAQs exist) |
-| `/services/`          | `CollectionPage` + `BreadcrumbList`                                    |
-| `/pricing/`           | `OfferCatalog` + `FAQPage` + `BreadcrumbList`                          |
-| `/faq/`               | `FAQPage` + `BreadcrumbList`                                           |
-| `/service-areas/`     | `CollectionPage` + `BreadcrumbList`                                    |
-| `/about/` `/contact/` | `AboutPage` / `ContactPage` + `BreadcrumbList`                         |
-| `/reviews/`           | **nothing** — see rule 1                                               |
-| `/locations/{slug}/`  | `Service` with `areaServed` + `BreadcrumbList` (silo not built)        |
+| Route                 | Emit                                                                                   |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| `/`                   | `GeneralContractor` (layout) + `WebSite` — no `FAQPage` (owned by `/faq/`)             |
+| `/services/{slug}/`   | `Service` + `WebPage`(author, dateModified) + `Person` + `BreadcrumbList` + `FAQPage`  |
+| `/services/`          | `CollectionPage` + `BreadcrumbList`                                                    |
+| `/pricing/`           | `WebPage` + `BreadcrumbList` (`OfferCatalog` after 1.9; no `FAQPage` since 2026-09-01) |
+| `/faq/`               | `FAQPage` (16 visible questions) + `BreadcrumbList`                                    |
+| `/guides/`            | `CollectionPage` + `BreadcrumbList`                                                    |
+| `/guides/{slug}/`     | `Article` + `Person` + `BreadcrumbList` + `FAQPage` from the `faq` block               |
+| `/service-areas/`     | `CollectionPage` + `BreadcrumbList`                                                    |
+| `/about/` `/contact/` | `AboutPage` / `ContactPage` + `BreadcrumbList`                                         |
+| `/locations/{slug}/`  | `Service` with `areaServed` + `BreadcrumbList` (silo not built)                        |
 
 ## Location pages, when the silo is built
 
 ⚠️ **The builders can't express this yet.** The kit is
 `serviceJsonLd(m, { name, description?, slug?, url? })` — it derives `serviceType` from `name` and
 hardcodes `areaServed` from `m.schema.areaServed` as an `AdministrativeArea`
-(`@ishub/site-kit/src/seo/index.ts:118-134`); `lib/seo.ts:71-79` narrows it to a single `slug` string.
+(`@ishub/site-kit/src/seo/index.ts:118-134`); `serviceJsonLd()` in `lib/seo.ts` narrows it to a single `slug` string.
 A per-city `areaServed` means **extending the kit first** — not hand-assembling a node around it.
 Target once extended:
 
@@ -93,7 +93,7 @@ serviceJsonLd(manifest, {
 `גוש דן` and `השרון` are regions — typing a region as a `City` is a factual error in the graph.
 
 **Never emit a `GeneralContractor`/`LocalBusiness` node per location.** One operation means one node.
-Sixteen of them implies sixteen premises that don't exist and is a recognised local-spam pattern.
+Fourteen of them would imply fourteen premises that don't exist and is a recognised local-spam pattern.
 
 ## The gating rules — correctness, not preference
 
@@ -105,7 +105,8 @@ Sixteen of them implies sixteen premises that don't exist and is a recognised lo
 2. **Schema must match visible content.** A `FAQPage` question not rendered on the page is a
    violation. `Offer` values must equal the visible price table. Never mark up hidden content.
 3. **`FAQPage` only where FAQs are visible.** `/`, `/faq/` and `/pricing/` all render the full `faqs`
-   array unconditionally, so all three qualify — the first two already emit it. If `components/Faq.tsx` ever becomes a conditionally
+   array unconditionally, so all three _qualify_ — but since 2026-09-01 only `/faq/` emits it, because
+   three URLs marking up the same six Q&As competed for one entity. One `FAQPage` per distinct Q&A set. If `components/Faq.tsx` ever becomes a conditionally
    rendering accordion, the markup stops qualifying — keep the answers in the DOM.
 4. **No dangling `@id`s.** `serviceJsonLd` wires `provider` to the business `@id`; don't invent refs.
 5. **`foundingDate` follows `foundedYear`.** The manifest says 2005, so the field is present. It is
@@ -122,6 +123,7 @@ Sixteen of them implies sixteen premises that don't exist and is a recognised lo
 
 - [ ] Every nested route emits `BreadcrumbList` built from the same array the UI renders.
 - [ ] Every `FAQPage` question is visible on the page.
+- [ ] `author` on a `WebPage`/`Article` node only where a visible byline names the same person, with the `Person` node emitted on that page.
 - [ ] `Offer` values equal the rendered price table.
 - [ ] No `Review` or `AggregateRating` without a public source URL.
 - [ ] The business node appears exactly once, from the layout.
@@ -131,7 +133,7 @@ Sixteen of them implies sixteen premises that don't exist and is a recognised lo
 
 ```bash
 grep -rL 'application/ld+json' out --include=index.html          # pages with no schema
-grep -rl 'BreadcrumbList' out --include=index.html | wc -l       # expect 14
+grep -rl 'BreadcrumbList' out --include=index.html | wc -l       # expect 18
 grep -rl 'aggregateRating\|"@type": *"Review"' out --include=index.html   # expect none
 ```
 

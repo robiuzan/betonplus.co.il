@@ -5,6 +5,11 @@ description: Build or extend the location silo that doesn't exist yet — servic
 
 # Build or extend the location silo
 
+> ⚠️ **City slugs must be ASCII** (`tel-aviv`, `ramat-gan`), not the Hebrew values currently in
+> `serviceAreas[].slug`: the static export of Next 16.2.9 `btoa`-encodes dynamic params and aborts on
+> Hebrew (`InvalidCharacterError`, hit 2026-09-06 on the guides hub). Change the `slug` values to ASCII
+> before building `/locations/[city]/`; `prefixed`/`name` carry the Hebrew.
+
 **Read this first — two gates before any of this ships:**
 
 1. ✅ **The 5 service pages cleared the 450-word floor** in wave 2 (456–574 unique words each). This

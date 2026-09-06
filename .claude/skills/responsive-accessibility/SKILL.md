@@ -1,6 +1,6 @@
 ---
 name: responsive-accessibility
-description: WCAG 2.1 AA and Israeli IS 5568 compliance for betonplus — the verified-passing brand contrast and the one pairing that would fail, the mobile menu with no focus trap or Escape handler, form labelling and error announcement, 44px tap targets, semantic landmarks and one H1, LTR isolation for phone numbers, reduced motion, and keeping /accessibility/ truthful. Use before shipping or when auditing accessibility. Triggers: "accessibility pass", "WCAG", "contrast check", "tap targets", "keyboard navigation", "נגישות", "IS 5568".
+description: WCAG 2.1 AA and Israeli IS 5568 compliance for betonplus — the verified-passing brand contrast and the one pairing that would fail, the mobile menu (Escape closes and returns focus; deliberately no trap), form labelling and error announcement, 44px tap targets, semantic landmarks and one H1, LTR isolation for phone numbers, reduced motion, and keeping /accessibility/ truthful. Use before shipping or when auditing accessibility. Triggers: "accessibility pass", "WCAG", "contrast check", "tap targets", "keyboard navigation", "נגישות", "IS 5568".
 ---
 
 # Accessibility — WCAG 2.1 AA + IS 5568
@@ -81,11 +81,10 @@ be established _before_ the photos in `docs/business-facts.md` §D arrive:
 
 ## Tap targets and mobile
 
-- 44×44px minimum for anything tappable. ⚠️ **`.btn` does not clear this on its own.**
-  `app/globals.css:68-83` sets `padding: 0.8rem 1.5rem` with `line-height: 1` and no `font-size`, so a
-  **text-only** button computes to 2 × 12.8 + 16 = **41.6px** tall. It only reaches 44px when it
-  contains an `h-5` (20px) icon. Text-only buttons — and the header button, which overrides the padding
-  to `py-2.5` — need an explicit `min-height: 44px`. Measure; don't assume the padding covers it.
+- 44×44px minimum for anything tappable. ✅ `.btn` carries `min-height: 2.75rem` (44px) in
+  `app/globals.css` since 2026-08-25 — padding alone computed to 41.6px for a text-only button. The
+  footer conversion links got the same treatment 2026-09-01. **Do not regress:** a new tappable element
+  that is not a `.btn` needs its own explicit minimum. Measure; don't assume the padding covers it.
 - Test at 360px, 768px and ≥1024px. **No horizontal scroll at any width** — common RTL offenders are
   fixed widths, negative margins, oversized images and `100vw` plus padding.
 - Text must reflow to 320px without horizontal scroll; zoom to 200% without loss of content.
@@ -94,9 +93,9 @@ be established _before_ the photos in `docs/business-facts.md` §D arrive:
 
 ## Motion
 
-`app/globals.css` sets `scroll-behavior: smooth` on `html`. **Confirm a `prefers-reduced-motion` reset
-exists** — if it doesn't, add one; smooth scrolling is a vestibular trigger and this is the one motion
-behaviour the site currently has.
+`app/globals.css` sets `scroll-behavior: smooth` on `html` **and** carries a `prefers-reduced-motion: reduce`
+reset (since 2026-08-25) that returns it to `auto` and removes decorative transitions. Keep both; any
+new animation must live under the same media query.
 
 ## Checklist
 

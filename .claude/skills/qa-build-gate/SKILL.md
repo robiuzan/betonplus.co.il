@@ -26,8 +26,8 @@ unformatted file means something bypassed it.
 ## 2. Route count
 
 ```bash
-find out -name index.html | wc -l          # expect 17 (14 content + /thank-you/ + /404/ + /_not-found/)
-grep -c '<url>' out/sitemap.xml            # expect 14
+find out -name index.html | wc -l          # expect 22 (19 content incl. /guides/ + 4 articles, + /thank-you/ + /404/ + /_not-found/)
+grep -c '<url>' out/sitemap.xml            # expect 19 (9 static + 5 services + hub + 4 articles; Hebrew locs percent-encoded)
 test -f out/robots.txt && echo ok
 test -f out/_headers && test -f out/_redirects && echo ok   # edge files ship with the export
 ```
@@ -72,8 +72,10 @@ Expect no output.
 
 ```bash
 grep -rL 'application/ld+json' out --include=index.html   # expect empty
-grep -rl 'BreadcrumbList' out --include=index.html | wc -l  # expect 13 (all content but / and /thank-you/)
+grep -rl 'BreadcrumbList' out --include=index.html | wc -l  # expect 18 (all content but / and /thank-you/)
 grep -rl 'aggregateRating\|"@type": *"Review"' out --include=index.html  # expect NONE
+grep -rL '"author":{"@id"' out/services out/guides --include=index.html      # expect only the hub index — bylines (roadmap 5.3)
+grep -rl 'FAQPage' out --include=index.html | wc -l                          # expect 10 (/faq/ + 5 services + 4 articles; never / or /pricing/)
 ```
 
 Any `Review` or `AggregateRating` without a verifiable public source is a **stop-ship**, not a warning
@@ -126,31 +128,18 @@ floor in waves 2–4 (service pages 456–574, `/faq/` 850, `/pricing/` 602, `/a
 434, `/services/` 377). Measure **unique-to-page** words — strip tags, then subtract the vocabulary
 common to every page — because raw counts flatter a shared template.
 
-## 12. Font preloads still match Google's current URLs
+## 12. No hard-coded font preloads
 
-`app/layout.tsx` preloads the **Hebrew subset** woff2 of Heebo and Assistant by version-pinned
-URL (`/v28/`, `/v24/`). Google eventually bumps those. A stale preload is harmless — the stylesheet
-still fetches the right file — but it stops helping, and the Hebrew `<h1>` is the LCP element.
-
-```bash
-# every preloaded URL must still appear in the live stylesheet
-CSS=$(curl -sS -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126 Safari/537.36" \
-  "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Heebo:wght@400;500;700;800;900&display=swap")
-for u in $(grep -o 'https://fonts.gstatic.com[^"]*\.woff2' out/index.html | sort -u); do
-  echo "$CSS" | grep -q "$u" && echo "ok    $u" || echo "STALE $u"
-done
-```
-
-Any `STALE` line: re-run the fetch, take the URLs from the `U+0590` (Hebrew) `@font-face` blocks,
-and update `HEBREW_FONT_FILES`.
-
-Also assert there is no duplication — React hoists a `<link rel="preload">` written in JSX _and_
-leaves the original, emitting each tag twice. The layout uses `preload()` from `react-dom` to avoid
-that; expect exactly **2** woff2 preloads per page:
+Two gstatic `woff2` preloads shipped 2026-08-25 and were **removed 2026-09-01**: Google Fonts serves a
+different file per user-agent class, so a fixed pair matched desktop only and cost every mobile
+visitor ~19 KB of unused downloads. The correct state is **zero** preloads until the fonts are
+self-hosted under a stable URL.
 
 ```bash
-grep -o '<link[^>]*rel="preload"[^>]*woff2[^>]*>' out/index.html | wc -l   # expect 2
+grep -o '<link[^>]*rel="preload"[^>]*woff2[^>]*>' out/index.html | wc -l   # expect 0
 ```
+
+A non-zero count means someone reinstated the desktop-only preload — fail the gate.
 
 ## 13. Live checks after deploy
 
@@ -160,8 +149,9 @@ curl -sS https://betonplus.co.il/robots.txt | head -40
 curl -o /dev/null -w '%{http_code}\n' "https://www.googletagmanager.com/gtm.js?id=GTM-KWGGH438"
 ```
 
-The GTM check must return **200**. The `robots.txt` will show Cloudflare's managed AI-crawler block —
-that is expected and is a zone setting, not a repo bug (`/aeo-answer-content`).
+The GTM check must return **200**. The live `robots.txt` must match `out/robots.txt` **byte for byte** —
+Cloudflare's managed AI-crawler block is gone since 2026-08-25, and a zone change could silently
+re-inject it with no repo change (`/aeo-answer-content`). Diff, don't assume.
 
 ## 14. Auditor sweep
 

@@ -33,7 +33,7 @@ export type Block =
   | { kind: "cta"; text: string };
 
 export interface Article {
-  /** Hebrew slug, hyphen-separated, NFC — becomes `/מדריכים/<slug>/`. */
+  /** ASCII slug, hyphen-separated — becomes `/guides/<slug>/`. Hebrew slugs break Next 16's static export (see lib/articles/index.ts). */
   slug: string;
   /** The question, verbatim — it is the `<h1>` and the `Article.headline`. */
   title: string;

@@ -5,8 +5,16 @@
 import type { Metadata } from "next";
 import * as kit from "@ishub/site-kit/seo";
 import { site, services, faqs, manifest, owner, ownerJobTitle, updatedFor } from "@/lib/site";
+import type { Article } from "@/lib/articles/types";
 
-const absolute = (path: string): string => `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
+/**
+ * Absolute, percent-encoded URL. Every route is ASCII today (Hebrew dynamic segments break
+ * Next 16's static export — see lib/articles/index.ts), so `encodeURI` is a no-op; it stays so
+ * that a non-ASCII path, if one is ever added, yields the same bytes in the canonical, the OG
+ * url, every `@id` here and the sitemap `<loc>`.
+ */
+const absolute = (path: string): string =>
+  `${site.url}${encodeURI(path.startsWith("/") ? path : `/${path}`)}`;
 
 // Build-time-generated share image (app/opengraph-image.tsx). Referenced explicitly so every
 // page — not just the root — emits a single, deterministic og:image / twitter:image.
@@ -170,6 +178,30 @@ function pageNode(
     ...(opts.author ? { author: { "@id": `${site.url}/#owner` } } : {}),
     isPartOf: { "@id": `${site.url}/#website` },
     about: { "@id": `${site.url}/#business` },
+  };
+}
+
+/**
+ * Article node for a knowledge-hub page (docs/schema-graph.md §6). `author` is the owner's
+ * Person node — the page must emit `personJsonLd()` alongside and render a visible
+ * `<Byline>`; `publisher` is the kit-emitted business node. Dates are the article's own
+ * fields, never build time. `FAQPage` is emitted separately from the article's `faq` block.
+ */
+export function articleJsonLd(a: Article, path: string): JsonLd {
+  return {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "@id": `${absolute(path)}#article`,
+    headline: a.title,
+    description: a.description,
+    image: absolute("/opengraph-image"),
+    datePublished: a.datePublished,
+    dateModified: a.dateModified,
+    inLanguage: "he-IL",
+    author: { "@id": `${site.url}/#owner` },
+    publisher: { "@id": `${site.url}/#business` },
+    mainEntityOfPage: { "@id": absolute(path) },
+    isPartOf: { "@id": `${site.url}/#website` },
   };
 }
 

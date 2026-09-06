@@ -92,9 +92,10 @@ Every conversion element is instrumented today. Keep this table true — a new C
 | Form                 | `form-submit`, `form-whatsapp-fallback`                                          |
 | Thank-you            | `thankyou-call`, `thankyou-whatsapp`                                             |
 | 404                  | `notfound-call`, `notfound-whatsapp`, `notfound-home`                            |
+| Articles             | `article-call`, `article-whatsapp` (the closing `cta` block)                     |
 | Contact section      | `contact-call`, `contact-whatsapp`, `contact-email` — per-channel, from the data |
 
-24 unique values, each used exactly once in source (`grep -rhoE 'data-cta="[^"]+"' app components \| sort -u`).
+26 unique values, each used exactly once in source (`grep -rhoE 'data-cta="[^"]+"' app components \| sort -u`).
 
 `components/ui.tsx` `Button` accepts `data-cta` as a first-class prop. Use it; do not wrap a raw `<a>`.
 

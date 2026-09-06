@@ -21,8 +21,9 @@ coverage claims.
 
 ## What to audit
 
-1. **The structural gap.** There is no `/locations/` route. `lib/site.ts` holds 14 area names as
-   flat strings and `ServiceAreasSection` renders them as chips that link nowhere. For a trade chosen
+1. **The structural gap.** There is no `/locations/` route. `lib/site.ts` holds 14 areas as a typed
+   `ServiceArea[]` (`slug`/`kind`/`prefixed`; Hebrew slugs reserved for `/locations/[city]/`, since
+   2026-08-31) and `ServiceAreasSection` renders them as deliberately unlinked chips. For a trade chosen
    by proximity, this is the largest missing surface — and the easiest to get catastrophically wrong.
    Your central judgement is **whether and how to build it**, not whether it would be nice to have.
 2. **Coverage — settled 2026-08-30, and it stays settled.** The area is **גוש דן והמרכז**: 14 cities,

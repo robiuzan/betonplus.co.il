@@ -66,8 +66,8 @@ Repeated multi-utility patterns are defined as real classes, not copy-pasted uti
 | `.eyebrow`                                                            | the small steel-blue kicker above a section heading        |
 
 `.hero-grad` (the gradient hero backdrop, no image asset) is **not** in this block — it is a top-level
-unlayered rule at `app/globals.css:148`, after the `@layer components { … }` block that spans lines
-58–145. Layer membership affects cascade order, so put a new utility-composed class _inside_ the block
+unlayered rule at `app/globals.css:158`, after the `@layer components { … }` block that spans lines
+58–155. Layer membership affects cascade order, so put a new utility-composed class _inside_ the block
 and keep standalone visual treatments outside it, matching what's there.
 
 **When to add a class here versus using utilities:** if the same 4+ utility combination appears in
@@ -104,11 +104,6 @@ markup — a hand-rolled button will miss the focus ring, the tap target, or the
 Heebo for headings, Assistant for body, both loaded by `<link>` in `app/layout.tsx`. Headings get
 `font-heading`, weight 800, `text-wrap: balance` — set globally in the `@layer base` block, so a new
 `<h2>` inherits it without classes. Don't restate what base already applies.
-
-## Ignore these files
-
-`app/enrich.css` is part of the abandoned WordPress layer and is imported by nothing. Don't extend it,
-don't copy its patterns (it contains `.text-left` overrides that violate the RTL rules).
 
 ## Checklist
 

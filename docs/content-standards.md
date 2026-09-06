@@ -16,7 +16,7 @@ CTA banner).
 | Location page                           | 350   | — the silo does not exist yet                                                      |
 | Index (`/services/`, `/service-areas/`) | 250   | ✅ 377 / 434 unique words (waves 3–4)                                              |
 | `/pricing/` `/about/` `/faq/`           | 300   | ✅ 602 / 525 / 850 unique words (waves 3–4)                                        |
-| Article (`/מדריכים/`)                   | 900   | — no editorial surface exists yet                                                  |
+| Article (`/guides/`)                    | 900   | ✅ hub + 4 articles shipped 2026-09-06, each over the floor (`lib/articles/`)      |
 | Legal pages                             | none  | ✅ `/privacy/`, `/accessibility/` are fine as they are                             |
 
 Word count alone is not the bar — **generic reassurance does not count toward it.** "מקצועיים,

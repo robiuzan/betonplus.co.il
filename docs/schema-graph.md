@@ -49,7 +49,7 @@ are ASCII, so escaping is a non-issue here — but keep the property if a Hebrew
 | `/thank-you/`                 | nothing — noindex conversion page                                                     | ✅ intentionally bare                                                                                           |
 | `/privacy/` `/accessibility/` | `BreadcrumbList`                                                                      | ✅                                                                                                              |
 | `/locations/{slug}/` (future) | `Service` + `areaServed` + `BreadcrumbList`                                           | — silo doesn't exist                                                                                            |
-| `/מדריכים/{slug}/` (future)   | `Article` + `BreadcrumbList` + `FAQPage`                                              | — hub doesn't exist                                                                                             |
+| `/guides/{slug}/`             | `Article` + `Person` + `BreadcrumbList` + `FAQPage` (from the `faq` block)            | ✅ shipped 2026-09-06 (`articleJsonLd()` in `lib/seo.ts`)                                                       |
 
 **Verified 2026-08-17 (post wave 1):** all 14 content routes carry at least one `ld+json` block;
 13 of 14 carry `BreadcrumbList` (the homepage correctly does not — it is the root; `/thank-you/` is

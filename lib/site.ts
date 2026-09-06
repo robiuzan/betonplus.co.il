@@ -93,6 +93,7 @@ export const navItems: NavItem[] = [
   { label: "אזורי שירות", href: "/service-areas/" },
   { label: "אודות", href: "/about/" },
   { label: "שאלות נפוצות", href: "/faq/" },
+  { label: "מדריכים", href: "/guides/" },
   { label: "צור קשר", href: "/contact/" },
 ];
 
@@ -924,6 +925,8 @@ export const staticRoutes: string[] = [
   "/contact/",
   "/privacy/",
   "/accessibility/",
+  // The knowledge hub index; article URLs come from `articles` in lib/articles (sitemap.ts).
+  "/guides/",
 ];
 
 /**
@@ -946,6 +949,7 @@ export const routeUpdated: Record<string, string> = {
   "/contact/": "2026-08-17",
   "/privacy/": "2026-06-15",
   "/accessibility/": "2026-06-15",
+  "/guides/": "2026-09-06",
   // All five service pages were rewritten to depth in wave 2.
   "/services/wall-sawing/": "2026-08-17",
   "/services/core-drilling/": "2026-08-17",

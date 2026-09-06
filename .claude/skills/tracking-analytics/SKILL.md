@@ -13,7 +13,23 @@ container by a RegEx table on `{{Page Hostname}}`. Consequences:
 - Changing container config affects **every fleet site**, not just betonplus. Never edit a shared
   trigger or variable to fix one site — add a hostname condition.
 - betonplus's GA4 property is resolved in the container, not in this repo. `analytics.ga4MeasurementId`
-  being `null` locally is expected; the property still has to exist (backlog §13.3).
+  (`G-VMVP7XQKMG`, in the roster and synced to `site.config.json`) is record-keeping — nothing in the
+  repo reads it. The live `gtm.js` maps `betonplus\.co\.il---
+  name: tracking-analytics
+  description: GTM, GA4 and conversion events for betonplus on the shared Israeli fleet container GTM-KWGGH438 — head placement, hostname-based GA4 routing inside the container, the data-cta inventory and its gaps, lead_submit, thank-you-URL conversions, Search Console verification drift, and the mandatory gtm.js 200-check whenever a container id changes. Use when turning on analytics or when conversions are not being recorded. Triggers: "set up GTM", "GA4", "track calls", "conversion tracking not firing", "Search Console", "container id".
+
+---
+
+# Tracking & analytics
+
+## The container is shared — this changes everything
+
+`GTM-KWGGH438` is **one container for all ~10 Israeli fleet domains**, with GA4 resolved _inside_ the
+container by a RegEx table on `{{Page Hostname}}`. Consequences:
+
+- Changing container config affects **every fleet site**, not just betonplus. Never edit a shared
+  trigger or variable to fix one site — add a hostname condition.
+  → that property (verified 2026-09-06).
 - The container id lives in the **roster manifest**, not `site.config.json` directly.
 
 ## The 200-check — non-negotiable
@@ -32,13 +48,12 @@ unchased. Run this check any time an id changes, and again after deploy.
 
 Verified 2026-08-16: `GTM-KWGGH438` returns 200 and is present in the live HTML of betonplus.co.il.
 
-## Head placement (backlog §13.1)
+## Head placement (backlog §13.1) — done
 
-`app/layout.tsx:51` renders the GTM script as the **first child of `<body>`**. Google's own install
-requires `<head>`; body placement delays container load and can miss early events.
-
-This layout has no explicit `<head>` element — React 19 hoists the `<link>` tags on their own. Adding
-the script to a real `<head>` is the fix; keep the `<noscript>` iframe in `<body>`, where it belongs.
+`app/layout.tsx` renders the GTM loader inside an **explicit `<head>`** (since 2026-08-25). React 19
+hoists `<link>` tags on its own but does **not** hoist an inline `dangerouslySetInnerHTML` script, so
+the explicit `<head>` is what puts the snippet where Google's install requires it. The `<noscript>`
+iframe stays in `<body>`.
 
 ```tsx
 <head>{gtmHead && <script id="gtm-init" dangerouslySetInnerHTML={{ __html: gtmHead }} />}</head>
@@ -57,15 +72,20 @@ for them**, which is why the attribute is load-bearing. Convention: `{location}-
 
 **Coverage is complete as of 2026-08-17** (backlog §13.2). The full inventory:
 
-| Surface          | Attributes                                                                |
-| ---------------- | ------------------------------------------------------------------------- |
-| Header / Hero    | `header-call` · `hero-call`                                               |
-| Service sidebar  | `sidebar-call` · `sidebar-whatsapp` · `sidebar-form`                      |
-| Contact section  | `contact-call` · `contact-whatsapp` · `contact-email`                     |
-| Form             | `form-submit` · `form-whatsapp-fallback`                                  |
-| Thank-you        | `thankyou-call` · `thankyou-whatsapp`                                     |
-| Footer           | `footer-call` · `footer-whatsapp` · `footer-email`                        |
-| Sticky bar / CTA | `sticky-call` · `sticky-whatsapp` · `finalcta-call` · `finalcta-whatsapp` |
+| Surface          | Attributes                                                                                                                                      |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| Header / Hero    | `header-call` · `hero-call` · `hero-form`                                                                                                       |
+| Service sidebar  | `sidebar-call` · `sidebar-whatsapp` · `sidebar-form`                                                                                            |
+| Pricing          | `pricing-call` · `pricing-whatsapp` · `pricing-form`                                                                                            |
+| Contact section  | `contact-call` · `contact-whatsapp` · `contact-email`                                                                                           |
+| Form             | `form-submit` · `form-whatsapp-fallback`                                                                                                        |
+| Thank-you        | `thankyou-call` · `thankyou-whatsapp`                                                                                                           |
+| 404              | `notfound-call` · `notfound-whatsapp` · `notfound-home`                                                                                         |
+| Articles         | `article-call` · `article-whatsapp` (the closing `cta` block)                                                                                   |
+| Footer           | `footer-call` · `footer-whatsapp` · `footer-email`                                                                                              |
+| Sticky bar / CTA | `sticky-call` · `sticky-whatsapp` (mobile bar) · `bubble-whatsapp` (desktop bubble, renamed 2026-08-31) · `finalcta-call` · `finalcta-whatsapp` |
+
+26 unique values, each used once in source (`grep -rhoE 'data-cta="[^"]+"' app components | sort -u`).
 
 A new CTA without an attribute is permanently invisible — audit before shipping:
 
@@ -86,14 +106,17 @@ grep -rn 'href={telHref}\|href={whatsappHref}' components app | grep -v 'data-ct
 
 ## GA4 and Search Console
 
-- **GA4 property** for betonplus.co.il: `analytics.ga4MeasurementId` is `null` in the roster. Once the
-  property exists, the measurement id goes in the roster manifest and the container's hostname table.
-- Mark `lead_submit`, call clicks and WhatsApp clicks as **Key events** in GA4, or they won't appear as
-  conversions.
+- **GA4 property** for betonplus.co.il: `G-VMVP7XQKMG` — in the roster since 2026-08-30, synced to
+  `site.config.json` 2026-09-06, and routed by hostname in the live container, so **page views flow**.
+- **The container has no event tags** (verified 2026-09-06): no GA4 Event tag, no Custom Event trigger,
+  no click trigger, no `data-cta` variable. `lead_submit`, `lead_fallback`, `form_error` (all pushed by
+  `ContactForm`) and every CTA click stop at `dataLayer`. Add: a GA4 Event tag on Custom Event triggers
+  for the three events, and a link-click trigger + Auto-Event Variable reading `data-cta` for
+  `cta_click`; publish; then mark `lead_submit` and the `/thank-you/` page view as **Key events**.
 - **Search Console:** resolved 2026-08-17 — the token lives in the roster manifest
   (`analytics.googleSiteVerification`), synced to `site.config.json`, read from the manifest in
-  `app/layout.tsx` (renders nothing when null, so clones don't inherit it). Next step: submit
-  `https://betonplus.co.il/sitemap.xml`.
+  `app/layout.tsx` (renders nothing when null, so clones don't inherit it). Sitemap submitted
+  2026-09-03 (14 URLs, 0 errors); resubmit after the guides hub ships (19 URLs).
 
 ## Verifying a deploy
 

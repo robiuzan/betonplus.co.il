@@ -37,8 +37,8 @@ An accordion that conditionally renders would break the markup-matches-content r
 Reach for these first. A hand-rolled button misses the focus ring, the tap target, or the analytics
 attribute. `components/Icon.tsx` is a **self-contained inline-SVG set with no external icon dependency** — every
 glyph is hand-authored on a 24×24 viewBox inheriting `currentColor`. To add an icon, extend the
-`IconName` union in `lib/site.ts` and add the matching paths to `PATHS` in `Icon.tsx`. (`lucide-react`
-sits unused in `package.json`; don't start importing it without a decision to adopt it.)
+`IconName` union in `lib/site.ts` and add the matching paths to `PATHS` in `Icon.tsx`. (`lucide-react` was
+removed 2026-08-31 — there is no icon package, and adding one needs a decision.)
 
 ## Single source of truth
 
@@ -50,16 +50,13 @@ import { pageMetadata, serviceJsonLd, breadcrumbJsonLd } from "@/lib/seo";
 **Never hardcode the phone, email, service names or slugs.** Never type Hebrew copy into JSX — it goes
 in `lib/site.ts`. Never build a `Metadata` object by hand — use `pageMetadata()`.
 
-⚠️ Naming trap: **`lib/site.ts` is the live content file. `lib/content.ts` is a dead WordPress snapshot
-reader.** Check the import, not the filename.
-
 ## Strict TypeScript
 
 - **No `any`.** Prefer `unknown` + narrowing at boundaries. No non-null `!` to silence the compiler.
 - `noUncheckedIndexedAccess` is **not** enabled here — an indexed read is typed `T`, so the compiler
   will not catch an out-of-range access for you. Guard it yourself where it matters.
 - Type props explicitly. Model data with the interfaces already in `lib/site.ts` (`Service`, `Faq`,
-  `Review`, `TrustStat`, `ProcessStep`, `Differentiator`, `NavItem`, `IconName`).
+  `ServiceArea`, `ServiceDepth`, `Owner`, `HoursLine`, `TrustStat`, `ProcessStep`, `Differentiator`, `NavItem`, `IconName`).
 - Import via the `@/*` alias, never deep relative paths.
 
 ## Next 16 route components
@@ -94,13 +91,14 @@ Convention `{location}-{action}` — `hero-call`, `sticky-whatsapp`, `footer-cal
 match on these strings and no JS ships for them, so a missing attribute makes the click permanently
 invisible. `Button` takes it as a prop. See `/tracking-analytics`.
 
-## Do not imitate these
+## The legacy layer is gone
 
-`components/SiteFrame.tsx`, `SiteAssets.tsx` and `ThemeScripts.tsx` are the **abandoned WordPress
-snapshot layer** — imported by nothing under `app/`. They render captured `bodyHtml` through
-`dangerouslySetInnerHTML` and replay theme scripts. That was correct for a 1:1 port and is wrong for
-this build. Don't extend them, don't import them, don't take patterns from them
-(`/betonplus-architecture`).
+The WordPress snapshot components (`SiteFrame`, `SiteAssets`, `ThemeScripts`) and their
+`dangerouslySetInnerHTML` replay of captured markup were deleted 2026-08-31 (`58d0749`,
+`/legacy-wordpress-layer`). The only sanctioned `dangerouslySetInnerHTML` uses are the GTM snippet and
+JSON-LD (`components/JsonLd.tsx`); flag any new one. Reusable pieces that do exist: `CompareTable`
+(citable tables), `Hours` (LTR-isolated hour ranges), `Byline` (author + dates), `ArticleBody`
+(the typed-block renderer for `/guides/`).
 
 ## Conventions
 

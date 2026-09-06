@@ -5,6 +5,12 @@ description: Next.js 16 App Router specifics for this static-export project — 
 
 # Next.js 16 App Router (this project)
 
+> ⚠️ **Dynamic segments must be ASCII in this version.** `next build` with `output: "export"` on
+> 16.2.9 base64-encodes each dynamic param value with `btoa` (Latin-1 only) for the segment cache, so a
+> Hebrew value from `generateStaticParams` aborts the export with `InvalidCharacterError: Invalid
+character` (hit 2026-09-06 on the guides hub). Use ASCII slugs (`sawing-vs-demolition`, `tel-aviv`)
+> and keep the Hebrew in the `<h1>`, breadcrumbs and copy.
+
 ⚠️ **This is NOT the Next.js in your training data.** Next 16 has breaking changes. **Before writing any
 routing/metadata/image code, read the relevant guide in `node_modules/next/dist/docs/`** and heed
 deprecation notices (see [AGENTS.md](AGENTS.md)).

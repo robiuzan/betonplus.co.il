@@ -70,9 +70,12 @@ canonical, any doubled `<title>`, any `Review`/`AggregateRating` without a verif
 **any fabricated testimonial** (the three that once shipped were removed 2026-08-17 and the gate greps
 for their names on every build — a hit is an unconditional stop).
 
-The next deploy also takes live: the testimonial removal + `/reviews/` 301, `public/_headers`
-(security headers + report-only CSP), `/thank-you/`, the form overhaul, and the new `data-cta`
-coverage — verify each in the post-deploy checks below.
+The next deploy takes live (staged 2026-09-06, not yet shipped): the `/guides/` guides hub and its
+first four articles (5 new routes, sitemap 14 → 19), the service-page bylines with `author` on the
+`WebPage` node, the `lead_fallback`/`form_error` dataLayer events, the detached
+`Access-Control-Allow-Origin` wildcard, the synced `site.config.json` (GA4 id present, internal notes
+gone from the bundle), and the `/about/` meta description without the 🔶 founding claim. Everything
+before that (Sprint 2, the audit tiers 1–4) went live 2026-08-31 / 2026-09-01.
 
 ## After you deploy
 
@@ -86,7 +89,7 @@ curl -o /dev/null -w '%{http_code}\n' "https://www.googletagmanager.com/gtm.js?i
 
 Check: the page is the new build; the title carries the brand exactly once; `robots.txt` matches the
 intended AI-crawler stance (**Cloudflare prepends a managed block** — see `/aeo-answer-content`); the
-sitemap lists 14 URLs; GTM returns 200; and any new `public/_headers` entries actually appear in the
+sitemap lists 19 URLs (14 before the guides hub); GTM returns 200; and any new `public/_headers` entries actually appear in the
 response (`/web-security-headers`).
 
 ## Rollback

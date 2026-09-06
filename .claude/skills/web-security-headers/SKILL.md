@@ -1,28 +1,30 @@
 ---
 name: web-security-headers
-description: Security posture for a static export on Cloudflare Pages — the missing public/_headers for HSTS, X-Frame-Options and Permissions-Policy, a report-only-first CSP path around the inline GTM snippet, public/_redirects, PII and consent on the Web3Forms lead form, secret hygiene, and the dead GitHub Pages origin. Use when adding headers, planning a CSP, or auditing security. Triggers: "security headers", "CSP", "HSTS", "_headers", "is the form safe", "clickjacking".
+description: Security posture for a static export on Cloudflare Pages — the live public/_headers (HSTS, X-Frame-Options, Permissions-Policy, nosniff, Referrer-Policy, the detached ACAO wildcard), a report-only-first CSP path around the inline GTM snippet, public/_redirects, PII and consent on the Web3Forms lead form, secret hygiene, and the dead GitHub Pages origin. Use when adding headers, planning a CSP, or auditing security. Triggers: "security headers", "CSP", "HSTS", "_headers", "is the form safe", "clickjacking".
 ---
 
 # Security headers & posture
 
 `output: "export"` means Next's `headers()` is unavailable. **Cloudflare Pages reads
 `public/_headers`** — shipped 2026-08-17 (backlog §12.1) with HSTS (no `preload`),
-`X-Frame-Options: SAMEORIGIN`, `Permissions-Policy` and a **report-only** CSP. ⚠️ It is **live only
-after the next deploy** — until then the live table below still describes production.
+`X-Frame-Options: SAMEORIGIN`, `Permissions-Policy` and a **report-only** CSP. ✅ **Live at the edge** since the 2026-08-17 deploy and re-verified 2026-09-06 — the table below is
+the current production response.
 
 ## What the live site actually returns
 
-Verified against `https://betonplus.co.il/` on 2026-08-16:
+Verified against `https://betonplus.co.il/` on 2026-09-06 (cache-busted, UA-bearing curl):
 
-| Header                                             | Status                              |
-| -------------------------------------------------- | ----------------------------------- |
-| `x-content-type-options: nosniff`                  | ✅ Cloudflare Pages default         |
-| `referrer-policy: strict-origin-when-cross-origin` | ✅ Pages default                    |
-| `strict-transport-security`                        | ❌ absent                           |
-| `x-frame-options` / `frame-ancestors`              | ❌ absent — the site is framable    |
-| `permissions-policy`                               | ❌ absent                           |
-| `content-security-policy`                          | ❌ absent                           |
-| `access-control-allow-origin`                      | ⚠️ `*` on HTML — looser than needed |
+| Header                                             | Status                                                                                                    |
+| -------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `strict-transport-security`                        | ✅ `max-age=31536000; includeSubDomains` (no `preload`, deliberately)                                     |
+| `x-frame-options: SAMEORIGIN`                      | ✅                                                                                                        |
+| `x-content-type-options: nosniff`                  | ✅                                                                                                        |
+| `referrer-policy: strict-origin-when-cross-origin` | ✅                                                                                                        |
+| `permissions-policy`                               | ✅ camera, microphone, geolocation, browsing-topics, payment, usb, serial, midi, display-capture all `()` |
+| `content-security-policy-report-only`              | ✅ present — **no `report-to`/`report-uri`**, so nothing collects its reports                             |
+| `access-control-allow-origin`                      | ⚠️ `*` (Pages default) — `! Access-Control-Allow-Origin` added 2026-09-06, live after the next deploy     |
+| `/_next/static/*` `cache-control`                  | ✅ `public, max-age=31536000, immutable`                                                                  |
+| `/opengraph-image` `content-type`                  | ✅ `image/png` (extensionless file, typed by `_headers`)                                                  |
 
 **Always verify against the live response, never against the repo's intent:**
 
@@ -54,6 +56,19 @@ Notes before shipping this:
 GTM is injected via `dangerouslySetInnerHTML` in `app/layout.tsx`, and **a static export cannot
 generate a per-request nonce**. So the options are a hash of the inline snippet, or `'unsafe-inline'`
 for scripts. Neither is free, which is exactly why this goes report-only first.
+
+Two facts that shape the enforcement path (verified 2026-09-06):
+
+- **The live report-only policy has no reporting directive and there is no `Reporting-Endpoints`
+  header**, so "observe a week of traffic" observes nothing outside a developer's own console. Pick a
+  collector first (a third-party report endpoint, or a Cloudflare Worker — an owner account decision),
+  add `report-to`/`report-uri` to the CSP-RO, deploy, then observe (roadmap 8.1).
+- **Hashing the GTM snippet alone cannot remove `'unsafe-inline'`.** The static export ships ~28 inline
+  scripts per page (Next's RSC payload pushes). Either a `postbuild` step hashes every inline script
+  per route and emits per-path `_headers` rules, or `'unsafe-inline'` stays for `script-src` and the
+  other directives are hardened (roadmap 8.2).
+- `! Access-Control-Allow-Origin` in `_headers` **detaches** the Pages default wildcard — that item was
+  never a zone change (roadmap 8.4).
 
 ```
 /*
@@ -97,8 +112,9 @@ stable, so there is nothing to redirect today.
 
 ## Secret hygiene
 
-The only key in the repo is the public Web3Forms access key. `.env.local` holds `NEXT_PUBLIC_WP_URL`,
-which only the dead snapshot layer reads.
+The only key in the repo is the public Web3Forms access key. `.env.local`, if present, may hold `NEXT_PUBLIC_WEB3FORMS_KEY` — a dev-only override that
+`components/ContactForm.tsx` reads when the manifest carries no key. (The snapshot layer that once read
+`NEXT_PUBLIC_WP_URL` was deleted 2026-08-31.)
 
 ```bash
 npm audit --omit=dev    # runtime — matters
@@ -107,22 +123,22 @@ npm audit               # includes dev — usually informational for a static ex
 
 Report the two separately. A devDependency advisory does not ship to users here.
 
-## The second origin
+## The second origin — resolved
 
-`.github/workflows/deploy.yml` publishes to **GitHub Pages** while production is wrangler → Cloudflare
-Pages, and `public/CNAME` is its leftover (backlog §1.3, §12.4). A second origin serving stale content
-is a real risk: it can be indexed, it can be linked, and it will drift the moment anything ships
-through wrangler. Strip the publish step (keep the build as CI) and delete `public/CNAME`.
+`.github/workflows/deploy.yml` is **build-gate CI only** (its GitHub Pages publish steps were removed
+2026-08-17) and `public/CNAME` is deleted. The old GitHub Pages origin returns **404** (verified
+2026-09-06), so there is no second live copy to index or drift. Re-check only if the workflow file
+changes.
 
 ## Checklist
 
-- [ ] `public/_headers` shipped; verified with `curl -sSI` against the live site after deploy.
+- [x] `public/_headers` shipped; verified with `curl -sSI` against the live site (2026-09-06).
 - [ ] HSTS without `preload` unless the owner has explicitly accepted it.
-- [ ] CSP is **report-only** and has been observed for a full week including a real form submit.
-- [ ] Form links to `/privacy/`.
+- [ ] CSP is **report-only** with a reporting endpoint, observed for a full week including a real form submit (endpoint still missing — roadmap 8.1).
+- [x] Form links to `/privacy/`.
 - [ ] No PII in `dataLayer`.
 - [ ] `npm audit --omit=dev` clean or triaged.
-- [ ] No second live origin.
+- [x] No second live origin (GitHub Pages origin 404, 2026-09-06).
 
 ## Gotchas
 

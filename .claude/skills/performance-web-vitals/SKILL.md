@@ -1,6 +1,6 @@
 ---
 name: performance-web-vitals
-description: Core Web Vitals for the betonplus static export on Cloudflare Pages — the render-blocking Google Fonts link with no preload, the image pipeline that images.unoptimized disables and which becomes urgent the moment real photos ship, the CSS-gradient hero and what the LCP element actually is, the INP client-JS budget, and keeping out/ clean. Use before shipping or when LCP, CLS or INP regress. Triggers: "perf pass", "Core Web Vitals", "LCP slow", "image optimization", "bundle size", "srcset".
+description: Core Web Vitals for the betonplus static export on Cloudflare Pages — the render-blocking Google Fonts link (hard-coded gstatic preloads were tried and removed 2026-09-01), the image pipeline that images.unoptimized disables and which becomes urgent the moment real photos ship, the CSS-gradient hero and what the LCP element actually is, the INP client-JS budget, and keeping out/ clean. Use before shipping or when LCP, CLS or INP regress. Triggers: "perf pass", "Core Web Vitals", "LCP slow", "image optimization", "bundle size", "srcset".
 ---
 
 # Core Web Vitals
@@ -11,18 +11,23 @@ issues are fonts, and an image pipeline that isn't a problem yet but will be.
 
 ## Fonts — the live cost today
 
-`app/layout.tsx:58-65` loads Heebo + Assistant from Google Fonts via a `<link rel="stylesheet">`, with
-`preconnect` to both origins and `display=swap`. **There is no `rel="preload"`**, so both families FOUT
-on first paint on every page, and the stylesheet is a render-blocking third-party request on the
-critical path (backlog §10.2).
+`app/layout.tsx` (`FONT_CSS` near the top; `preconnect` + the stylesheet `<link>` in the explicit
+`<head>`) loads Heebo + Assistant from Google Fonts with `display=swap`. The stylesheet is a
+render-blocking third-party request on the critical path, and both families FOUT on first paint.
 
-The `<link>` approach is deliberate — the comment in the layout explains it keeps the build gate
-reproducible offline and avoids the App-Router `no-page-custom-font` false positive. That reasoning
-holds; the fix is not to switch to `next/font` but to preload the two subsets actually used above the
-fold, or to self-host the two families and drop the third-party round trip entirely.
+**Preloading was tried and reverted.** Two hard-coded gstatic `woff2` preloads shipped 2026-08-25 and
+were removed 2026-09-01: Google Fonts serves a **different file per user-agent class**, so a fixed
+pair matched desktop only and cost every mobile visitor ~19 KB of unused downloads. The layout comment
+records the measurement and forbids reinstating it; `/qa-build-gate` §12 asserts zero preloads.
 
-Since the hero is a CSS gradient, **the fonts are almost certainly on the LCP path** — the `<h1>` is
-the LCP element on most routes. That makes this the highest-value performance item on the site.
+The `<link>` approach is still deliberate (reproducible offline builds, no `next/font` false positive).
+The durable fix is **self-hosting two Hebrew-subset files under `public/fonts/`** with a stable URL
+that _can_ be preloaded — pending the owner's call on font binaries in the repo. Cutting weights
+(2 families × 9 weights today) is the free interim win.
+
+The measurement recorded in `app/layout.tsx` (2026-09-01) says the **LCP element is a paragraph set in
+Assistant on every route**, not the `<h1>` — so body-font delivery, not the heading font, is the LCP
+path.
 
 ## Images — half-installed, and dormant
 
@@ -57,8 +62,9 @@ nothing.
 
 - The hero is `.hero-grad`, a radial + linear gradient in `app/globals.css`. No image download, no
   decode. That is a genuinely good starting position.
-- **Confirm what the LCP element actually is per route type** before optimizing anything — on this site
-  it is most likely the `<h1>`, which makes it a font problem, not an image problem.
+- **Measured 2026-09-01: the LCP element is a paragraph in Assistant** on every route (recorded in
+  `app/layout.tsx`), not the `<h1>`. It is a font problem, not an image problem. Re-measure per route
+  type the day a gallery ships.
 - At most one `priority`/preloaded image per page, ever.
 
 ## JS budget (INP)
@@ -67,9 +73,6 @@ nothing.
   nav and button tree to the client on every page (backlog §10.3). Small here, but it is the pattern
   to avoid repeating.
 - `components/ContactForm.tsx` genuinely needs client — state, fetch, form handling.
-- `components/ThemeScripts.tsx` is `"use client"` and part of the **dead snapshot layer**. Its only
-  consumer is `components/SiteFrame.tsx:11`, which **nothing under `app/` imports** — so the whole
-  chain ships nothing. Don't "optimize" it; it isn't running.
 - `components/Faq.tsx` renders all answers unconditionally with no client JS. Keep that — it is both
   fast and what makes the `FAQPage` schema valid (`/schema-structured-data`).
 
@@ -91,6 +94,12 @@ The fleet has repeatedly shipped multi-MB dev-only chunks (`main.js`, `fallback/
 `.next/` surviving into an export. betonplus is currently clean — the `rm -rf` is what keeps it that
 way, and the deploy script does it for a second reason (the vendored tarball cache trap).
 
+Caching is settled: `public/_headers` serves `/_next/static/*` with `max-age=31536000, immutable`
+(live `cf-cache-status: HIT` on repeat fetch, since 2026-09-01) while HTML stays
+`max-age=0, must-revalidate`. The vendored `@ishub/site-kit` already ships `SiteImage` + Cloudflare
+image transforms via the manifest's `mediaHost` — the image pipeline is an adoption task the day
+photos exist, not a build.
+
 ## Measuring
 
 Reading the artifact is not measuring a browser. For real numbers run Lighthouse or PSI against the
@@ -99,7 +108,7 @@ homepage **and** a service page — they have different LCP elements.
 
 ## Checklist
 
-- [ ] Fonts preloaded (or self-hosted); no unnecessary render-blocking third-party CSS.
+- [ ] No hard-coded gstatic font preload (self-hosting is the only preload-able path); no new render-blocking third-party CSS.
 - [ ] The LCP element per route type is identified and sized for the viewport.
 - [ ] Content images emit a real `srcset` (or `sizes` has been removed as misleading).
 - [ ] At most one `priority` image per page.

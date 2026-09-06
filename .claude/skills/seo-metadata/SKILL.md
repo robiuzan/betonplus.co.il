@@ -22,7 +22,7 @@ export const metadata: Metadata = pageMetadata({
 ```
 
 Never hand-write `alternates`, `openGraph` or `twitter` on a page. If something is missing, add it to
-`pageMetadata` so all 15 routes get it.
+`pageMetadata` so every route gets it.
 
 ## The two title mechanisms — get this right
 
@@ -85,7 +85,7 @@ stay out of metadata.
 passes its own; there is no inheritance. Both slashes are required — a missing trailing slash splits
 signals against the exported directory URL.
 
-Verified state: all 15 content routes carry exactly one self-referencing canonical. Only `/404/` and
+Verified state: every content route carries exactly one self-referencing canonical (percent-encoded for the Hebrew hub/article paths). Only `/404/` and
 `/_not-found/` lack one, which is correct.
 
 ## Sitemap
@@ -95,7 +95,7 @@ routes from the exported **`staticRoutes`** const in `lib/site.ts`. A new static
 `staticRoutes` — that is the single registry, and the build gate's parity check catches drift.
 `/thank-you/` is noindex and deliberately absent from it.
 
-It also emits no `lastModified` at all (§1.2). Adding build time would be worse than nothing — every
+It emits `lastModified` from `routeUpdated` in `lib/site.ts` (real content dates; articles carry their own `dateModified`) since 2026-08-25. Adding build time would be worse than nothing — every
 URL would look freshly changed on every deploy. Use a real per-route date or leave it out.
 
 **Never hand-maintain a second URL list anywhere.**
@@ -123,7 +123,7 @@ change an edge policy, so always verify with `curl`, never from source. See `/ae
 ## One H1 per page
 
 Exactly one `<h1>`, matching the title's intent. Everything else `<h2>`/`<h3>`, no skipped levels.
-Currently correct on all 15 routes — keep it that way.
+Currently correct on every route — keep it that way.
 
 ## Checklist
 

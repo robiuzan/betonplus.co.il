@@ -108,18 +108,20 @@ app/
   services/page.tsx       # services index (CollectionPage)
   services/[slug]/        # 5 pages — Service + WebPage(author, dateModified) + Person + BreadcrumbList + FAQPage
   pricing/ service-areas/ about/ faq/ contact/ privacy/ accessibility/
+  guides/ guides/[slug]/  # knowledge hub (CollectionPage) + articles — Article + Person + BreadcrumbList + FAQPage
   thank-you/              # noindex conversion target — form navigates here; not in sitemap
 components/
   ui.tsx                  # Section, SectionHeading, Button — the primitives
   Header Footer FloatingCTA PageHero CtaBanner ContactSection ContactForm
   Hero TrustBar ServicesGrid WhyUs ProcessSteps Faq ServiceAreasSection
-  CompareTable Hours Byline   # citable tables · LTR-isolated hour ranges · author + עודכן line
+  CompareTable Hours Byline ArticleBody   # citable tables · LTR-isolated hours · author + dates · typed-block renderer
   Icon JsonLd
 lib/
   site.ts        # ⭐ manifest facade + ALL Hebrew content: services[5] + serviceDepth, faqs/faqGroups,
                  #   staticRoutes[9], serviceAreas[14] (typed) + serviceAreaGroups, navItems, trustStats,
                  #   processSteps, differentiators, owner, routeUpdated, price helpers
-  seo.ts         # ⭐ pageMetadata() + JSON-LD builders over @ishub/site-kit/seo
+  seo.ts         # ⭐ pageMetadata() + JSON-LD builders over @ishub/site-kit/seo (incl. articleJsonLd)
+  articles/      # the knowledge hub: types.ts (Block/Article), index.ts (registry + helpers), one file per article
 scripts/
   check-titles.mjs  # postbuild gate: brand exactly once per <title>, no unexpected duplicates
 public/
@@ -129,7 +131,12 @@ docs/            # the acceptance bars every agent cites (+ manifest-assumptions
 ```
 
 Place by responsibility: reusable primitive → `components/ui.tsx`; page section → its own component in
-`components/`; business fact or copy → `lib/site.ts`.
+`components/`; business fact or copy → `lib/site.ts`; an article → `lib/articles/<name>.ts` registered in
+`lib/articles/index.ts` (the `/new-article` skill).
+
+**Dynamic segments are ASCII.** Next 16.2.9's static export `btoa`-encodes each dynamic param value
+(Latin-1 only) and aborts the build on a Hebrew slug (`InvalidCharacterError`, hit 2026-09-06). Hebrew
+lives in the `<h1>`, breadcrumbs and copy; URLs stay Latin — for the guides and for the future city silo.
 
 ---
 

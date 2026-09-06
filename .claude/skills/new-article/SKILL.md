@@ -1,23 +1,24 @@
 ---
 name: new-article
-description: Publish a Hebrew knowledge-hub article under /מדריכים/[slug]/ — the typed block model, author attribution and dates, Article + BreadcrumbList + FAQPage schema derived from the blocks, the answer-block opening, and internal links into services and areas. Use when adding editorial content for topical authority and AEO. Triggers: "write an article", "blog post", "knowledge hub", "מדריך", "topical authority", "guide".
+description: Publish a Hebrew knowledge-hub article under /guides/[slug]/ — the typed block model, author attribution and dates, Article + BreadcrumbList + FAQPage schema derived from the blocks, the answer-block opening, and internal links into services and areas. Use when adding editorial content for topical authority and AEO. Triggers: "write an article", "blog post", "knowledge hub", "מדריך", "topical authority", "guide".
 ---
 
 # Publish an article
 
-The site has **no editorial surface at all** — no blog, no guides, no route. That is the whole
-topical-authority and AEO gap in one line (backlog §6.5). `/faq/` (grouped FAQs plus the comparison
-tables) is currently the only page holding Tier-3 intent.
-
-A `/מדריכים/` hub is where the Tier-3 questions in `docs/keyword-map.md` §2 get answered properly.
+The guides hub **exists since 2026-09-06** (backlog §6.7): `app/guides/page.tsx` (index) and
+`app/guides/[slug]/page.tsx`, the typed block model in `lib/articles/types.ts`, the registry and
+helpers in `lib/articles/index.ts`, one file per article (`lib/articles/<name>.ts`), the renderer
+`components/ArticleBody.tsx`, and `articleJsonLd()` in `lib/seo.ts`. Four articles ship; the remaining
+Tier-3 questions in `docs/keyword-map.md` §2 are the next ones. Adding an article = one new file +
+one line in the registry; the route, sitemap, schema, hub card and service-page cross-links follow.
 
 ## Route
 
-`/מדריכים/` (index) and `/מדריכים/[slug]/` (detail). Fully static-export compatible:
+`/guides/` (index) and `/guides/[slug]/` (detail). Fully static-export compatible:
 `export const dynamic = "force-static"`, `dynamicParams = false`, `generateStaticParams`.
 
 Betonplus's emitted routes are ASCII, but the location slugs reserved in `serviceAreas` are Hebrew
-(`תל-אביב`), so `/מדריכים/` would match the silo's convention rather than depart from it. Either way,
+(`תל-אביב`), so `/guides/` would match the silo's convention rather than depart from it. Either way,
 Hebrew params arrive **percent-encoded** during static export:
 
 ```ts
@@ -26,14 +27,17 @@ const target = decodeURIComponent(slug).normalize("NFC");
 return articles.find((a) => a.slug.normalize("NFC") === target);
 ```
 
-Skipping the decode+normalize works in dev and 404s in production, and `app/sitemap.ts` then needs
-`encodeURI` so the `<loc>` matches the canonical byte for byte. Staying ASCII (`/guides/…`) avoids all
-of it — pick one deliberately.
+The decision was forced to **ASCII** (`/guides/<ascii-slug>/`): the static export of Next 16.2.9
+base64-encodes dynamic param values with `btoa` (Latin-1 only) while writing the segment cache, so a
+Hebrew slug fails the build with `InvalidCharacterError: Invalid character` (hit 2026-09-06). Hebrew
+lives in the `<h1>`, the breadcrumbs and the copy; the URL is Latin. `getArticle()` keeps the
+decode+NFC and `lib/seo.ts`/`app/sitemap.ts` keep `encodeURI` as a no-op safety net.
 
 ## Typed blocks, not MDX
 
-Articles live in `lib/articles/<slug>.ts` (or, while there are only a few, a typed `articles` array
-in `lib/site.ts`) as typed data:
+Articles live in `lib/articles/<name>.ts` as typed data and are registered in `lib/articles/index.ts`.
+The canonical `Block`/`Article` types are in `lib/articles/types.ts` — this is the shape (keep it in
+sync with that file):
 
 ```ts
 export type Block =
@@ -122,7 +126,7 @@ for the commercial action.
 ## Steps
 
 1. Pick a Tier-3 question; confirm no existing page already targets it.
-2. Create `lib/articles/<slug>.ts` (or the array entry in `lib/site.ts`).
+2. Create `lib/articles/<name>.ts` exporting an `Article` (ASCII `slug`), and add it to `articles` in `lib/articles/index.ts`.
 3. Write to the structure above; every claim free or 🔶 (`docs/content-standards.md` §6).
 4. Register the slug so `generateStaticParams` picks it up, and add the article URLs to
    `app/sitemap.ts` beside `staticRoutes` + `services` (`encodeURI` for a Hebrew slug); date each

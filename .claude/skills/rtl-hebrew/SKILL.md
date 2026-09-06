@@ -1,6 +1,6 @@
 ---
 name: rtl-hebrew
-description: RTL and Hebrew (he-IL) discipline for betonplus — logical Tailwind utilities only with the pl/pr/ml/mr/left/right/text-left/text-right ban, dir="ltr" islands for phone, email, price and URL (and the missing .ltr helper), Israeli number and date formats, Hebrew punctuation with גרש and גרשיים, and trade vocabulary. Use whenever writing markup, classes or copy that appears on the page. Mandatory per CLAUDE.md §6. Triggers: "RTL", "Hebrew", "which padding utility", "text direction", "LTR island", "phone renders backwards".
+description: RTL and Hebrew (he-IL) discipline for betonplus — logical Tailwind utilities only with the pl/pr/ml/mr/left/right/text-left/text-right ban, dir="ltr" islands for phone, email, price and URL (via the .ltr helper in app/globals.css), Israeli number and date formats, Hebrew punctuation with גרש and גרשיים, and trade vocabulary. Use whenever writing markup, classes or copy that appears on the page. Mandatory per CLAUDE.md §6. Triggers: "RTL", "Hebrew", "which padding utility", "text direction", "LTR island", "phone renders backwards".
 ---
 
 # Hebrew & RTL discipline
@@ -22,8 +22,8 @@ correctly:
 | `rounded-s-*` / `rounded-e-*`           | `rounded-l-*` / `rounded-r-*` |
 | `border-s-*` / `border-e-*`             | `border-l-*` / `border-r-*`   |
 
-`components/` and `app/` are currently **clean** of every banned utility (the only hits are in the
-vestigial `app/enrich.css`). That is a property worth protecting — verify before you hand back:
+`components/` and `app/` are currently **clean** of every banned utility. That is a property worth
+protecting — verify before you hand back:
 
 ```bash
 grep -rnE '\b(pl|pr|ml|mr)-[0-9]|\b(left|right)-[0-9]|text-(left|right)\b' components app

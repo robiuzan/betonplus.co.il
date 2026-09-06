@@ -10,8 +10,8 @@ quote it?"** Three separate gates, in that order.
 
 ## Gate 1 — reachability. Check this first.
 
-`app/robots.ts` is **not what serves.** Cloudflare prepends a managed block at the edge. Verified live
-on betonplus.co.il. **As of 2026-08-25 this gate is OPEN** — the managed block is gone and the live
+`app/robots.ts` is **not necessarily what serves** — Cloudflare can prepend a managed block at the edge,
+and did until 2026-08-25. Verified live on betonplus.co.il 2026-09-06: the file byte-matches the export. **As of 2026-08-25 this gate is OPEN** — the managed block is gone and the live
 file is byte-identical to the export, allowing every AI crawler. `app/robots.ts` now states the allow
 list explicitly so the stance is documented rather than implied.
 
@@ -51,8 +51,8 @@ current state, means the site cannot be cited at all.
 
 An answer engine lifts a **contiguous, self-contained span**. Structure for that.
 
-**The answer block** — every service page, location page and article opens with one. **No page on this
-site has one today** (backlog §6.2):
+**The answer block** — every service page, location page and article opens with one. ✅ Every content
+page, the guides hub and every article carries one today (backlog §6.2 resolved); the spec:
 
 - Directly under a **question-form heading** (`<h2>כמה עולה ניסור בטון?`).
 - **40–60 words.** Shorter reads thin; longer stops being liftable.
@@ -89,16 +89,17 @@ missing, and what would be genuinely useful:
 - What goes wrong: cutting into rebar, hitting a live conduit, cracking at the corner of an opening.
 
 These are also the Tier-3 keyword targets in `docs/keyword-map.md` §2 and the natural spine of a
-`/מדריכים/` hub. **One honest comparison table earns more citations than ten reassuring pages** — and
+`/guides/` hub. **One honest comparison table earns more citations than ten reassuring pages** — and
 the ניסור-מול-הריסה comparison is the one where saying "sometimes demolition is the right answer" is
 both true and disproportionately trusted.
 
 ## Freshness and authorship
 
-Assistants discount undated, unattributed content. The site has **no** `datePublished`, `dateModified`
-or author anywhere (backlog §6.3). Add all three to articles (see `/new-article`), and put a real
-named person behind them — blocked on `docs/business-facts.md` §A, which notes that **nobody is named
-anywhere on this site**. **Never invent an author**; a fabricated byline is a worse trust signal than
+Assistants discount undated, unattributed content. ✅ Every page node carries `dateModified` with a
+visible `עודכן:` line (2026-08-31); service pages and articles carry a visible byline (`components/Byline.tsx`)
+with `author: {@id #owner}` and the owner's `Person` node (2026-09-06); articles carry `datePublished`
+too. The named person is **אור שוורץ, בעלים** — `owner` in `lib/site.ts`, consented (business-facts §A).
+No second person exists; **never invent an author**; a fabricated byline is a worse trust signal than
 an absent one — and this repo shipped three fabricated customers once (removed 2026-08-17).
 
 ## Entity consistency
@@ -109,7 +110,7 @@ schema, the visible copy, and every off-site profile once they exist. See `/loca
 
 ## llms.txt
 
-A plain-language map at `public/llms.txt` — who the business is, what it does, the service and area
+✅ Shipped 2026-08-31, live as `text/plain`. A plain-language map at `public/llms.txt` — who the business is, what it does, the service and area
 lists, canonical URLs for the key answers, and contact. Keep it short and factual; it is a pointer
 file, not a second website. Gate 1 is currently open, so this is now worth shipping (backlog §6.4).
 

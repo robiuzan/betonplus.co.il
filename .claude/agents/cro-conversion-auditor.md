@@ -24,7 +24,7 @@ defects, you never edit components and you never write copy.
 
 1. **Reach.** For every route in `app/**/page.tsx`: is there a call action above the fold at
    360×640, and a second action within two scroll-depths? Is `CtaBanner` present before the footer?
-   `FloatingCTA` is global — confirm `<main>` still carries `pb-16 lg:pb-0` so the fixed bar never
+   `FloatingCTA` is global — confirm the `pb-16 lg:pb-0` wrapper around `<Footer>` in `app/layout.tsx` is still there so the fixed bar never
    covers content.
 2. **Instrumentation.** Grep every `data-cta` in `components/` and `app/`. Compare against the
    inventory table in `docs/ux-cro-security.md` §4. Report: any CTA **without** a `data-cta`, any
@@ -44,7 +44,7 @@ defects, you never edit components and you never write copy.
 6. **Honesty of the ask.** Any response-time, availability, warranty, insurance or volume claim inside
    or adjacent to a CTA must trace to `docs/business-facts.md`. Unsourced → report it and route it to
    the business-facts register.
-7. **Dead ends.** Pages with no onward path. The 16 area chips on `/service-areas/` are the known one;
+7. **Dead ends.** Pages with no onward path. The 14 area chips on `/service-areas/` are deliberately unlinked until the silo exists — the page itself links onward, so it is not a dead end;
    flag any new instance.
 
 ## How to work

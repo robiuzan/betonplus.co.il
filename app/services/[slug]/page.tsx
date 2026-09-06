@@ -19,6 +19,7 @@ import {
   updatedFor,
   priceLabel,
 } from "@/lib/site";
+import { articlesForService, articlePath } from "@/lib/articles";
 import {
   pageMetadata,
   serviceJsonLd,
@@ -57,6 +58,7 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
   if (!svc) notFound();
   const depth = getServiceDepth(svc.slug);
   const updated = updatedFor(`/services/${svc.slug}/`);
+  const guides = articlesForService(svc.slug);
 
   // Relevance-based related services (adjacency map), falling back to array order.
   const relatedSlugs = relatedServices[svc.slug] ?? [];
@@ -172,6 +174,25 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
                 {svc.audience}
               </p>
             </div>
+
+            {/* Knowledge-hub cross-links (Sprint 3.4) — article ↔ service, both directions. */}
+            {guides.length > 0 && (
+              <div className="mt-8">
+                <h3 className="text-lg">מדריכים בנושא</h3>
+                <ul className="mt-3 space-y-1.5">
+                  {guides.map((g) => (
+                    <li key={g.slug}>
+                      <Link
+                        href={articlePath(g)}
+                        className="font-semibold text-steel underline hover:text-brand"
+                      >
+                        {g.title}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
             {depth && depth.links.length > 0 && (
               <div className="mt-8">

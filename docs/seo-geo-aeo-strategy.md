@@ -23,7 +23,8 @@ of them well:
    מבוקרת). Owned by `/services/[slug]/`.
 2. **Place axis** — _who is near me_ (`<service> ב<city>`). **Owned by nothing today.**
 3. **Question axis** — _can this even be done / what will it cost / is it safe_ (Tier 3 in
-   [keyword-map.md](keyword-map.md) §2). Partly owned by `/faq/`; no editorial surface exists.
+   [keyword-map.md](keyword-map.md) §2). Short answers on `/faq/`; long-form on the `/guides/` hub
+   (four articles since 2026-09-06).
 
 The current site covers axis 1 well (5 pages, 456–574 unique words each, answer blocks, per-service
 `FAQPage`), covers axis 3 at one page, and covers axis 2 **not at all**. That imbalance — not any
@@ -53,10 +54,10 @@ Three silos, one hub each, cross-linked in both directions.
                     |
    +----------------+-------------------------+--------------------------+
    |                |                         |                          |
-/services/     /service-areas/           /מדריכים/                  /faq/  /pricing/
+/services/     /service-areas/           /guides/                  /faq/  /pricing/
 (hub, 377w)    (hub, 428w)               (hub - DOES NOT EXIST)     (conversion + AEO
    |                |                         |                      support pages)
-5 x /services/  14 chips -> nowhere       N x /מדריכים/[slug]/
+5 x /services/  14 chips -> nowhere       N x /guides/[slug]/
    [slug]/      => must become            (Tier-3 questions,
    BUILT        /locations/[city]/         900w floor)
                  NOT BUILT                 NOT BUILT
@@ -85,7 +86,7 @@ Three silos, one hub each, cross-linked in both directions.
 4. **Tier-1 location pages** — only cities where three or more of the
    [content-standards.md](content-standards.md) §2 local facts are genuinely true. Realistically
    תל אביב · רמת גן · גבעתיים · בני ברק · פתח תקווה · ראשון לציון · חולון · בת ים.
-5. **Guides hub** `/מדריכים/` — the Tier-3 spine. This is also the AEO engine (§4).
+5. **Guides hub** `/guides/` — the Tier-3 spine. This is also the AEO engine (§4).
 6. **Only then** service × location cells, and only for ניסור קירות and קידוח יהלום, where local
    intent actually exists. Nobody searches "ניסור בכבל יהלום בגבעתיים".
 

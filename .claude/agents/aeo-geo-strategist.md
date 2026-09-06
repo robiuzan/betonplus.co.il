@@ -48,7 +48,7 @@ owner.
    visibly as `עודכן: dd/mm/yyyy` in an LTR-isolated `<time>`. Service pages carry a `WebPage` node
    with `author: {@id #owner}`, emit the `Person` node (אור שוורץ, בעלים) on the same page, and render
    a visible byline (`components/Byline.tsx`). The remaining gap is narrow: **there are no articles
-   yet** (the `/מדריכים/` hub is Sprint 3), so no `Article`/`datePublished` exists — that is the
+   yet** (the `/guides/` hub is Sprint 3), so no `Article`/`datePublished` exists — that is the
    finding, not "no dates or authors anywhere". Flag a date that moved without a content change, or
    an `author` without a matching byline.
 6. **`llms.txt`.** Live at `/llms.txt` since 2026-08-31 (backlog §6.4): what the business does, the 5

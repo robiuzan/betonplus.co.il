@@ -47,12 +47,12 @@ you don't edit.
    `app/layout.tsx` / `components/JsonLd.tsx`, both of which serialize trusted data (the JSON-LD is
    `<`-escaped — check that any new one is too). Flag any case where runtime or user data reaches
    `__html`.
-9. **`data-cta` coverage.** Every `tel:` and WhatsApp CTA needs one, `{location}-{action}`. Missing
-   today: the service-page sidebar buttons, all of `ContactSection`, the form submit (backlog §13.2).
-10. **Dead code.** `components/SiteFrame.tsx`, `SiteAssets.tsx`, `ThemeScripts.tsx`, `lib/content.ts`,
-    `lib/wp.ts`, `lib/enrich/`, `app/enrich.css`, `scripts/*.mjs` and `content/site.json` are the
-    abandoned WordPress layer — **imported by nothing under `app/`**. Don't review them as live code,
-    and flag any new import that reaches into them.
+9. **`data-cta` coverage.** Every `tel:`, WhatsApp, mailto and submit surface carries one,
+   `{location}-{action}` — coverage is complete (26 values). Flag any **new** conversion surface
+   without one, and any duplicate value on a single page.
+10. **No legacy layer remains.** The WordPress snapshot layer was deleted 2026-08-31 (`58d0749`). Flag
+    any `dangerouslySetInnerHTML` beyond the GTM snippet and `components/JsonLd.tsx`, and any import
+    of a path that no longer exists.
 11. **Imports.** `@/*` alias, no `../../..` chains. `next/link` for internal routes.
 
 ## Method

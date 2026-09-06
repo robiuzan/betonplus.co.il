@@ -41,19 +41,19 @@ Note the vocabulary split that matters for matching:
 location silo, only a chip list on `/service-areas/`. This is the largest untapped tier for a trade
 that is chosen by proximity. See `/new-city` and `/local-seo-il` before building it.
 
-**Tier 3 — informational / long tail.** The AEO targets. The site answers none of them properly and
-has no editorial surface at all:
+**Tier 3 — informational / long tail.** The AEO targets. Since 2026-09-06 the `/guides/` hub answers
+four of them at article depth (marked ✅); the rest are the next articles to write:
 
 - כמה עולה ניסור בטון למ״ר?
-- ניסור בטון או הריסה — מה מתאים לפתח שלי?
-- האם פתיחת פתח בקיר פוגעת ביציבות המבנה?
-- מתי צריך אישור קונסטרוקטור לפתיחת פתח?
+- ✅ ניסור בטון או הריסה — מה מתאים לפתח שלי? → `/guides/sawing-vs-demolition/`
+- ✅ האם פתיחת פתח בקיר פוגעת ביציבות המבנה? → `/guides/opening-and-stability/`
+- ✅ מתי צריך אישור קונסטרוקטור לפתיחת פתח? → `/guides/engineer-approval/`
 - כמה רעש ואבק יש בניסור בטון בדירה מאוכלסת?
-- קידוח יבש או רטוב — מה ההבדל?
+- ✅ קידוח יבש או רטוב — מה ההבדל? → `/guides/wet-vs-dry-drilling/`
 - כמה זמן לוקח לפתוח פתח לדלת בקיר בטון?
 - מה ההבדל בין ניסור דיסק לניסור בכבל יהלום?
 
-These are the natural spine of a `/מדריכים/` hub (`/new-article`). Several are also the questions a
+These are the natural spine of a `/guides/` hub (`/new-article`). Several are also the questions a
 B2B buyer uses to qualify a contractor, which makes them commercial as well as informational.
 
 ---
@@ -149,5 +149,5 @@ Scaling a thin pattern multiplies risk, not reach.
 | `/faq/`                           | Tier-3 questions (interim host) |
 | `/about/` `/reviews/` `/contact/` | brand / navigational            |
 
-`/faq/` is currently the only page carrying Tier-3 intent, and it does so with six short answers. Until
-`/מדריכים/` exists it is the single highest-leverage page to deepen.
+`/faq/` carries the short Tier-3 answers and the two comparison tables; `/guides/` (since 2026-09-06)
+carries the long-form answers. New Tier-3 questions get an article first and a `/faq/` entry second.
