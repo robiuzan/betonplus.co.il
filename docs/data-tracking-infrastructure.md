@@ -24,16 +24,17 @@ Static HTML (Cloudflare Pages)
    +-- form POST -> api.web3forms.com -> email to info@betonplus.co.il   [the actual lead delivery]
 ```
 
-| Component             | State                                                                                                |
-| --------------------- | ---------------------------------------------------------------------------------------------------- |
-| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                      |
-| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts) |
-| GA4 property          | 🔴 **`analytics.ga4MeasurementId` is `null` in the roster** — the container fires into nothing       |
-| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                          |
-| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                            |
-| Lead event            | ✅ `lead_submit` on confirmed delivery, then `/thank-you/`                                           |
-| Server-side analytics | ❌ none                                                                                              |
-| CRM                   | ❌ none — leads arrive as email                                                                      |
+| Component             | State                                                                                                   |
+| --------------------- | ------------------------------------------------------------------------------------------------------- |
+| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                         |
+| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts)    |
+| GA4 property          | 🔴 **`analytics.ga4MeasurementId` is `null` in the roster** — the container fires into nothing          |
+| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                             |
+| Sitemap               | ✅ `/sitemap.xml` submitted to Search Console 2026-09-03 — 14 URLs, 0 errors, 0 warnings, 0 indexed yet |
+| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                               |
+| Lead event            | ✅ `lead_submit` on confirmed delivery, then `/thank-you/`                                              |
+| Server-side analytics | ❌ none                                                                                                 |
+| CRM                   | ❌ none — leads arrive as email                                                                         |
 
 **The single most important fact on this page: we are not currently collecting any analytics data.**
 The container is live and the events are wired, but with no GA4 measurement ID they land nowhere. Every
