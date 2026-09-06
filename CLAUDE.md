@@ -16,7 +16,8 @@
   (`addressRegion: מרכז`, `addressCountry: IL`).
 - **Phone (click-to-call):** `055-6601006` · WhatsApp same number · `info@betonplus.co.il`.
 - **Hours:** ראשון–חמישי 07:00–18:00, שישי 07:00–13:00.
-- **Service area:** גוש דן והמרכז. 5 services, 16 named areas — **no location pages exist yet**.
+- **Service area:** גוש דן והמרכז. 5 services, 14 named areas (typed `ServiceArea[]` with Hebrew
+  slugs reserved for the silo) — **no location pages exist yet**.
 - **Audience:** renovation contractors, builders, engineers and project managers first; homeowners and
   ועדי בתים second. That order shapes the copy — B2B buyers want tolerances, access and scheduling.
 - **Core promise:** precise diamond cutting — open the opening without harming the structure, with
@@ -43,10 +44,13 @@
    (removed 2026-08-17) and must never do it again.
 2. **Never edit `site.config.json` directly.** It is synced downstream from
    `Israeli services sites/roster/sites/betonplus.json`. Edit the roster, then sync.
-3. **The snapshot/enrich pipeline is vestigial — do not build on it.** `scripts/*.mjs`,
-   `content/site.json` (1.1 MB), `lib/content.ts`, `lib/wp.ts`, `lib/enrich/`, `app/enrich.css` and
-   `components/{SiteFrame,SiteAssets,ThemeScripts}.tsx` are leftovers from the abandoned WordPress 1:1
-   port. **Nothing under `app/` imports them.** The live site is the brief-driven build described in §4.
+3. **The WordPress snapshot layer is gone — do not resurrect it.** The 1:1 port's scraper, its
+   1.2 MB `content/site.json`, `lib/content.ts`, `lib/wp.ts`, `lib/enrich/`, `app/enrich.css`, the
+   `SiteFrame`/`SiteAssets`/`ThemeScripts` components, the `snapshot`/`enrich` npm scripts and five
+   dependencies were **deleted in `58d0749` (2026-08-31)**. The `legacy-wordpress-layer` skill keeps
+   the history; `git show 58d0749^:content/site.json` recovers the snapshot if ever needed. The live
+   site is the brief-driven build described in §4. If a doc or skill still names one of those files,
+   the doc is stale — fix the doc.
 4. **Pushing to `main` does not deploy.** Deploys are `wrangler` direct-upload to Cloudflare Pages —
    see §10. `.github/workflows/deploy.yml` is **build-gate CI only** (the GitHub Pages publish steps
    were removed 2026-08-17).
@@ -58,7 +62,7 @@
    `https://www.googletagmanager.com/gtm.js?id=<ID>` returns **200**. Two fabricated ids cost the IL
    fleet 18 days of zero analytics across every site. `GTM-KWGGH438` is verified and live here.
 8. **Never edit generated or vendored output** — `node_modules/`, `vendor/`, `.next/`, `out/`,
-   `out.prev/`, `content/site.json`.
+   `out.prev/`, and `site.config.json` (synced, rule 2).
 
 ---
 
@@ -67,7 +71,8 @@
 Next.js **16.2.9** App Router · React **19** · TypeScript strict (`noUncheckedIndexedAccess` is **not**
 on — don't assume it) · Tailwind **v4** (CSS-first `@theme` in `app/globals.css` — there is no
 `tailwind.config.ts`; the **full** framework including preflight is imported) · a hand-rolled inline-SVG set in
-`components/Icon.tsx` (**`lucide-react` is a declared but entirely unused dependency**) · `@ishub/site-kit` (vendored tarball). Flat layout (no `src/`), path alias
+`components/Icon.tsx` (no icon package — `lucide-react` was removed 2026-08-31) · `@ishub/site-kit` (vendored tarball,
+which also ships `SiteImage` + Cloudflare image transforms for the day photos land). Flat layout (no `src/`), path alias
 `@/* -> ./*`.
 
 **`next.config.ts` — the constraints that shape everything:**
@@ -94,31 +99,34 @@ Next 16 specifics that bite: `params` is a **`Promise`** in `generateMetadata` a
 
 ```
 app/
-  layout.tsx              # metadata template, fonts, GTM, LocalBusiness JSON-LD, <html lang="he-IL" dir="rtl">
-  page.tsx                # homepage
-  sitemap.ts robots.ts    # /sitemap.xml, /robots.txt
-  opengraph-image.tsx     # build-time 1200x630 share card
-  services/page.tsx       # services index
-  services/[slug]/        # 5 pages — Service + BreadcrumbList JSON-LD
+  layout.tsx              # metadata template, fonts, GTM in an explicit <head>, LocalBusiness JSON-LD,
+                          #   <html lang="he-IL" dir="rtl">
+  page.tsx                # homepage (+ WebSite node)
+  not-found.tsx           # Hebrew 404 — Next's default shipped English inside dir="rtl"
+  sitemap.ts robots.ts    # derived from staticRoutes + services; explicit AI-crawler allow list
+  opengraph-image.tsx     # build-time 1200x630 share card (extensionless — typed via public/_headers)
+  services/page.tsx       # services index (CollectionPage)
+  services/[slug]/        # 5 pages — Service + WebPage(author, dateModified) + Person + BreadcrumbList + FAQPage
   pricing/ service-areas/ about/ faq/ contact/ privacy/ accessibility/
   thank-you/              # noindex conversion target — form navigates here; not in sitemap
 components/
   ui.tsx                  # Section, SectionHeading, Button — the primitives
   Header Footer FloatingCTA PageHero CtaBanner ContactSection ContactForm
   Hero TrustBar ServicesGrid WhyUs ProcessSteps Faq ServiceAreasSection
+  CompareTable Hours Byline   # citable tables · LTR-isolated hour ranges · author + עודכן line
   Icon JsonLd
-  SiteFrame SiteAssets ThemeScripts   # ⚠️ vestigial, unused — see §2 rule 3
 lib/
-  site.ts        # ⭐ manifest facade + ALL Hebrew content: services[5], faqs, staticRoutes,
-                 #   serviceAreas[16], navItems, trustStats, processSteps, differentiators
+  site.ts        # ⭐ manifest facade + ALL Hebrew content: services[5] + serviceDepth, faqs/faqGroups,
+                 #   staticRoutes[9], serviceAreas[14] (typed) + serviceAreaGroups, navItems, trustStats,
+                 #   processSteps, differentiators, owner, routeUpdated, price helpers
   seo.ts         # ⭐ pageMetadata() + JSON-LD builders over @ishub/site-kit/seo
-  content.ts wp.ts enrich/   # ⚠️ vestigial WordPress snapshot layer
-site.config.json # SiteManifest — SYNCED FROM THE ROSTER, do not edit here
-docs/            # the acceptance bars every agent cites
+scripts/
+  check-titles.mjs  # postbuild gate: brand exactly once per <title>, no unexpected duplicates
+public/
+  _headers _redirects llms.txt brand/   # edge headers · /reviews/ 301 · AI pointer file · logos
+site.config.json # SiteManifest — SYNCED FROM THE ROSTER (ops/sync-manifest.ps1), do not edit here
+docs/            # the acceptance bars every agent cites (+ manifest-assumptions.md, written by the sync)
 ```
-
-Note the naming trap: **`lib/site.ts` is the live content source; `lib/content.ts` is the dead
-snapshot reader.** The names are the wrong way round relative to the rest of the fleet.
 
 Place by responsibility: reusable primitive → `components/ui.tsx`; page section → its own component in
 `components/`; business fact or copy → `lib/site.ts`.
@@ -135,7 +143,7 @@ site.config.json  (SiteManifest)                     ← never edit directly
         │
         ▼
 lib/site.ts    manifest · site · services · serviceAreas · navItems · telHref · whatsappHref
-        │      + faqs · reviews · trustStats · processSteps · differentiators
+        │      + faqs · owner · trustStats · processSteps · differentiators · routeUpdated
         ├── lib/seo.ts     pageMetadata() · localBusinessJsonLd() · serviceJsonLd()
         │                  · faqJsonLd() · breadcrumbJsonLd()
         ▼
@@ -174,7 +182,7 @@ See the `rtl-hebrew` skill for the full rule set.
 - **TypeScript strict.** No `any` (use `unknown` + narrowing). No non-null `!` to silence the
   compiler — handle the null case.
 - **RSC by default.** Add `"use client"` only for state, effects, or browser APIs. Keep client
-  components small and leaf-level. Currently client: `Header`, `ContactForm`, `ThemeScripts` (unused).
+  components small and leaf-level. Currently client: `Header`, `ContactForm` — nothing else.
 - Imports use the `@/*` alias. No `../../..` chains.
 - Tailwind utilities only, **mobile-first**. Use the `@theme` tokens (`brand`, `steel`, `cta`, `ink`,
   `muted`, `mist`, `line`, `font-heading`, `font-body`) — **never hardcode brand hex in components**.
@@ -238,20 +246,21 @@ The script does the drift check, busts the two staleness traps (npm caches `file
 caches under `.next/`), gates the output, preserves `out.prev/` for rollback, and logs the deploy.
 **Deploying is a production mutation — always ask first.** See the `deploy-betonplus` skill.
 
-`.github/workflows/deploy.yml` and `public/CNAME` are artifacts of the previous GitHub Pages host.
+`.github/workflows/deploy.yml` is a build-gate leftover of the previous GitHub Pages host (`public/CNAME`
+was deleted 2026-08-17; the old origin returns 404).
 
 ---
 
 ## 11. Commands
 
-| Task             | Command                                      |
-| ---------------- | -------------------------------------------- |
-| Dev server       | `npm run dev`                                |
-| Production build | `npm run build`                              |
-| Lint             | `npm run lint`                               |
-| Type-check       | `npm run typecheck`                          |
-| Format / check   | `npm run format` · `npm run format:check`    |
-| Snapshot (dead)  | `npm run snapshot` · `npm run enrich` — §2.3 |
+| Task             | Command                                                                          |
+| ---------------- | -------------------------------------------------------------------------------- |
+| Dev server       | `npm run dev`                                                                    |
+| Production build | `npm run build`                                                                  |
+| Lint             | `npm run lint`                                                                   |
+| Type-check       | `npm run typecheck`                                                              |
+| Format / check   | `npm run format` · `npm run format:check`                                        |
+| Sync manifest    | `ops/sync-manifest.ps1 -Domain betonplus.co.il -DryRun` / `-Confirm` (fleet hub) |
 
 ---
 

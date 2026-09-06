@@ -34,3 +34,21 @@ what light there is.
 **A brief is not evidence.** It describes a picture that does not exist yet. Nothing in it may be
 quoted on the site, and no caption here becomes a claim until the photograph it describes has actually
 been taken on a real job.
+
+## The briefs
+
+Written 2026-09-06 for the owner's first shoot. Every caption carries `[…]` placeholders that are
+filled only from the real job the photo was taken on.
+
+| Brief                                                                                    | Slot                                                  |
+| ---------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| [about-owner-portrait.md](about-owner-portrait.md)                                       | `/about/` avatar (renders an initial today)           |
+| [service-wall-sawing.md](service-wall-sawing.md)                                         | `/services/wall-sawing/` figure                       |
+| [service-core-drilling.md](service-core-drilling.md)                                     | `/services/core-drilling/` figure                     |
+| [service-floor-ceiling-sawing.md](service-floor-ceiling-sawing.md)                       | `/services/floor-ceiling-sawing/` figure              |
+| [service-wire-saw.md](service-wire-saw.md)                                               | `/services/wire-saw/` figure                          |
+| [service-demolition.md](service-demolition.md)                                           | `/services/demolition/` figure                        |
+| [work-gallery-1.md](work-gallery-1.md) · [2](work-gallery-2.md) · [3](work-gallery-3.md) | the future work gallery (roadmap 5.1, after Sprint 6) |
+
+Before any of these ships: strip EXIF (roadmap 6.4), adopt the image pipeline (6.1–6.3), and confirm
+the caption facts with the owner — a brief is not evidence.

@@ -70,30 +70,37 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
 - **`params` is a `Promise`.** `await params` in _both_ `generateMetadata` and the component.
   Destructuring it directly is the most likely regression when copying older App Router code.
 - **Route data is build-time.** It comes from [lib/site.ts](lib/site.ts) — never `fetch` at request
-  time. (`lib/content.ts` is the dead snapshot reader, not this — see `/legacy-wordpress-layer`.)
+  time. `lib/` holds only `site.ts` and `seo.ts`; the old snapshot reader is gone
+  (`/legacy-wordpress-layer`).
 - **Metadata goes through `pageMetadata()`** in [lib/seo.ts](lib/seo.ts), never hand-assembled. The root
   [app/layout.tsx](app/layout.tsx) owns `metadataBase`, the `title.template`, the GTM snippet, the fonts
   and the `<html lang="he-IL" dir="rtl">` shell. Details in `/seo-metadata`.
 - **`app/sitemap.ts` / `app/robots.ts`** use the `MetadataRoute` APIs, not hand-written XML. Both set
-  `dynamic = "force-static"`. Note `sitemap.ts` has a **hand-maintained `staticPaths` array** — a new
-  static route must be added there or it silently misses the sitemap.
+  `dynamic = "force-static"`. `sitemap.ts` is **derived** — `staticRoutes` + `services` from
+  `lib/site.ts`, `lastModified` from `routeUpdated` — and keeps no list of its own. A new static
+  route is registered by adding it to `staticRoutes` (and dating it in `routeUpdated`), or it
+  silently misses the sitemap.
 - **`app/opengraph-image.tsx`** generates the 1200×630 share card at build time via `ImageResponse`.
   It is a real emitted route (`/opengraph-image`) — `lib/seo.ts` points every page's OG/Twitter at it.
 - **Images are unoptimized.** `next/image` emits a bare `<img>` with no `srcset`, so a `sizes` prop is
   inert and misleading. See `/performance-web-vitals` before adding photography.
-- **Adding a static route** means creating `app/<name>/page.tsx` _and_ adding it to `staticPaths` in
-  `app/sitemap.ts`. The build won't warn you.
+- **Adding a static route** means creating `app/<name>/page.tsx` _and_ registering the path in
+  `staticRoutes` in `lib/site.ts`. The build won't warn you. (`/thank-you/` is deliberately absent
+  from that list — it is noindex.)
 
 ## Where the routes are
 
-14 content routes: `/`, `/services/` + 5 service pages, `/pricing/`, `/service-areas/`, `/about/`,
+14 sitemap routes: `/`, `/services/` + 5 service pages, `/pricing/`, `/service-areas/`, `/about/`,
 `/faq/`, `/contact/`, `/privacy/`, `/accessibility/`. Plus `/thank-you/` (noindex, not in the
-sitemap), `/404/`, `/sitemap.xml`, `/robots.txt`, `/opengraph-image`, `/icon.svg`. `/reviews/` was
-removed 2026-08-17 and 301s via `public/_redirects`.
+sitemap), `/404/` + `/_not-found/` (from `app/not-found.tsx`, Hebrew), `/sitemap.xml`,
+`/robots.txt`, `/opengraph-image`, `/icon.svg`. `/reviews/` was removed 2026-08-17 and 301s via
+`public/_redirects`.
 
-All slugs are **ASCII**. If you ever add a Hebrew dynamic route, params arrive percent-encoded during
-export and must be matched with `decodeURIComponent(slug).normalize("NFC")` — skipping that works in
-dev and 404s in production — and `app/sitemap.ts` then needs `encodeURI`. See `/rtl-hebrew`.
+All emitted slugs are **ASCII** today. The first Hebrew dynamic route will be `/locations/[city]/` —
+`serviceAreas[].slug` in `lib/site.ts` is already Hebrew (`תל-אביב`), reserved for it. Hebrew params
+arrive percent-encoded during export and must be matched with
+`decodeURIComponent(slug).normalize("NFC")` — skipping that works in dev and 404s in production —
+and `app/sitemap.ts` then needs `encodeURI` on those URLs. See `/rtl-hebrew`, `/new-city`.
 
 ## Checklist before committing routing/metadata changes
 
@@ -102,6 +109,7 @@ dev and 404s in production — and `app/sitemap.ts` then needs `encodeURI`. See 
 - [ ] `dynamic = "force-static"` set; `dynamicParams = false` on dynamic routes.
 - [ ] `generateStaticParams` still returns every route; `npm run build` generates all pages.
 - [ ] Metadata via `pageMetadata()`; canonical has both slashes.
-- [ ] New route added to `app/sitemap.ts` and present in `out/sitemap.xml`.
+- [ ] New route registered in `staticRoutes` (`lib/site.ts`), dated in `routeUpdated`, and present in
+      `out/sitemap.xml`.
 - [ ] Output stays static-export-compatible (no server-only features).
 - [ ] Gate through `/qa-build-gate`.

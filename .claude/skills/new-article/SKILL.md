@@ -6,8 +6,8 @@ description: Publish a Hebrew knowledge-hub article under /מדריכים/[slug]
 # Publish an article
 
 The site has **no editorial surface at all** — no blog, no guides, no route. That is the whole
-topical-authority and AEO gap in one line (backlog §6.5). `/faq/` is currently the only page holding
-Tier-3 intent, with six short answers.
+topical-authority and AEO gap in one line (backlog §6.5). `/faq/` (grouped FAQs plus the comparison
+tables) is currently the only page holding Tier-3 intent.
 
 A `/מדריכים/` hub is where the Tier-3 questions in `docs/keyword-map.md` §2 get answered properly.
 
@@ -16,8 +16,9 @@ A `/מדריכים/` hub is where the Tier-3 questions in `docs/keyword-map.md` 
 `/מדריכים/` (index) and `/מדריכים/[slug]/` (detail). Fully static-export compatible:
 `export const dynamic = "force-static"`, `dynamicParams = false`, `generateStaticParams`.
 
-Betonplus's existing routes are ASCII, so a Hebrew route is a deliberate departure. If you take it,
-params arrive **percent-encoded** during static export:
+Betonplus's emitted routes are ASCII, but the location slugs reserved in `serviceAreas` are Hebrew
+(`תל-אביב`), so `/מדריכים/` would match the silo's convention rather than depart from it. Either way,
+Hebrew params arrive **percent-encoded** during static export:
 
 ```ts
 const { slug } = await params; // Next 16: params is a Promise
@@ -31,7 +32,8 @@ of it — pick one deliberately.
 
 ## Typed blocks, not MDX
 
-Articles live in `content/articles/<slug>.ts` as typed data:
+Articles live in `lib/articles/<slug>.ts` (or, while there are only a few, a typed `articles` array
+in `lib/site.ts`) as typed data:
 
 ```ts
 export type Block =
@@ -51,7 +53,7 @@ export interface Article {
   description: string;
   datePublished: string;
   dateModified: string; // ISO
-  authorId: string; // → a real named person
+  authorId: string; // "owner" today — resolves to `owner` in lib/site.ts
   heroImage?: { src: string; alt: string };
   blocks: Block[];
   relatedServices: readonly string[];
@@ -64,8 +66,9 @@ already the release gate; strict TS stays meaningful; and — the real reason �
 answer block are derived from the `faq` and `answer` blocks**, so the schema cannot drift from the copy
 as it is edited.
 
-Note `content/` currently holds the dead WordPress snapshot (`content/site.json`). Putting articles in
-`content/articles/` is fine, but say so in the PR — that directory reads as legacy right now.
+There is no `content/` directory any more — the WordPress snapshot that lived there was deleted
+2026-08-31 (`58d0749`, `/legacy-wordpress-layer`). Don't recreate it; typed data lives in `lib/`
+next to `site.ts` and `seo.ts`, and the hub route reads it at build time like every other route.
 
 ## Structure
 
@@ -86,14 +89,21 @@ Note `content/` currently holds the dead WordPress snapshot (`content/site.json`
 ## Schema
 
 `Article` with `headline`, `description`, `image`, `datePublished`, `dateModified`, `author`
-(a `Person` with a **real** name), `publisher` (`@id` → the site-wide business node),
-`mainEntityOfPage`. Plus `BreadcrumbList` (`בית › מדריכים › {title}`) and `FAQPage` derived from the
-`faq` blocks. See `docs/schema-graph.md` §6.
+(`{ "@id": "…/#owner" }`), `publisher` (`@id` → the site-wide business node), `mainEntityOfPage`.
+Plus `BreadcrumbList` (`בית › מדריכים › {title}` — `breadcrumbJsonLd()` prepends בית itself) and
+`FAQPage` derived from the `faq` blocks. See `docs/schema-graph.md` §6.
 
-**The author must be a real named person** — blocked on `docs/business-facts.md` §A, which records that
-**nobody is named anywhere on this site**. **Never invent a byline.** A fabricated author is a worse
-trust signal than an absent one, and this repo shipped three fabricated customers once — removed
-2026-08-17 (backlog §7.1) — don't add a fourth fictional person.
+**`lib/seo.ts` has no `Article` builder yet** — add `articleJsonLd()` beside `webPageJsonLd()`,
+reuse its `{ author: true }` pattern, and emit `personJsonLd()` on the same page so `#owner` resolves
+without a cross-page lookup, exactly as `app/services/[slug]/page.tsx` does.
+
+**The author is a real named person, and one exists:** אור שוורץ, בעלים — `owner` and
+`ownerJobTitle` in `lib/site.ts`, the `Person` node `#owner` from `personJsonLd()`, and the visible
+byline in `components/Byline.tsx` (`<Byline updated={…} />`, already on the service pages; the
+visible surface and the markup must name the same person). Attribute articles to him. Any
+biographical fact beyond what `owner` holds is 🔶 unconfirmed. **Never invent a second byline** —
+this repo shipped three fabricated customers once, removed 2026-08-17 (backlog §7.1); don't add a
+fictional person.
 
 ## Topic selection
 
@@ -112,10 +122,12 @@ for the commercial action.
 ## Steps
 
 1. Pick a Tier-3 question; confirm no existing page already targets it.
-2. Create `content/articles/<slug>.ts`.
+2. Create `lib/articles/<slug>.ts` (or the array entry in `lib/site.ts`).
 3. Write to the structure above; every claim free or 🔶 (`docs/content-standards.md` §6).
-4. Register the slug so `generateStaticParams` and `app/sitemap.ts` pick it up.
-5. Wire `Article` + `BreadcrumbList` + `FAQPage`.
+4. Register the slug so `generateStaticParams` picks it up, and add the article URLs to
+   `app/sitemap.ts` beside `staticRoutes` + `services` (`encodeURI` for a Hebrew slug); date each
+   in `routeUpdated`.
+5. Wire `Article` (new builder) + `BreadcrumbList` + `FAQPage`, plus `personJsonLd()` and `<Byline>`.
 6. Add links from the related service pages back to the article.
 7. `npm run lint && npm run typecheck && npm run format:check && npm run build`; verify the route and
    the sitemap entry.
@@ -126,7 +138,7 @@ for the commercial action.
 - [ ] `answer` block in the first 60 words, complete in the first sentence.
 - [ ] Question-form `<h2>`s; one `<h1>`.
 - [ ] At least one table or comparison worth citing.
-- [ ] Real author, real dates.
+- [ ] Author is `#owner` (`personJsonLd()` + visible `<Byline>`); real dates, also in `routeUpdated`.
 - [ ] `Article` + `BreadcrumbList` + `FAQPage` emitted, FAQ derived from the blocks.
 - [ ] 3+ contextual internal links with descriptive anchors; inbound links added from related pages.
 - [ ] Present in `out/` and `out/sitemap.xml`.

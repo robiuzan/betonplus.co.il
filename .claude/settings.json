@@ -7,8 +7,6 @@
       "Bash(npm run dev)",
       "Bash(npm run format)",
       "Bash(npm run format:check)",
-      "Bash(npm run snapshot:*)",
-      "Bash(npm run enrich:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",

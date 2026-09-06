@@ -31,7 +31,8 @@ which is why `end-*`/`start-*` utilities matter physically and not just semantic
 
 - ✅ `FloatingCTA` puts **התקשרו** and **וואטסאפ** in a two-up fixed bar at the very bottom — squarely
   in the easy band, full width, `py-3.5` (comfortably over 44 px).
-- ✅ `<main>` carries `pb-16 lg:pb-0` so the bar never covers content.
+- ✅ A `pb-16 lg:pb-0` wrapper **around `<Footer>`** in `app/layout.tsx` keeps the bar off the footer's
+  privacy/accessibility links (on `<main>` it left them unclickable — fixed 2026-08-31).
 - 🟡 The **header call button sits in the hard band** on a large phone. It is a duplicate of an action
   already in the easy band, so this is acceptable — but it means the header CTA should never be the
   _only_ call affordance on a page.

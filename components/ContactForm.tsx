@@ -23,6 +23,10 @@ interface FieldErrors {
  * Conversion path: confirmed success → trackEvent("lead_submit") → navigate to /thank-you/
  * (the URL-based conversion GA4/Ads can count). Delivery failure → offer a WhatsApp deep link
  * prefilled with the user's own submission, so the lead is never simply lost.
+ *
+ * dataLayer contract (docs/data-tracking-infrastructure.md §3): `form_error` when validation
+ * blocks a submit (which field, never its value), `lead_fallback` when delivery failed and the
+ * WhatsApp fallback is shown, `lead_submit` only on confirmed delivery. No PII in any of them.
  */
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 const WEB3FORMS_KEY = site.formAccessKey ?? process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "";
@@ -64,6 +68,7 @@ export default function ContactForm() {
     setErrors(nextErrors);
     if (nextErrors.name || nextErrors.phone) {
       (nextErrors.name ? nameRef : phoneRef).current?.focus();
+      trackEvent("form_error", { form: "lead", field: nextErrors.name ? "name" : "phone" });
       return;
     }
 
@@ -95,6 +100,7 @@ export default function ContactForm() {
         return;
       }
       setStatus("error");
+      trackEvent("lead_fallback", { form: "lead", reason: "no_key" });
       return;
     }
 
@@ -119,7 +125,10 @@ export default function ContactForm() {
       trackEvent("lead_submit", { form: "lead" });
       router.push("/thank-you/");
     } catch {
+      // Delivery failed → the WhatsApp fallback renders below. Counted separately from
+      // lead_submit so a delivery outage shows up as a spike here, not as silence.
       setStatus("error");
+      trackEvent("lead_fallback", { form: "lead", reason: "delivery" });
     }
   }
 

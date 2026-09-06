@@ -4,7 +4,7 @@
  */
 import type { Metadata } from "next";
 import * as kit from "@ishub/site-kit/seo";
-import { site, services, faqs, manifest, owner, updatedFor } from "@/lib/site";
+import { site, services, faqs, manifest, owner, ownerJobTitle, updatedFor } from "@/lib/site";
 
 const absolute = (path: string): string => `${site.url}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -91,7 +91,7 @@ export function personJsonLd(): JsonLd {
     "@type": "Person",
     "@id": `${site.url}/#owner`,
     name: owner.name,
-    jobTitle: owner.role.split(",")[0]?.trim() ?? owner.role,
+    jobTitle: ownerJobTitle,
     worksFor: { "@id": `${site.url}/#business` },
     url: absolute("/about/"),
   };
@@ -138,7 +138,23 @@ export function breadcrumbJsonLd(crumbs: { name: string; path: string }[]): Json
  * `isPartOf` points at the WebSite node, which only the homepage emits; that is a
  * valid cross-page reference and is how schema.org expects the graph to link up.
  */
-function pageNode(type: string, path: string, name: string, description: string): JsonLd {
+interface PageNodeOptions {
+  /**
+   * Attribute the page to the named owner (`Person` `#owner`). Set it only on pages that
+   * render a visible byline naming him — the markup and the visible surface must agree
+   * (roadmap 5.3, eeat-and-trust §4). The referenced node must be emitted on the same page
+   * via `personJsonLd()` so the graph resolves without a cross-page lookup.
+   */
+  author?: boolean;
+}
+
+function pageNode(
+  type: string,
+  path: string,
+  name: string,
+  description: string,
+  opts: PageNodeOptions = {},
+): JsonLd {
   const updated = updatedFor(path);
   return {
     "@context": "https://schema.org",
@@ -151,14 +167,20 @@ function pageNode(type: string, path: string, name: string, description: string)
     // Real content dates from `routeUpdated`, never build time — a date that moves on
     // every deploy is a freshness signal that means nothing (backlog §6.3).
     ...(updated ? { dateModified: updated } : {}),
+    ...(opts.author ? { author: { "@id": `${site.url}/#owner` } } : {}),
     isPartOf: { "@id": `${site.url}/#website` },
     about: { "@id": `${site.url}/#business` },
   };
 }
 
 /** WebPage — for leaf content routes that are not an index, an about or a contact page. */
-export function webPageJsonLd(path: string, name: string, description: string): JsonLd {
-  return pageNode("WebPage", path, name, description);
+export function webPageJsonLd(
+  path: string,
+  name: string,
+  description: string,
+  opts?: PageNodeOptions,
+): JsonLd {
+  return pageNode("WebPage", path, name, description, opts);
 }
 
 /** CollectionPage — for index routes that list children (`/services/`, `/service-areas/`). */

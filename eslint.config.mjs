@@ -19,10 +19,8 @@ const eslintConfig = defineConfig([
     // ours to fix, and linting it made `npm run lint` unusable as a release gate.
     "public/**",
     "vendor/**",
-    // The abandoned WordPress snapshot layer (CLAUDE.md section 2, rule 3).
-    // Frozen legacy, imported by nothing under app/.
-    "scripts/**",
-    "lib/enrich/**",
+    // scripts/check-titles.mjs (the postbuild title gate) is deliberately NOT ignored:
+    // the WordPress snapshot layer that once lived here was deleted in 58d0749.
   ]),
 ]);
 

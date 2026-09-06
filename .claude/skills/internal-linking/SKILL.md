@@ -1,52 +1,57 @@
 ---
 name: internal-linking
-description: Build the link mesh on betonplus — relevance-based related services instead of array order, the dead-end service-area chips, service↔location cross-links once the silo exists, contextual in-copy links (currently zero), a header that reaches every service in one hop, breadcrumbs matched to BreadcrumbList, and a zero-orphan check. Use when wiring related links, fixing orphans, or auditing navigation. Triggers: "internal linking", "orphan pages", "navigation", "related links", "footer links", "breadcrumbs".
+description: Build the link mesh on betonplus — the relatedServices adjacency map, the header services dropdown that puts every service one hop from every page, the deliberately unlinked service-area chips, service↔location cross-links once the silo exists, maintaining 2–3 contextual in-copy links per depth entry, breadcrumbs matched to BreadcrumbList, and a zero-orphan check. Use when wiring related links, fixing orphans, or auditing navigation. Triggers: "internal linking", "orphan pages", "navigation", "related links", "footer links", "breadcrumbs".
 ---
 
 # Internal linking
 
-Fifteen content pages with a healthy skeleton and almost no connective tissue. Nothing is orphaned —
-but nothing is _contextually_ linked either.
+Fifteen content routes, a healthy skeleton, zero orphans, and — since Sprint 2 (2026-08-31) — a real
+first layer of connective tissue: every service one hop from every page, an adjacency map for
+related services, and links inside the copy. What remains is maintenance, and the silo.
 
 ## Current state (backlog §9)
 
-| Item                               | Detail                                                                                                       |
-| ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| ✅ Zero orphans                    | every emitted content route has an inbound internal link                                                     |
-| ✅ Breadcrumbs                     | render **and** emit `BreadcrumbList` from the same crumb data on every nested route                          |
-| ✅ Header + footer                 | 8 nav items reach every static page; the footer also lists all 5 services                                    |
-| ⚠️ Related services by array order | `services.filter(≠self).slice(0, 3)` (`app/services/[slug]/page.tsx:40`) — the first three absorb the equity |
-| ⚠️ Service-area chips              | 14 chips linking **nowhere** — a dead-end page                                                               |
-| ❌ Contextual in-copy links        | **zero**. Every internal link is a nav item, a card or a chip                                                |
-| ❌ Service ↔ location              | no silo exists yet                                                                                           |
+| Item                             | Detail                                                                                                               |
+| -------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| ✅ Zero orphans                  | every emitted content route has an inbound internal link                                                             |
+| ✅ Breadcrumbs                   | render **and** emit `BreadcrumbList` from the same crumb data on every nested route (13 routes)                      |
+| ✅ Header + footer               | 8 nav items reach every static page; the footer also lists all 5 services                                            |
+| ✅ Header reaches every service  | services dropdown (desktop) + inline list under שירותים (mobile) — every service is one hop from every page          |
+| ✅ Related services by relevance | `relatedServices` adjacency map in `lib/site.ts`, read by `app/services/[slug]/page.tsx`                             |
+| ✅ Contextual in-copy links      | per-service "קשור לנושא" blocks (`serviceDepth[slug].links`); prose links on `/faq/`, `/service-areas/`, `/contact/` |
+| ⚠️ Service-area chips            | 14 chips, deliberately unlinked until the silo exists; the section carries an onward link to `/service-areas/`       |
+| ❌ Service ↔ location            | no silo exists yet                                                                                                   |
 
-## 1. Relevance-based related services
+## 1. Relevance-based related services — done
 
-`slice(0, 3)` always yields the same three services in array order, so wall-sawing and core-drilling
-hoard the internal equity and wire-saw/demolition get almost none. Replace it with an explicit
-adjacency map in `lib/site.ts`:
+The old `slice(0, 3)` handed all internal equity to whichever services came first in the array.
+`app/services/[slug]/page.tsx` now reads the explicit adjacency map in `lib/site.ts`:
 
 ```ts
-const relatedServices: Record<string, readonly string[]> = {
+export const relatedServices: Record<string, readonly string[]> = {
   "wall-sawing": ["core-drilling", "demolition", "floor-ceiling-sawing"],
-  "core-drilling": ["wall-sawing", "floor-ceiling-sawing"],
-  "floor-ceiling-sawing": ["wall-sawing", "wire-saw"],
-  "wire-saw": ["demolition", "floor-ceiling-sawing"],
-  demolition: ["wire-saw", "wall-sawing"],
+  "core-drilling": ["wall-sawing", "floor-ceiling-sawing", "wire-saw"],
+  "floor-ceiling-sawing": ["wall-sawing", "wire-saw", "demolition"],
+  "wire-saw": ["demolition", "floor-ceiling-sawing", "core-drilling"],
+  demolition: ["wire-saw", "wall-sawing", "floor-ceiling-sawing"],
 };
 ```
 
-With five services the difference in reach is small; the difference in _relevance_ is not. A visitor on
-the wire-saw page is far likelier to want הריסה מבוקרת than a generic next card.
+A new service goes in on **both sides** of each edge (`/new-service`). With five services the
+difference in reach is small; the difference in _relevance_ is not — a visitor on the wire-saw page
+is far likelier to want הריסה מבוקרת than a generic next card.
 
 ## 2. The service-area chips
 
-`/service-areas/` renders 16 area names that link nowhere. Two honest options:
+`/service-areas/` renders the 14 `serviceAreas` entries (grouped via `serviceAreaGroups`) as plain,
+unlinked chips — deliberately: `slug` is reserved for `/locations/[city]/` and nothing may link to it
+until that route exists. Two honest options:
 
 - **Build the silo** (`/new-city`) and link each chip to its page — but only after the service pages
   clear the depth bar — both now done (depth in wave 2, coverage 2026-08-30). See `/local-seo-il` §5–§6.
-- **Until then**, keep them as plain text and give the page a real introduction (250-word index floor,
-  `docs/content-standards.md` §1) that links contextually into the service pages instead.
+- **Until then** — the current state — they stay plain text, and the page carries a real
+  introduction (answer block + logistics) that links contextually into the service pages, `/faq/`
+  and `/pricing/` instead.
 
 What you must not do is link 14 chips to 14 thin pages generated from a template. That is the doorway
 pattern, and the penalty lands on the domain.
@@ -58,27 +63,33 @@ by proximity to the core service area, not by array order. On each **location** 
 service list plus 2–4 **nearby locations** driven by a `nearby?: readonly string[]` field chosen by
 real geographic adjacency. The edge is bidirectional — a one-way `nearby` link is a modelling error.
 
-## 4. Contextual in-copy links
+## 4. Contextual in-copy links — maintain them
 
-Zero exist today, which means the site emits no descriptive anchor text at all — only nav labels and
-card titles. As the service pages gain depth (`/new-service`), each should carry 2–3 links **inside the
-prose**:
+The first layer exists: each `serviceDepth[slug].links` entry renders a "קשור לנושא" block with
+descriptive Hebrew anchors, and `/faq/`, `/service-areas/` and `/contact/` link from inside their
+prose. The rule from here: **every depth entry keeps 2–3 links inside the copy** (`/new-service`),
+and the moment the silo exists, each service links to its areas and each area page back to the
+services (§3).
 
 - ✅ `<Link href="/services/core-drilling/">קידוח ליבות למעבר צנרת</Link>`
 - ❌ "לחצו כאן", "למידע נוסף", a bare URL
 
 Anchor text is a ranking signal, and it is the cheapest one on this list.
 
-## 5. Header reach
+## 5. Header reach — done, and the lesson
 
-The header's 8 nav items reach every static page but **not the individual services** — those are one
-hop further, via `/services/`. With only five services, a simple dropdown on the שירותים item closes
-that gap.
+`components/Header.tsx` has a services disclosure on the שירותים item (a desktop dropdown; an inline
+list under שירותים in the mobile menu), so every service is one hop from every page. It is
+keyboard-operable — `aria-expanded`, `aria-controls`, Escape closes and returns focus to the trigger,
+click-outside dismisses — and the state lives in the same `"use client"` leaf as the mobile toggle.
 
-Constraints if you build it: `Header.tsx` is already `"use client"` for the mobile toggle — keep any
-new state in the same leaf. Make it keyboard-operable (`aria-expanded`, `aria-controls`, Escape closes,
-focus returns to the trigger). The current mobile menu has **none** of those (backlog §11.1) — fix that
-in the same pass rather than copying it.
+The lesson worth keeping: **the dropdown is always rendered and toggled with `hidden`**, never mounted
+on open. Behind `{servicesOpen && …}` the five links were absent from the static export entirely —
+the SEO half of the task silently not happening. Verify any change to it by grepping `out/`:
+
+```bash
+grep -c 'href="/services/wire-saw/"' out/pricing/index.html   # must be ≥ 1 on every route
+```
 
 ## 6. Breadcrumbs
 
@@ -106,9 +117,10 @@ which is correct. **Target: nothing else ever.**
 
 ## Checklist
 
-- [ ] Related services come from an adjacency map, not `slice()`.
+- [ ] Related services come from `relatedServices`, with the new slug on both sides of each edge.
 - [ ] Every chip or card either links somewhere real or is honestly plain text.
-- [ ] Every new content block carries 2–3 contextual in-copy links with descriptive anchors.
+- [ ] Every depth entry carries 2–3 contextual in-copy links with descriptive anchors.
+- [ ] Header service links present in the static HTML of every route (grep `out/`).
 - [ ] Breadcrumbs render **and** emit `BreadcrumbList` from the same array.
 - [ ] The orphan check returns nothing beyond `/404/` and `/_not-found/`.
 

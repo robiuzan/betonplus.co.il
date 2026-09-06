@@ -80,7 +80,9 @@ for (const route of missing) {
   console.error(`✖ missing <title>  ${route}`);
 }
 for (const [title, routes] of duplicates) {
-  console.error(`✖ duplicate title across ${routes.length} routes: ${title}\n    ${routes.join(", ")}`);
+  console.error(
+    `✖ duplicate title across ${routes.length} routes: ${title}\n    ${routes.join(", ")}`,
+  );
 }
 
 if (doubled.length || missing.length || duplicates.length) {
@@ -91,4 +93,6 @@ if (doubled.length || missing.length || duplicates.length) {
   process.exit(1);
 }
 
-console.log(`check-titles: ${byTitle.size} unique titles across the export, brand appears once each.`);
+console.log(
+  `check-titles: ${byTitle.size} unique titles across the export, brand appears once each.`,
+);

@@ -15,17 +15,17 @@ identity/NAP/schema field, sync, and remove the marker.
 
 ## A. Identity & history
 
-| Fact               | Current value                      | Source                          | Status                                         |
-| ------------------ | ---------------------------------- | ------------------------------- | ---------------------------------------------- |
-| Brand name         | בטון פלוס                          | roster manifest                 | ✅ confirmed                                   |
-| Legal entity / ח.פ | `legalName: "בטון פלוס"`           | roster, echoed `lib/site.ts:31` | 🔶 is this the registered entity?              |
-| Founded            | 2005                               | roster `foundedYear`            | 🔶 owner-asserted, never evidenced             |
-| "מעל 20 שנה"       | `lib/site.ts:37` `yearsLabel`      | derived from 2005               | ✅ consistent **if** 2005 is right             |
-| Named person       | **אור שוורץ** — בעלים              | owner-supplied 2026-08-30       | ✅ name + photo consent given                  |
-| His biography      | `owner` in `lib/site.ts`           | his own words, 2026-08-30       | ✅ published on `/about/`                      |
-| His years in trade | "למעלה מעשור" (his phrasing)       | owner-supplied 2026-08-30       | 🔶 **held back — conflicts with "מעל 20 שנה"** |
-| Address            | region only (`מרכז`, `IL`)         | roster `schema.address`         | 🔶 street address? or deliberate?              |
-| Hours              | א׳–ה׳ 07:00–18:00 · ו׳ 07:00–13:00 | `lib/site.ts:48`                | 🔶 marked confirm in code                      |
+| Fact               | Current value                      | Source                                                                                                                                                                                                                                                                                                                                                           | Status                                         |
+| ------------------ | ---------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| Brand name         | בטון פלוס                          | roster manifest                                                                                                                                                                                                                                                                                                                                                  | ✅ confirmed                                   |
+| Legal entity / ח.פ | `legalName: "בטון פלוס"`           | roster, echoed in `lib/site.ts` (`site.legalName`)                                                                                                                                                                                                                                                                                                               | 🔶 is this the registered entity?              |
+| Founded            | 2005                               | roster `foundedYear` → `foundingDate` in the JSON-LD on every page, plus the literals in `lib/site.ts` (FAQ answer, trustStats, differentiator), `components/Hero.tsx` (chip + stat) and `app/about/page.tsx` (hero lead, AboutPage description, first paragraph) — **all marked 🔶 since 2026-09-06**; removed from the `/about/` meta description the same day | 🔶 owner-asserted, never evidenced             |
+| "מעל 20 שנה"       | `site.yearsLabel` in `lib/site.ts` | derived from 2005                                                                                                                                                                                                                                                                                                                                                | ✅ consistent **if** 2005 is right             |
+| Named person       | **אור שוורץ** — בעלים              | owner-supplied 2026-08-30                                                                                                                                                                                                                                                                                                                                        | ✅ name + photo consent given                  |
+| His biography      | `owner` in `lib/site.ts`           | his own words, 2026-08-30                                                                                                                                                                                                                                                                                                                                        | ✅ published on `/about/`                      |
+| His years in trade | "למעלה מעשור" (his phrasing)       | owner-supplied 2026-08-30                                                                                                                                                                                                                                                                                                                                        | 🔶 **held back — conflicts with "מעל 20 שנה"** |
+| Address            | region only (`מרכז`, `IL`)         | roster `schema.address`                                                                                                                                                                                                                                                                                                                                          | 🔶 street address? or deliberate?              |
+| Hours              | א׳–ה׳ 07:00–18:00 · ו׳ 07:00–13:00 | `hoursLines` in `lib/site.ts`                                                                                                                                                                                                                                                                                                                                    | 🔶 marked confirm in code                      |
 
 **✅ The anonymity problem is solved (2026-08-30).** אור שוורץ, בעלים, is named on `/about/` in his own
 words, with a `Person` node in the graph (`#owner`, `worksFor` the business — deliberately **not**
@@ -52,15 +52,15 @@ Until one of those is confirmed, neither figure gains evidence and the bio ships
 
 ## B. Proof & authority — the site's biggest liability
 
-| Fact                | Current value                                                                           | Source                    | Status                                     |
-| ------------------- | --------------------------------------------------------------------------------------- | ------------------------- | ------------------------------------------ |
-| Customer reviews    | none published — the 3 invented testimonials + `/reviews/` route **removed 2026-08-17** | —                         | ✅ resolved; real GBP reviews still needed |
-| Google rating       | —                                                                                       | none                      | 🔶 does a GBP exist at all?                |
-| Project count       | `+1,000 פרויקטים בוצעו`                                                                 | `lib/site.ts:253`         | 🔶 marked confirm in code                  |
-| Insurance (צד ג׳)   | claimed 3×                                                                              | `lib/site.ts:254,291,328` | 🔶 policy? cover amount?                   |
-| Licences / תעודות   | —                                                                                       | nowhere                   | 🔶 any certification to show?              |
-| `schema.sameAs`     | `[]`                                                                                    | roster                    | 🔶 no off-site profile at all              |
-| Photos of real work | **none** — `public/` has brand only                                                     | —                         | 🔶 can the owner supply photos?            |
+| Fact                | Current value                                                                               | Source                               | Status                                     |
+| ------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------ | ------------------------------------------ |
+| Customer reviews    | none published — the 3 invented testimonials + `/reviews/` route **removed 2026-08-17**     | —                                    | ✅ resolved; real GBP reviews still needed |
+| Google rating       | —                                                                                           | none                                 | 🔶 does a GBP exist at all?                |
+| Project count       | `+1,000 פרויקטים בוצעו`                                                                     | `trustStats` in `lib/site.ts`        | 🔶 marked confirm in code                  |
+| Insurance (צד ג׳)   | claimed **4×** (three copy sites in `lib/site.ts` + the hero chip in `components/Hero.tsx`) | `grep -rn "צד ג" lib app components` | 🔶 policy? insurer? cover amount?          |
+| Licences / תעודות   | —                                                                                           | nowhere                              | 🔶 any certification to show?              |
+| `schema.sameAs`     | `[]`                                                                                        | roster                               | 🔶 no off-site profile at all              |
+| Photos of real work | **none** — `public/` has brand only                                                         | —                                    | 🔶 can the owner supply photos?            |
 
 **✅ Resolved 2026-08-17.** The three invented testimonials (אבי כהן, מאיה לוי, דניאל אזולאי) and the
 `/reviews/` route were **removed**; `public/_redirects` 301s the old URL, and a note at the former
@@ -80,19 +80,20 @@ exist.** Currently the graph correctly emits none.
 
 ## C. Commercial terms
 
-| Fact                           | Current value           | Source                    | Status                     |
-| ------------------------------ | ----------------------- | ------------------------- | -------------------------- |
-| ניסור קירות — price from       | `₪150 למ״ר`             | `lib/site.ts:122`         | 🔶                         |
-| קידוח יהלום — price from       | `₪190 למ׳`              | `lib/site.ts:147`         | 🔶                         |
-| רצפות/תקרות · wire saw · הריסה | "הצעת מחיר" (no number) | `lib/site.ts:172,197,222` | ✅ safe                    |
-| Minimum call-out / travel fee  | —                       | nowhere                   | 🔶                         |
-| Warranty / אחריות              | not claimed             | —                         | ✅ nothing to substantiate |
-| Payment terms, VAT inclusion   | —                       | nowhere                   | 🔶                         |
+| Fact                           | Current value           | Source                                  | Status                     |
+| ------------------------------ | ----------------------- | --------------------------------------- | -------------------------- |
+| ניסור קירות — price from       | `₪150 למ״ר`             | `services[].priceFrom` (wall-sawing)    | 🔶                         |
+| קידוח יהלום — price from       | `₪190 למ׳`              | `services[].priceFrom` (core-drilling)  | 🔶                         |
+| רצפות/תקרות · wire saw · הריסה | "הצעת מחיר" (no number) | `services[].priceFrom` (three services) | ✅ safe                    |
+| Minimum call-out / travel fee  | —                       | nowhere                                 | 🔶                         |
+| Warranty / אחריות              | not claimed             | —                                       | ✅ nothing to substantiate |
+| Payment terms, VAT inclusion   | —                       | nowhere                                 | 🔶                         |
 
-**Consistency check — currently passing.** `/pricing/` renders `services[].priceFrom` directly, and
-`faqs[0]` (`lib/site.ts:308`) restates `₪150` / `₪190` as literals. The two agree today, but the FAQ is
-a **hand-copied duplicate**: change a `priceFrom` and the FAQ silently contradicts the table on the
-same page. Interpolate it. The fleet has already shipped that exact bug once on another site.
+**Consistency check — single-sourced since 2026-08-24.** Every price on the site derives from
+`services[].priceFrom` through `priceOf()` / `priceAmount()` / `priceLabel()` in `lib/site.ts` — the
+pricing table, the FAQ answer and the hero chips. Change a `priceFrom` and every surface follows.
+(The FAQ used to restate `₪150`/`₪190` as hand-copied literals; the hero re-introduced the same bug
+once and was fixed 2026-09-01. Any new price literal in JSX is a regression.)
 
 The `* המחירים הם מחירי התחלה להמחשה בלבד` disclaimer on `/pricing/` is doing real work — keep it.
 
@@ -146,14 +147,14 @@ location silo (`/new-city`) and for `/pricing/`.
 
 ## F. Infrastructure — owner-only changes
 
-| Item                             | State                                                                                                                                                                            |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| GTM container                    | ✅ `GTM-KWGGH438` — verified 200, live in production                                                                                                                             |
-| GA4 property for betonplus.co.il | ✅ `G-VMVP7XQKMG` — supplied 2026-08-30, recorded in the roster. ⚠️ **No data flows until** the GTM container carries a GA4 tag gated on a `betonplus.co.il` hostname condition. |
-| Search Console verification      | ✅ resolved 2026-08-17 — token lives in the roster manifest (`analytics.googleSiteVerification`), synced down, read from the manifest in `app/layout.tsx`                        |
-| Google עסק שלי (GBP)             | 🔶 unknown whether one exists                                                                                                                                                    |
-| Cloudflare AI-crawler policy     | ✅ **verified live 2026-08-30** — `robots.txt` matches `app/robots.ts` exactly; the managed block is gone. Still a zone setting: re-verify with `curl`, never infer from source. |
-| Security headers                 | ✅ **verified live 2026-08-30** — HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy and the report-only CSP all present on the origin response. |
+| Item                             | State                                                                                                                                                                                                                                                |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GTM container                    | ✅ `GTM-KWGGH438` — verified 200, live in production                                                                                                                                                                                                 |
+| GA4 property for betonplus.co.il | ✅ `G-VMVP7XQKMG` — supplied 2026-08-30, in the roster, synced to `site.config.json` 2026-09-06. The live container routes hostname `betonplus.co.il` to it (page views flow). ⚠️ **Lead events are not yet tagged in the container** — roadmap 7.3. |
+| Search Console verification      | ✅ resolved 2026-08-17 — token lives in the roster manifest (`analytics.googleSiteVerification`), synced down, read from the manifest in `app/layout.tsx`                                                                                            |
+| Google עסק שלי (GBP)             | 🔶 unknown whether one exists                                                                                                                                                                                                                        |
+| Cloudflare AI-crawler policy     | ✅ **verified live 2026-08-30** — `robots.txt` matches `app/robots.ts` exactly; the managed block is gone. Still a zone setting: re-verify with `curl`, never infer from source.                                                                     |
+| Security headers                 | ✅ **verified live 2026-08-30** — HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy and the report-only CSP all present on the origin response.                                                                     |
 
 _(The Search Console token drift was resolved 2026-08-17 — the value now lives in the roster manifest,
 so a sync manages it and cloned sites no longer inherit betonplus's token.)_

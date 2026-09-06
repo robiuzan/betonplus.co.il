@@ -42,12 +42,14 @@ is an upper bound — see [data-tracking-infrastructure.md](data-tracking-infras
 
 ## 2. Navigation principles
 
-- **Every service reachable in one hop from the header.** The header currently exposes flat
-  `navItems`; the five services sit one level deeper behind `/services/`. A dropdown or a mega-menu
-  section closes that gap without a new page.
+- **Every service reachable in one hop from the header.** ✅ Satisfied 2026-08-31: a services
+  disclosure in `Header.tsx` (desktop dropdown, inline nested list on mobile). It is **always rendered
+  and toggled with `hidden`** — a conditionally mounted menu is invisible to crawlers, and the first
+  version silently omitted all five links from the static export. Verify by grepping `out/`.
 - **≤3 clicks from home to any indexable route.** Currently satisfied.
-- **Zero orphans, zero dead ends.** The 16 area chips on `/service-areas/` link nowhere — they are the
-  site's one dead end today, and they resolve automatically when the location silo ships.
+- **Zero orphans, zero dead ends.** The 14 area chips on `/service-areas/` are **deliberately**
+  unlinked until the location silo ships (linking them to pages that do not exist is the doorway trap);
+  the page itself links onward to every service, `/faq/` and `/pricing/`, so it is not a dead end.
 - **Breadcrumbs must match `BreadcrumbList`.** Visible trail and JSON-LD are one source, never two.
 - **Descriptive Hebrew anchors.** `ניסור קירות בטון` — never "לחצו כאן", never a bare URL.
 - **Footer is a sitemap, not a decoration** — every silo hub and every service.
@@ -77,18 +79,22 @@ cost" question · a CTA that scrolls out of reach on mobile.
 Every conversion element is instrumented today. Keep this table true — a new CTA without a
 `data-cta` is invisible to GTM.
 
-| Surface              | `data-cta` values                                  |
-| -------------------- | -------------------------------------------------- |
-| Header               | `header-call`                                      |
-| Hero                 | `hero-call`                                        |
-| Sticky bar / bubble  | `sticky-call`, `sticky-whatsapp`                   |
-| Closing banner       | `finalcta-call`, `finalcta-whatsapp`               |
-| Footer               | `footer-call`, `footer-whatsapp`, `footer-email`   |
-| Service page sidebar | `sidebar-call`, `sidebar-whatsapp`, `sidebar-form` |
-| Pricing              | `pricing-whatsapp`, `pricing-form`                 |
-| Form                 | `form-submit`, `form-whatsapp-fallback`            |
-| Thank-you            | `thankyou-call`, `thankyou-whatsapp`               |
-| Contact section      | `{d.cta}` — per-channel, from the data             |
+| Surface              | `data-cta` values                                                                |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Header               | `header-call`                                                                    |
+| Hero                 | `hero-call`, `hero-form`                                                         |
+| Sticky mobile bar    | `sticky-call`, `sticky-whatsapp`                                                 |
+| Desktop bubble       | `bubble-whatsapp` (renamed from `sticky-whatsapp` 2026-08-31 so the two differ)  |
+| Closing banner       | `finalcta-call`, `finalcta-whatsapp`                                             |
+| Footer               | `footer-call`, `footer-whatsapp`, `footer-email`                                 |
+| Service page sidebar | `sidebar-call`, `sidebar-whatsapp`, `sidebar-form`                               |
+| Pricing              | `pricing-call`, `pricing-whatsapp`, `pricing-form`                               |
+| Form                 | `form-submit`, `form-whatsapp-fallback`                                          |
+| Thank-you            | `thankyou-call`, `thankyou-whatsapp`                                             |
+| 404                  | `notfound-call`, `notfound-whatsapp`, `notfound-home`                            |
+| Contact section      | `contact-call`, `contact-whatsapp`, `contact-email` — per-channel, from the data |
+
+24 unique values, each used exactly once in source (`grep -rhoE 'data-cta="[^"]+"' app components \| sort -u`).
 
 `components/ui.tsx` `Button` accepts `data-cta` as a first-class prop. Use it; do not wrap a raw `<a>`.
 
@@ -139,8 +145,9 @@ Strict-Transport-Security: max-age=31536000; includeSubDomains
 X-Frame-Options: SAMEORIGIN
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
-Permissions-Policy: camera=(), microphone=(), geolocation=(), interest-cohort=()
-Content-Security-Policy-Report-Only: ...
+Permissions-Policy: camera=(), microphone=(), geolocation=(), browsing-topics=(), payment=(), usb=(), serial=(), midi=(), display-capture=()
+! Access-Control-Allow-Origin        # detaches the Pages default wildcard (2026-09-06)
+Content-Security-Policy-Report-Only: ...   # no report-to yet — see roadmap 8.1
 ```
 
 `public/_redirects` carries the `/reviews/` → `/` 301 from the testimonial removal.
@@ -193,4 +200,4 @@ Promoting early breaks GTM silently and takes analytics down with it.
 | `/pricing/` states two 🔶 numbers and three "הצעת מחיר" placeholders; a cost table by thickness would convert far better — **blocked on owner-confirmed pricing** | 🟠  |
 | No photography — the strongest conversion asset for a visual trade is entirely absent ([eeat-and-trust.md](eeat-and-trust.md) §6)                                 | 🟠  |
 | No visible response-time commitment (nothing confirmed to commit to)                                                                                              | 🟡  |
-| The 16 area chips are a dead end                                                                                                                                  | 🟡  |
+| The 14 area chips stay unlinked until the silo exists (deliberate — backlog §9.3); the page is not a dead end                                                     | ⚪  |

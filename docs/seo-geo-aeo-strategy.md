@@ -70,7 +70,9 @@ Three silos, one hub each, cross-linked in both directions.
 - **A page belongs to exactly one silo.** `/pricing/` and `/faq/` are cross-silo support, not silo
   members; they link _into_ silos, never form a fourth one.
 - **Cross-silo links are contextual, in-copy, and descriptive** — `ניסור קירות בטון ברמת גן`, never
-  "לחצו כאן". There are currently **zero** in-copy contextual links; that is a backlog §9 item.
+  "לחצו כאן". Today: per-service "קשור לנושא" blocks, prose links on `/faq/`, `/service-areas/`,
+  `/pricing/` and `/contact/`, and a header dropdown that puts every service one hop from every page.
+  Still missing: links inside the `serviceDepth` body copy, and service ↔ city once the silo exists.
 
 ### Expansion order — do not reorder this
 
@@ -121,9 +123,9 @@ Pages built before the profile exists rank into a vacuum.
 
 ### Hebrew place grammar
 
-`ב` + city is not uniform. `serviceAreas` is a flat `string[]` with no `kind`/`prefixed` fields, so any
-template that interpolates `ב${name}` will produce wrong Hebrew for regions. Fix the data shape
-**before** the first city page — see the `/new-city` skill.
+`ב` + city is not uniform. Since 2026-08-31 `serviceAreas` is a typed `ServiceArea[]` with `kind` and
+`prefixed` (and a Hebrew `slug` reserved for the silo), so a template must use `prefixed` — never
+interpolate a bare `ב${name}`, which produces wrong Hebrew for regions. See the `/new-city` skill.
 
 ---
 
@@ -131,12 +133,12 @@ template that interpolates `ב${name}` will produce wrong Hebrew for regions. Fi
 
 An answer engine has to do four things in order. A failure at any step makes the next three moot.
 
-| #   | Step          | Our state                                                                                                                                                                                                                                                                |
-| --- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | **Reach**     | ✅ `app/robots.ts` names 11 AI agents in an explicit allow list. ⚠️ Cloudflare's managed robots.txt can prepend an override at the edge — it blocked everything until at least 2026-08-17. **Verify with `curl https://betonplus.co.il/robots.txt`, never from source.** |
-| 2   | **Parse**     | ✅ Static HTML, answers in the DOM at first paint, no client-fetched content, valid JSON-LD.                                                                                                                                                                             |
-| 3   | **Lift**      | 🟡 Answer blocks on all 5 service pages + `/faq/`'s two comparison tables. Missing: a cost table by thickness/reinforcement (blocked on confirmed pricing) and any article-length treatment.                                                                             |
-| 4   | **Attribute** | 🔴 No `datePublished`/`dateModified`, no author, no named human, empty `sameAs`, no `llms.txt`. An assistant has nothing to cite _as_.                                                                                                                                   |
+| #   | Step          | Our state                                                                                                                                                                                                                                                                                                   |
+| --- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Reach**     | ✅ `app/robots.ts` names 11 AI agents in an explicit allow list. ⚠️ Cloudflare's managed robots.txt can prepend an override at the edge — it blocked everything until at least 2026-08-17. **Verify with `curl https://betonplus.co.il/robots.txt`, never from source.**                                    |
+| 2   | **Parse**     | ✅ Static HTML, answers in the DOM at first paint, no client-fetched content, valid JSON-LD.                                                                                                                                                                                                                |
+| 3   | **Lift**      | 🟡 Answer blocks on all 5 service pages + `/faq/`'s two comparison tables. Missing: a cost table by thickness/reinforcement (blocked on confirmed pricing) and any article-length treatment.                                                                                                                |
+| 4   | **Attribute** | 🟡 `dateModified` in every page node with a visible `עודכן:` line (2026-08-31); a named owner with a `Person` node and service-page bylines (`author` on the `WebPage` node, 2026-09-06); `public/llms.txt` live. Still missing: `sameAs` (needs the GBP) and any article an assistant could cite by title. |
 
 ### The extraction unit
 
@@ -164,10 +166,10 @@ is **corroboration** — that requires `sameAs` (§3) and a named human
 
 ### `llms.txt`
 
-Now unblocked (crawlers can reach us). Ship a short factual pointer file at `public/llms.txt`: what the
-business is, the service list, the area, the phone, and links to the highest-value pages. It is cheap,
-and it costs nothing if the convention never matures. **It carries no claim that
-[business-facts.md](business-facts.md) has not confirmed.**
+✅ Shipped 2026-08-31 at `public/llms.txt` (live, `text/plain`): what the business is, the service
+list, the area, the phone, links to the highest-value pages, and an explicit statement that the site
+carries no ratings. **It carries no claim that [business-facts.md](business-facts.md) has not
+confirmed** — keep it that way when services or areas change.
 
 ---
 
@@ -208,6 +210,7 @@ Non-negotiable properties of the export. `/qa-build-gate` asserts each one:
 | Are we ranking locally?         | Search Console queries filtered to `ב<city>` patterns; GBP insights once it exists                             |
 | Is intent converting?           | `lead_submit` + `/thank-you/` conversions ([data-tracking-infrastructure.md](data-tracking-infrastructure.md)) |
 
-⚠️ **GA4 is not receiving data.** `analytics.ga4MeasurementId` is `null` in the roster — `GTM-KWGGH438`
-is live and verified, but fires into nothing. Until the owner creates the property, every "is it
-working" question above is answerable only through Search Console and manual probes.
+⚠️ **GA4 receives page views only.** `G-VMVP7XQKMG` is in the roster (synced 2026-09-06) and the live
+container routes this hostname to it — but the container has no event tags, so `lead_submit` and CTA
+clicks never arrive ([data-tracking-infrastructure.md](data-tracking-infrastructure.md) §2 step 4).
+Until that tag exists, "is intent converting?" is answerable only from the `/thank-you/` page view.

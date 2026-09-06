@@ -30,12 +30,12 @@ Two consequences:
 
 ## 2. The four letters, scored honestly
 
-| Letter                      | What it means here                                                 | State                                                                                                     |
-| --------------------------- | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------- |
-| **Experience** (first-hand) | Photos of our openings, our core holes, our sites; job specifics   | 🔴 **Zero.** `public/` holds brand assets only. No photograph of concrete being cut exists.               |
-| **Expertise**               | Method judgement, structural limits, substrate knowledge           | 🟢 **The one strong letter.** `serviceDepth` + `/faq/`'s comparison tables carry genuine trade substance. |
-| **Authoritativeness**       | Off-site corroboration — GBP, directories, associations, citations | 🔴 `sameAs` is `[]`. Nothing anywhere confirms this business exists.                                      |
-| **Trustworthiness**         | Named humans, verifiable claims, real reviews, honest legal pages  | 🟠 Legal pages and NAP are clean; but no human is named and three headline claims are unverified.         |
+| Letter                      | What it means here                                                 | State                                                                                                                                                                                      |
+| --------------------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Experience** (first-hand) | Photos of our openings, our core holes, our sites; job specifics   | 🔴 **Zero.** `public/` holds brand assets only. No photograph of concrete being cut exists.                                                                                                |
+| **Expertise**               | Method judgement, structural limits, substrate knowledge           | 🟢 **The one strong letter.** `serviceDepth` + `/faq/`'s comparison tables carry genuine trade substance.                                                                                  |
+| **Authoritativeness**       | Off-site corroboration — GBP, directories, associations, citations | 🔴 `sameAs` is `[]`. Nothing anywhere confirms this business exists.                                                                                                                       |
+| **Trustworthiness**         | Named humans, verifiable claims, real reviews, honest legal pages  | 🟠 Legal pages and NAP are clean; the owner **is** named (`/about/` bio + `Person` node since 2026-08-30, service-page bylines since 2026-09-06); three headline claims remain unverified. |
 
 **The bottleneck is not Expertise.** Writing more expert copy will not move a site whose Experience and
 Authoritativeness are literally zero. Effort belongs where the zeros are.
@@ -44,18 +44,19 @@ Authoritativeness are literally zero. Effort belongs where the zeros are.
 
 ## 3. Trust assets, ranked by (value ÷ effort)
 
-| #   | Asset                                | Owner-blocked? | Why it ranks here                                                                        |
-| --- | ------------------------------------ | -------------- | ---------------------------------------------------------------------------------------- |
-| 1   | **Google עסק שלי profile**           | ✅ Yes         | The one asset that creates Authoritativeness, local ranking and a review surface at once |
-| 2   | **Photos of real completed work**    | ✅ Yes         | The only source of Experience. Competitors all have it                                   |
-| 3   | **A named human** (owner/foreman)    | ✅ Yes         | Converts an anonymous vendor into an accountable person; unlocks author attribution      |
-| 4   | **Real reviews on the GBP**          | ✅ Yes         | Legitimises `Review`/`AggregateRating` schema — which stays **absent** until they exist  |
-| 5   | **`sameAs` populated**               | Partly         | Ten minutes of repo work once #1 exists                                                  |
-| 6   | **Case studies / project write-ups** | Partly         | Buildable from a single real job + permission; strongest B2B proof after photos          |
-| 7   | **Insurance / licence evidence**     | ✅ Yes         | Already claimed three times with nothing behind it — either substantiate or remove       |
-| 8   | **Visible dates + author on pages**  | No             | Pure repo work; feeds both E-E-A-T and AEO attribution                                   |
+| #   | Asset                                | Owner-blocked? | Why it ranks here                                                                                                                           |
+| --- | ------------------------------------ | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Google עסק שלי profile**           | ✅ Yes         | The one asset that creates Authoritativeness, local ranking and a review surface at once                                                    |
+| 2   | **Photos of real completed work**    | ✅ Yes         | The only source of Experience. Competitors all have it                                                                                      |
+| 3   | **A named human** (owner/foreman)    | ✅ Shipped     | אור שוורץ, בעלים — bio on `/about/`, `Person` `#owner`, bylines on service pages. Still 🔶: his years-in-trade sentence (business-facts §A) |
+| 4   | **Real reviews on the GBP**          | ✅ Yes         | Legitimises `Review`/`AggregateRating` schema — which stays **absent** until they exist                                                     |
+| 5   | **`sameAs` populated**               | Partly         | Ten minutes of repo work once #1 exists                                                                                                     |
+| 6   | **Case studies / project write-ups** | Partly         | Buildable from a single real job + permission; strongest B2B proof after photos                                                             |
+| 7   | **Insurance / licence evidence**     | ✅ Yes         | Already claimed four times with nothing behind it — either substantiate or remove                                                           |
+| 8   | **Visible dates + author on pages**  | ✅ Shipped     | `dateModified` + `עודכן:` (2026-08-31) and `components/Byline.tsx` + `author` on `WebPage` nodes (2026-09-06); articles inherit both        |
 
-Items 1–4 and 7 need the owner. **Nothing in the repo can manufacture them, and no agent may try.**
+Items 1, 2, 4 and 7 need the owner. **Nothing in the repo can manufacture them, and no agent may try.**
+Item 3 is done; item 8 is done; 5 and 6 wait on 1 and 2 respectively.
 
 ---
 

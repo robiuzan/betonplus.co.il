@@ -18,38 +18,62 @@ metadata or rebuild the export.
 - `docs/keyword-map.md` §3–§5 holds the title, H1 and description formulas.
 - `docs/content-standards.md` §1 (word floors) and §2 (the doorway test).
 - The export: `out/**/index.html`, `out/sitemap.xml`, `out/robots.txt`.
-- `lib/site.ts` (`services` ×5, `serviceAreas` ×16) and `app/sitemap.ts` → the set of routes that must
-  exist.
+- `lib/site.ts` (`services` ×5, `staticRoutes` ×9, `routeUpdated`, `serviceAreas` ×14 typed
+  `ServiceArea[]`, `relatedServices`, `serviceDepth`) and `app/sitemap.ts` → the set of routes that
+  must exist. The sitemap is **derived**: 9 static routes + 5 service routes = **14 URLs**;
+  `/thank-you/` is noindex and deliberately absent.
+- `scripts/check-titles.mjs` — runs as `postbuild` and fails `npm run build` on a doubled brand, a
+  missing `<title>` or an unexpected duplicate. If a doubled title reaches `out/`, the gate was
+  skipped; that is a process finding as well as a metadata one.
 
 ## What to audit
 
-1. **Titles.** Unique per route, brand appearing exactly once in the rendered output, under ~60 chars.
-   Two title mechanisms coexist here — static pages use the layout `template`, service pages use
+1. **Titles.** Unique per route, brand appearing exactly once in the rendered output, under ~60
+   **characters** (measure in characters, not UTF-8 bytes — Hebrew doubles the byte count). Two
+   title mechanisms coexist here — static pages use the layout `template`, service pages use
    `absoluteTitle: true` with a brand-bearing `metaTitle`. Both are valid; **mixing them is the bug**.
-   Known: `/about/` renders `אודות בטון פלוס | בטון פלוס` (§2.1), `/service-areas/` is over length
-   (§2.2). The homepage title legitimately appears on `/`, `/404/` and `/_not-found/`.
-2. **Descriptions.** Present, unique, ~150–160 chars, following the keyword-map formulas, and claiming
-   nothing `docs/business-facts.md` marks 🔶.
-3. **One H1 per page**, matched to intent, heading order unbroken. Currently correct on all 15 content
-   routes — report any regression as High.
+   The historical `/about/` doubled title was fixed 2026-08-17 and `check-titles.mjs` now guards it;
+   the longest title is `/service-areas/` at 51 chars (verified 2026-09-06), so the old "over length"
+   note is retired — re-measure rather than repeat it. The homepage title legitimately appears on
+   `/`, `/404/` and `/_not-found/`.
+2. **Descriptions.** Present, unique, following the keyword-map formulas, and claiming nothing
+   `docs/business-facts.md` marks 🔶. As of 2026-09-06 all **12 indexable content routes** carry a
+   150–160-character description that includes the phone; `/privacy/` and `/accessibility/` are
+   shorter legal pages by design and `/thank-you/` is noindex. Report drift from that state.
+3. **One H1 per page**, matched to intent, heading order unbroken. Currently correct on all 15 H1
+   routes (14 indexable + the noindex `/thank-you/`) — report any regression as High.
 4. **Canonicals.** One self-referencing `<link rel="canonical">` per content route, trailing slash.
    Only `/404/` and `/_not-found/` may lack one.
 5. **Sitemap & robots.** Diff the sitemap URL set against the emitted `out/` tree in both directions.
-   The sitemap derives from `staticRoutes` in `lib/site.ts` (§1.1 resolved) — flag any route missing
-   from that registry, and that no
-   `lastModified` is emitted (§1.2). **Also fetch the live `/robots.txt`** — Cloudflare prepends a
-   managed block that `app/robots.ts` cannot override (§6.1).
-6. **Thin and near-duplicate content.** Strip tags, subtract the ~110 words of site chrome, and count
-   unique body words per route against the §1 floors. The 5 service pages sit at ~200 against a 450
-   floor (§3.1) and share an identical shape — run the doorway test by substituting the service name.
-7. **Orphans and internal links.** Crawl `href`s in the export. Currently clean apart from `/404/` and
-   `/_not-found/`; also flag the 16 service-area chips that link nowhere (§9.3) and related services
-   being chosen by `slice(0, 3)` rather than relevance (§9.1).
-8. **Anchors and alt.** Descriptive anchor text — note that the site currently emits **zero contextual
-   in-copy links** (§9.2). Meaningful `alt` on every content image.
-9. **The second origin.** The GitHub Pages publish was removed 2026-08-17 (§1.3 resolved), but the
-   old origin may still serve its last stale copy — a
-   duplicate-content and stale-content risk. Verify whether it still resolves.
+   The sitemap derives from `staticRoutes` + `services` in `lib/site.ts` (§1.1 resolved) — flag any
+   new route missing from that registry. `lastModified` **is** emitted (§1.2 resolved) from
+   `routeUpdated`, which holds hand-maintained real content dates, never build time; a route with no
+   entry validly omits `<lastmod>`, so the finding to look for is a content change whose date was
+   **not** bumped, or a date that moved without a content change. **Also fetch the live
+   `/robots.txt` cache-busted** — Cloudflare can prepend a managed block that `app/robots.ts` cannot
+   override. The block has been gone since 2026-08-25 and the live file byte-matches the export (§6.1);
+   confirm that is still true rather than assuming it.
+6. **Thin and near-duplicate content.** Strip tags, subtract the site chrome, and count unique body
+   words per route against the §1 floors. Since wave 2 the 5 service pages carry **456–574
+   unique-to-page words** from `serviceDepth` (§3.1 resolved), each with distinct substance, an answer
+   block and 3–4 per-service FAQs. Re-measure and flag anything that slips under the 450 floor; still
+   run the doorway test by substituting the service name.
+7. **Orphans and internal links.** Crawl `href`s in the export. Currently clean apart from `/404/`,
+   `/_not-found/` and `/thank-you/`, all unlinked by design. The 14 area chips on `/service-areas/`
+   are **deliberately unlinked** until the `/locations/` silo exists (§9.3 settled — linking to
+   pages that don't exist is the doorway trap); the page itself links to all 5 services, `/faq/` and
+   `/pricing/`, so it is not a dead end. Related services come from the `relatedServices` adjacency
+   map (§9.1 resolved) — flag any regression to array order. The header services dropdown is always
+   rendered and toggled with `hidden`, so all 5 service links are in every page's static HTML —
+   verify with a grep on `out/privacy/index.html`.
+8. **Anchors and alt.** Descriptive anchor text — contextual in-copy links now exist on every content
+   page (§9.2 resolved wave 4; `/contact/` got three in Sprint 2), so the finding is a page that
+   drops them or a bare "לחצו כאן". Meaningful `alt` on every content image.
+9. **The second origin.** The GitHub Pages publish was removed 2026-08-17 (§1.3 resolved) and the
+   old origin `https://robiuzan.github.io/betonplus.co.il/` returns **404** (verified 2026-09-06).
+   It does not need re-checking unless `.github/workflows/deploy.yml` regains a publish step. Note
+   that `www.betonplus.co.il` still answers 200 rather than redirecting — that is an owner zone rule,
+   not a repo fix; report it as such.
 
 ## Method
 
@@ -75,6 +99,8 @@ a green/red verdict per backlog section.
 - Group repeated instances of one root cause into a single finding with a count.
 - Distinguish the two title mechanisms before calling something a doubled suffix — `absoluteTitle: true`
   on service pages is deliberate and correct.
-- Don't audit the vestigial WordPress layer (`content/site.json`, `lib/content.ts`, `scripts/*.mjs`,
-  `app/enrich.css`) — nothing under `app/` imports it and it ships nothing.
+- No legacy layer remains: Sprint 2 (commit `58d0749`, 2026-08-31) deleted the WordPress snapshot
+  (`lib/content.ts`, `lib/wp.ts`, `lib/enrich/`, `content/site.json`, `app/enrich.css`, the
+  `scripts/*.mjs` pipeline). If any of it reappears, that is a regression to report, not something to
+  audit around. `scripts/check-titles.mjs` is the only script and is live.
 - If `out/` is stale or absent, say so and stop — do not audit source files as a proxy for the export.

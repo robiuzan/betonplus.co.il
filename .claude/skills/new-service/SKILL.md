@@ -1,6 +1,6 @@
 ---
 name: new-service
-description: Add or deepen a service page the data-driven way — append to services in lib/site.ts with a valid IconName, add the depth blocks and per-service FAQs the page template doesn't have yet, so the route, the services grid, the pricing table, the form select, cross-links, schema and the sitemap update automatically. Use when adding a service or retrofitting one of the 5 thin service pages. Triggers: "add a service", "new service page", "deepen the service copy", "per-service FAQ", "service page is thin".
+description: Add or deepen a service page the data-driven way — append to services in lib/site.ts with a valid IconName and add the serviceDepth entry (answer block, depth blocks, per-service FAQs, contextual links) the page template already renders, so the route, the services grid, the header dropdown, the pricing table, the form select, cross-links, schema and the sitemap update automatically. Use when adding a service or retrofitting one of the 5 thin service pages. Triggers: "add a service", "new service page", "deepen the service copy", "per-service FAQ", "service page is thin".
 ---
 
 # Add or deepen a service page
@@ -76,26 +76,31 @@ What actually creates depth in this trade (and what competitors' pages usually l
 ## Steps
 
 1. Add or edit the entry in `services` (`lib/site.ts`). Array order drives the grid, the pricing table,
-   the footer column and — until `/internal-linking` §1 is done — the related-services `slice`.
+   the header dropdown and the footer column; related services come from `relatedServices`, not
+   array order.
 2. Fill the depth fields above. **`answer` first**, then the substance.
 3. Add 3–5 service-specific `faqs`. These become a `FAQPage` on the route
    (`/schema-structured-data`) — five more schema-eligible pages.
-4. Update `app/services/[slug]/page.tsx` to render the new blocks. Order: answer block → intro →
-   what's included/excluded → method → site impact → structural note → process (exists) → price
-   (interpolated from `priceFrom`, never restated) → FAQ → related services → CTA.
-5. Add relevance-based related services (`/internal-linking` §1) and 2–3 contextual in-copy links.
+4. No template change needed — `app/services/[slug]/page.tsx` renders every block once
+   `serviceDepth[slug]` exists. Order: byline → answer block → intro → what's included/excluded →
+   method → site impact → structural note → process → price (interpolated via `priceLabel`, never
+   restated) → FAQ → related services → CTA.
+5. Add the slug to `relatedServices` on both sides of each edge (`/internal-linking` §1) and 2–3
+   contextual in-copy `links`.
 6. Metadata per `docs/keyword-map.md` §3 — `metaTitle` carries the brand and the page passes
-   `absoluteTitle: true`. **Don't mix that with the layout template** (`/seo-metadata`).
-7. Confirm `Service` + `BreadcrumbList` + the new `FAQPage` are emitted.
-8. Add `data-cta` to the sidebar call/WhatsApp buttons while you're in the file (backlog §13.2).
-9. `npm run lint && npm run typecheck && npm run format:check && npm run build`, then verify the route
+   `absoluteTitle: true`. **Don't mix that with the layout template** (`/seo-metadata`) — the
+   `postbuild` title guard fails the build if you do.
+7. Confirm `Service` + `WebPage` (with `author`) + `Person` + `BreadcrumbList` + the new `FAQPage`
+   are emitted, and date the route in `routeUpdated`.
+8. `npm run lint && npm run typecheck && npm run format:check && npm run build`, then verify the route
    in `out/` **and** in `out/sitemap.xml`.
 
 ## What follows automatically
 
-`generateStaticParams` picks up the route · `ServicesGrid` on `/` and `/services/` · the footer service
-column · the `/pricing/` table row · the `ContactForm` service `<select>` · `app/sitemap.ts` (services
-are derived, unlike `staticPaths`).
+`generateStaticParams` picks up the route · the header services dropdown · `ServicesGrid` on `/` and
+`/services/` · the footer service column · the `/pricing/` table row · the `ContactForm` service
+`<select>` · `app/sitemap.ts` (service URLs are derived from `services`). **Not** automatic:
+`serviceDepth`, `relatedServices` and `routeUpdated` — each needs its own entry.
 
 ## Checklist
 

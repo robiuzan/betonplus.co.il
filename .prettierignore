@@ -16,13 +16,3 @@ vendor
 site.config.json
 site.config.json.bak
 
-# The abandoned WordPress snapshot layer (CLAUDE.md §2 rule 3). Frozen legacy —
-# imported by nothing under app/. Left unformatted so it never shows up in a diff.
-scripts
-lib/content.ts
-lib/wp.ts
-lib/enrich
-app/enrich.css
-components/SiteFrame.tsx
-components/SiteAssets.tsx
-components/ThemeScripts.tsx

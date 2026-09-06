@@ -10,8 +10,12 @@ Everything below follows from that.
 
 ## 1. The structural gap
 
-`lib/site.ts` holds 14 area names as plain strings. `components/ServiceAreasSection.tsx` renders
-them as chips. **The chips link nowhere and no page targets `<service> ב<city>`** (backlog §5.1).
+`lib/site.ts` holds `serviceAreas: ServiceArea[]` — 14 typed entries (`slug`, `name`, `kind`,
+`prefixed`) with Hebrew slugs, grouped by real geography in `serviceAreaGroups` (members resolved via
+`area()`, which fails the build on an unknown name). `components/ServiceAreasSection.tsx` and
+`/service-areas/` render them as chips. **The chips are deliberately unlinked and no page targets
+`<service> ב<city>`** — `slug` is reserved for `/locations/[city]/`, which does not exist yet
+(backlog §5.1).
 
 For a trade chosen almost entirely by proximity — a contractor in בני ברק wants someone who can be
 there tomorrow — that is the single largest missing surface on the site. It is also the easiest one to
@@ -104,18 +108,20 @@ ranking. Any change goes to the owner first, then the roster, then the copy, the
 
 ## 7. Hebrew grammar per location
 
-When the silo is built, the areas array needs two more fields — the templates must never interpolate a
+The typed model already exists in `lib/site.ts` (Sprint 2) — the templates must never interpolate a
 bare `ב${name}`:
 
 ```ts
-{ slug: "תל-אביב",  name: "תל אביב",  kind: "city",   prefixed: "בתל אביב" }
+{ slug: "תל-אביב",     name: "תל אביב",     kind: "city", prefixed: "בתל אביב" }
 { slug: "ראשון-לציון", name: "ראשון לציון", kind: "city", prefixed: "בראשון לציון" }
-{ slug: "גוש-דן",   name: "גוש דן",   kind: "region", prefixed: "בגוש דן" }
-{ slug: "השרון",    name: "השרון",    kind: "region", prefixed: "באזור השרון" }
+{ slug: "ראש-העין",    name: "ראש העין",    kind: "city", prefixed: "בראש העין" }
 ```
 
-`prefixed` carries the preposition so no template has to guess. `kind` drives the schema type —
-`City` versus `AdministrativeArea` (see `/schema-structured-data`).
+All 14 entries are `kind: "city"` today; a region entry would carry `prefixed: "באזור השרון"`, which
+is exactly why the field exists. `prefixed` carries the preposition so no template has to guess.
+`kind` drives the schema type — `City` versus `AdministrativeArea` (see `/schema-structured-data`).
+`slug` is reserved for the silo: nothing may link to it until `/locations/[city]/` ships
+(`/new-city`).
 
 ## 8. Geo signals
 
@@ -126,8 +132,9 @@ never a fake pin on a street.
 
 ## 9. Internal equity
 
-The 14 area chips are a dead end (backlog §9.3). No service page mentions a city; no city page exists
-to link back. When the silo lands, wire both directions in the same pass — see `/internal-linking` §3.
+The 14 area chips are deliberately unlinked (backlog §9.3) — the section carries an onward link to
+`/service-areas/` so it is no longer a dead end, but no city page exists to link back. When the silo
+lands, wire both directions in the same pass — see `/internal-linking` §3.
 
 ## Checklist
 

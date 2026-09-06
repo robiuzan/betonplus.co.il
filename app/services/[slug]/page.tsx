@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import PageHero from "@/components/PageHero";
 import CtaBanner from "@/components/CtaBanner";
 import Faq from "@/components/Faq";
+import Byline from "@/components/Byline";
 import { Section, Button } from "@/components/ui";
 import Icon from "@/components/Icon";
 import JsonLd from "@/components/JsonLd";
@@ -16,10 +17,16 @@ import {
   telHref,
   whatsappHref,
   updatedFor,
-  formatDateIL,
   priceLabel,
 } from "@/lib/site";
-import { pageMetadata, serviceJsonLd, breadcrumbJsonLd, faqJsonLd, webPageJsonLd } from "@/lib/seo";
+import {
+  pageMetadata,
+  serviceJsonLd,
+  breadcrumbJsonLd,
+  faqJsonLd,
+  webPageJsonLd,
+  personJsonLd,
+} from "@/lib/seo";
 
 export const dynamic = "force-static";
 export const dynamicParams = false;
@@ -64,8 +71,12 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         data={[
           serviceJsonLd(svc.slug) ?? {},
           // Carries dateModified — `Service` has no date property, so the freshness
-          // signal needs a page node alongside it.
-          webPageJsonLd(`/services/${svc.slug}/`, svc.metaTitle, svc.metaDescription),
+          // signal needs a page node alongside it. `author` points at the owner's Person
+          // node below and matches the visible <Byline> (roadmap 5.3).
+          webPageJsonLd(`/services/${svc.slug}/`, svc.metaTitle, svc.metaDescription, {
+            author: true,
+          }),
+          personJsonLd(),
           breadcrumbJsonLd([
             { name: "שירותים", path: "/services/" },
             { name: svc.title, path: `/services/${svc.slug}/` },
@@ -87,19 +98,8 @@ export default async function ServicePage({ params }: { params: Promise<{ slug: 
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
           {/* Main content */}
           <div className="max-w-3xl">
-            {/*
-              Visible freshness signal to match `dateModified` in the schema. The machine
-              date alone is worth little if a reader can't see the page is maintained.
-              <time> carries the ISO value; the text carries the Israeli dd/mm/yyyy form.
-            */}
-            {updated && (
-              <p className="mb-6 text-sm text-muted">
-                עודכן:{" "}
-                <time className="ltr" dateTime={updated}>
-                  {formatDateIL(updated)}
-                </time>
-              </p>
-            )}
+            {/* Byline + visible freshness signal, matching `author` and `dateModified` in the schema. */}
+            <Byline updated={updated} />
 
             {depth && (
               <>

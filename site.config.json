@@ -1,4 +1,5 @@
 {
+  "_comment": "Normalized per-site manifest. SYNCED FROM THE HUB: 'Israeli services sites'/roster/sites/<domain>.json. Edit there (the canonical roster) and run ops/sync-manifest.ps1. Never edit this file directly. Conforms to @ishub/site-kit SiteManifest.",
   "domain": "betonplus.co.il",
   "url": "https://betonplus.co.il",
   "brandName": "בטון פלוס",
@@ -29,25 +30,53 @@
     "type": "GeneralContractor",
     "priceRange": "₪₪",
     "areaServed": "גוש דן והמרכז, ישראל",
-    "address": { "addressCountry": "IL", "addressRegion": "מרכז" },
+    "address": {
+      "addressCountry": "IL",
+      "addressRegion": "מרכז"
+    },
     "openingHours": [
-      { "days": ["Su", "Mo", "Tu", "We", "Th"], "opens": "07:00", "closes": "18:00" },
-      { "days": ["Fr"], "opens": "07:00", "closes": "13:00" }
+      {
+        "days": [
+          "Su",
+          "Mo",
+          "Tu",
+          "We",
+          "Th"
+        ],
+        "opens": "07:00",
+        "closes": "18:00"
+      },
+      {
+        "days": [
+          "Fr"
+        ],
+        "opens": "07:00",
+        "closes": "13:00"
+      }
     ],
     "sameAs": []
   },
-  "analytics": { "gtmId": "GTM-KWGGH438", "googleSiteVerification": "ozMzEyHFAfRd_siJREJ79bbkt-EPRpUTmn-Ln9XaBz0" },
-  "_needsConfirmation": ["brand.secondary", "brand.accent", "analytics.gtmId", "schema.address", "legalName", "silos-migrate-in-phase-2"],
+  "analytics": {
+    "gtmId": "GTM-KWGGH438",
+    "ga4MeasurementId": "G-VMVP7XQKMG",
+    "googleSiteVerification": "ozMzEyHFAfRd_siJREJ79bbkt-EPRpUTmn-Ln9XaBz0"
+  },
   "images": {
-    "mediaHost": "imgquarry.com", "defaultQuality": 80,
+    "mediaHost": "imgquarry.com",
+    "defaultQuality": 80,
     "og": {
       "key": "betonplus/og.jpg",
       "sha256": "907b503206efb1b294159c596c716ed0ebc015c52412020ffa2825bad1763cdc",
       "alt": "Beton Plus - share card",
       "altHe": "בטון פלוס - דיוק של יהלום · ביצוע פלוס",
-      "width": 1200, "height": 630, "bytes": 35462,
-      "kind": "raster", "focal": null, "legacySrc": null
+      "width": 1200,
+      "height": 630,
+      "bytes": 35462,
+      "kind": "raster",
+      "focal": null,
+      "legacySrc": null
     },
-    "badges": [], "gallery": null
+    "badges": [],
+    "gallery": null
   }
 }

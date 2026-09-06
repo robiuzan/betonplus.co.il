@@ -14,10 +14,11 @@ export const dynamic = "force-static";
 
 // Bare subject only — the layout template appends "| בטון פלוס". "אודות בטון פלוס"
 // here produced the doubled-brand title (backlog §2.1, fixed 2026-08-17).
+// No "משנת 2005" in the description: unconfirmed claims stay out of metadata (keyword-map §5).
 export const metadata: Metadata = pageMetadata({
   title: "אודות",
   description:
-    "בטון פלוס — ניסור, קידוח והריסה מבוקרת של בטון ביהלום משנת 2005 בגוש דן והמרכז. איך אנחנו עובדים, עם מי, ומה אנחנו לא מוכנים לעשות. חייגו 055-6601006.",
+    "בטון פלוס — ניסור, קידוח והריסה מבוקרת של בטון ביהלום בגוש דן והמרכז. איך אנחנו עובדים, עם מי, מתי עוצרים לאישור מהנדס ומה לא נעשה. חייגו 055-6601006.",
   path: "/about/",
 });
 
@@ -37,13 +38,14 @@ export default function AboutPage() {
           aboutPageJsonLd(
             "/about/",
             "אודות בטון פלוס",
-            "ניסור, קידוח והריסה מבוקרת של בטון ביהלום משנת 2005 בגוש דן והמרכז.",
+            "ניסור, קידוח והריסה מבוקרת של בטון ביהלום משנת 2005 בגוש דן והמרכז.", // 🔶 confirm — משנת 2005 (business-facts §A)
           ),
           personJsonLd(),
         ]}
       />
       <PageHero
         title="אודות בטון פלוס"
+        // 🔶 confirm — "מעל 20 שנה" derives from foundedYear 2005 (business-facts §A, roadmap 1.8)
         lead="מעל 20 שנה מנסרים, קודחים ומפרקים בטון ביהלום — מדויק, נקי ובזמן."
         crumbs={[{ name: "אודות", href: "/about/" }]}
       />
@@ -57,6 +59,7 @@ export default function AboutPage() {
           <p className="mt-4 text-lg leading-relaxed text-ink/90">{aboutAnswer.a}</p>
 
           <div className="mt-6 space-y-4 leading-relaxed text-muted">
+            {/* 🔶 confirm — foundedYear / yearsLabel are unevidenced (business-facts §A) */}
             <p>
               בטון פלוס פועלת משנת {site.foundedYear} ומתמחה בניסור וקידוח בטון ביהלום. לאורך{" "}
               {site.yearsLabel} צברנו ניסיון בכל סוגי העבודות — פתיחת פתחים בקירות בטון, קידוח ליבות

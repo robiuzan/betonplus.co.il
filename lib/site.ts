@@ -6,7 +6,9 @@
  * from here so copy/contact details stay consistent and editable in one place.
  *
  * Values inferred from competitor research / industry norms are marked `// 🔶 confirm`.
- * Confirmed facts (name, phone, founded 2005) are unmarked. See brief.md.
+ * Confirmed facts (name, phone, email) are unmarked. "founded 2005" / "מעל 20 שנה" is NOT
+ * confirmed — owner-asserted, never evidenced, and it conflicts with the owner's own "למעלה
+ * מעשור" (business-facts §A, roadmap 1.8). Every literal that carries it is marked 🔶.
  */
 
 import siteManifest from "@/site.config.json";
@@ -684,7 +686,7 @@ export const pricingExtra: string[] = [
 /** `/about/` — deepened without inventing a single unsourced fact. */
 export const aboutAnswer: Faq = {
   q: "מי זו בטון פלוס ומה בדיוק אנחנו עושים?",
-  a: "בטון פלוס עוסקת בניסור, קידוח והריסה מבוקרת של בטון בטכנולוגיית יהלום, ופועלת משנת 2005 באזור גוש דן והמרכז. אנחנו לא קבלני שיפוץ ולא קבלני בנייה — אנחנו הגורם שנקרא כשצריך לפתוח, לקדוח או להסיר בטון בצורה מדויקת, בלי לפגוע במה שנשאר עומד.",
+  a: "בטון פלוס עוסקת בניסור, קידוח והריסה מבוקרת של בטון בטכנולוגיית יהלום, ופועלת משנת 2005 באזור גוש דן והמרכז. אנחנו לא קבלני שיפוץ ולא קבלני בנייה — אנחנו הגורם שנקרא כשצריך לפתוח, לקדוח או להסיר בטון בצורה מדויקת, בלי לפגוע במה שנשאר עומד.", // 🔶 confirm — "משנת 2005" is owner-asserted (business-facts §A, roadmap 1.8)
 };
 
 /**
@@ -719,6 +721,12 @@ export const owner: Owner = {
     "לפני שנוגעים בקיר צריך להבין מה הוא מחזיק. ברגע שיש ספק קל שבקלים לגבי עמוד, קורה תומכת או קיר נושא — ובכל שינוי מבני בממ״ד — אני לא לוקח הימורים על יציבות המבנה. אם אין ודאות מוחלטת בתוכנית, אני עוצר ומחכה לתוכנית הנדסית חתומה בידי מהנדס לפני שמפעילים את המסור. זה לא עיכוב, זו העבודה.",
   ],
 };
+
+/**
+ * "בעלים" — the role without the business name. One derivation, used by both the visible
+ * byline (`components/Byline.tsx`) and the `Person` node's `jobTitle`, so the two cannot drift.
+ */
+export const ownerJobTitle: string = owner.role.split(",")[0]?.trim() ?? owner.role;
 
 export interface AboutSection {
   title: string;
@@ -772,7 +780,7 @@ export interface TrustStat {
 }
 
 export const trustStats: TrustStat[] = [
-  { value: "2005", label: "פעילים משנת", icon: "clock" },
+  { value: "2005", label: "פעילים משנת", icon: "clock" }, // 🔶 confirm — foundedYear 2005 (business-facts §A)
   { value: "+1,000", label: "פרויקטים בוצעו", icon: "check" }, // 🔶 confirm number
   { value: "ביטוח צד ג׳", label: "עבודה מבוטחת", icon: "shield" }, // 🔶 confirm coverage
   { value: "בזמן", label: "עמידה בלוחות זמנים", icon: "diamond" },
@@ -815,7 +823,7 @@ export const differentiators: Differentiator[] = [
   },
   {
     icon: "star",
-    title: "מעל 20 שנה ניסיון",
+    title: "מעל 20 שנה ניסיון", // 🔶 confirm — derives from foundedYear 2005
     // The clause "שהלקוחות חוזרים אליו וממליצים" was removed 2026-09-01: it asserts repeat
     // custom and recommendations with nothing behind it. That is social proof, the same
     // category as the three fabricated testimonials removed on 2026-08-17 — and this site

@@ -44,8 +44,17 @@ Sprint 2 (technical) ──> Sprint 3 (AEO content) ──> Sprint 4 (local silo
 ```
 
 **Unblocked as of 2026-08-30: Sprints 2, 3, 4, 7 and 8.** Only Sprint 6 (image pipeline) and most of
-Sprint 5 still wait on the owner — photos (1.2), the GBP (1.5), and אור שוורץ's own biographical
-facts. Sprint 4 additionally depends on 2.1 and 2.3, so Sprint 2 still comes first.
+Sprint 5 still wait on the owner — photos (1.2), the GBP (1.5), and the founding-year conflict (1.8).
+Sprint 2 shipped 2026-08-31, so Sprint 4 has no remaining technical dependency.
+
+> **Status 2026-09-06 (repo-side sweep — nothing here needed the owner):** Sprint 5.3 bylines shipped
+> (`components/Byline.tsx`, `author` on service-page `WebPage` nodes); Sprint 7.1 sync run
+> (`site.config.json` now carries `ga4MeasurementId`), 7.2 verified from the live `gtm.js`, 7.7
+> verified, and the `lead_fallback`/`form_error` events from the dataLayer contract implemented;
+> Sprint 8.4 done in `public/_headers` (live after the next deploy); every remaining `🔶` literal for
+> the 2005 claim marked and the claim removed from `/about/`'s meta description; CLAUDE.md, the
+> registers and the `.claude` toolkit corrected to the post-Sprint-2 state (they had described deleted
+> files, 16 areas, font preloads and a null GA4 id). **Not deployed** — see Standing rule 2.
 
 ---
 
@@ -54,22 +63,22 @@ facts. Sprint 4 additionally depends on 2.1 and 2.3, so Sprint 2 still comes fir
 **Goal:** convert the 🔶 rows in [business-facts.md](business-facts.md) into ✅ or into deletions.
 **Owner:** 👤 entirely. Nothing here can be inferred, and no agent may fill a 🔶 with a plausible number.
 
-| #   | Question                                                                                                                                                             | Unblocks                           |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------- |
-| 1.1 | ✅ **Answered 2026-08-30 — גוש דן והמרכז.** ירושלים and מודיעין removed, "פריסה ארצית" removed, hero stat corrected. Shipped in the repo the same day.               | Sprint 4 — **unblocked**           |
-| 1.2 | **Photos:** can you supply photographs of real completed work — openings, core holes, the kit on site?                                                               | Sprints 5, 6                       |
-| 1.3 | ✅ **Answered 2026-08-30 — אור שוורץ, owner**, consents to publishing his name and photos. 🔶 Still needed: the biographical facts themselves (see §1.3 note below). | Sprint 5 — **partially unblocked** |
-| 1.4 | ✅ **Answered 2026-08-30 — `G-VMVP7XQKMG`.** GA4 property exists; the GTM wiring is the remaining work.                                                              | Sprint 7 — **unblocked**           |
-| 1.5 | **Google עסק שלי:** does a profile exist? If not, create and verify it.                                                                                              | Sprints 4, 5 (reviews, sameAs)     |
+| #   | Question                                                                                                                                                                                                                                                                                                                     | Unblocks                                    |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 1.1 | ✅ **Answered 2026-08-30 — גוש דן והמרכז.** ירושלים and מודיעין removed, "פריסה ארצית" removed, hero stat corrected. Shipped in the repo the same day.                                                                                                                                                                       | Sprint 4 — **unblocked**                    |
+| 1.2 | **Photos:** can you supply photographs of real completed work — openings, core holes, the kit on site?                                                                                                                                                                                                                       | Sprints 5, 6                                |
+| 1.3 | ✅ **Answered 2026-08-30 — אור שוורץ, owner**, consents to publishing his name and photos. Bio published on `/about/` in his own words; bylines on service pages since 2026-09-06. 🔶 Still withheld: his "למעלה מעשור" sentence, which conflicts with the 2005 claim (1.8 — business-facts §A lists the three resolutions). | Sprint 5 — **unblocked except 5.1/5.4–5.6** |
+| 1.4 | ✅ **Answered 2026-08-30 — `G-VMVP7XQKMG`.** In the roster, synced to `site.config.json` 2026-09-06, and the live container already routes the hostname to it (page views flow). Remaining: event tags in the container (7.3).                                                                                               | Sprint 7 — **unblocked**                    |
+| 1.5 | **Google עסק שלי:** does a profile exist? If not, create and verify it.                                                                                                                                                                                                                                                      | Sprints 4, 5 (reviews, sameAs)              |
 
 **Second tier — each either becomes a trust asset or comes out of the copy. There is no third option:**
 
-| #   | Claim                              | Currently                                                 |
-| --- | ---------------------------------- | --------------------------------------------------------- |
-| 1.6 | ביטוח צד ג׳                        | Claimed 3× with no insurer, policy or cover amount        |
-| 1.7 | `+1,000 פרויקטים`                  | Displayed as a headline stat, unverified                  |
-| 1.8 | `foundedYear: 2005` → "מעל 20 שנה" | Drives 4 copy sites **and** `foundingDate` in the JSON-LD |
-| 1.9 | Pricing — `₪150 למ״ר`, `₪190 למ׳`  | Unconfirmed; blocks `OfferCatalog` and the FAQ cost table |
+| #   | Claim                              | Currently                                                                                    |
+| --- | ---------------------------------- | -------------------------------------------------------------------------------------------- |
+| 1.6 | ביטוח צד ג׳                        | Claimed at **four** copy sites (incl. the hero chip) with no insurer, policy or cover amount |
+| 1.7 | `+1,000 פרויקטים`                  | Displayed as a headline stat, unverified                                                     |
+| 1.8 | `foundedYear: 2005` → "מעל 20 שנה" | Drives 4 copy sites **and** `foundingDate` in the JSON-LD                                    |
+| 1.9 | Pricing — `₪150 למ״ר`, `₪190 למ׳`  | Unconfirmed; blocks `OfferCatalog` and the FAQ cost table                                    |
 
 **Exit gate:** every 🔶 row in [business-facts.md](business-facts.md) §§A–C and §E is either ✅ with a
 source, or the claim has been removed from `lib/site.ts`.
@@ -99,16 +108,16 @@ title carries the brand exactly once.
 > did not happen. It now always renders and toggles with `hidden`. Verified: all five services appear
 > in `/privacy/index.html`, a page with no services grid. **Check the export, not the component.**
 
-| #   | Task                                                                                                                                                                                                                                                                            | Pri | Est |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
-| 2.1 | ✅ **Done.** `serviceAreas` is `ServiceArea[]` (`slug`, `name`, `kind`, `prefixed`), moved above `serviceAreaGroups`, which resolves members through `area()` — an unknown name fails the build. `slug` is reserved for sprint 4 and **nothing links to it yet**.               | ✅  | ½ d |
-| 2.2 | ✅ **Done.** Services disclosure in `Header` — desktop dropdown (Escape + click-outside) and an inline nested list on mobile. Always rendered, toggled with `hidden`, so the links are in the static export. All five services now appear in `/privacy/index.html`.             | ✅  | ½ d |
-| 2.3 | ✅ **Done — differently than specified.** The chips stay unlinked (backlog §9.3 settled that: linking them to non-existent pages is the doorway trap). The actual dead end was that the homepage area section had **no onward link at all**; it now links to `/service-areas/`. | ✅  | ¼ d |
-| 2.4 | ✅ **Mostly pre-existing — the "zero" was stale.** Backlog §9.2 resolved this in wave 4; only `/contact/` had none. It now carries three descriptive links, placed **below** the form so they don't compete with the primary conversion.                                        | ✅  | 1 d |
-| 2.5 | ✅ **Done.** `public/llms.txt` → `/llms.txt`. Omits every 🔶 claim and states the site carries no ratings, so an assistant cannot invent one.                                                                                                                                   | ✅  | ¼ d |
-| 2.6 | ✅ **Date half done.** `dateModified` in every page node from `routeUpdated`; service pages gained a `WebPage` node to carry it (`Service` has no date property); visible `עודכן:` line in an LTR-isolated `<time>`. Author half → sprint 5.3, now unblocked by 1.3.            | ✅  | ½ d |
-| 2.7 | ✅ **Done.** Whole snapshot layer deleted (1.2 MB `content/site.json` included), plus the starter SVGs, the `snapshot`/`enrich` npm scripts, and five dependencies only that layer used.                                                                                        | ✅  | ½ d |
-| 2.8 | ✅ **Done.** `scripts/check-titles.mjs` runs as `postbuild` — doubled brand, missing `<title>` and unexpected duplicates all fail `npm run build`. Proven by injecting a doubled brand into the export and watching it exit 1.                                                  | ✅  | ¼ d |
+| #   | Task                                                                                                                                                                                                                                                                                   | Pri | Est |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| 2.1 | ✅ **Done.** `serviceAreas` is `ServiceArea[]` (`slug`, `name`, `kind`, `prefixed`), moved above `serviceAreaGroups`, which resolves members through `area()` — an unknown name fails the build. `slug` is reserved for sprint 4 and **nothing links to it yet**.                      | ✅  | ½ d |
+| 2.2 | ✅ **Done.** Services disclosure in `Header` — desktop dropdown (Escape + click-outside) and an inline nested list on mobile. Always rendered, toggled with `hidden`, so the links are in the static export. All five services now appear in `/privacy/index.html`.                    | ✅  | ½ d |
+| 2.3 | ✅ **Done — differently than specified.** The chips stay unlinked (backlog §9.3 settled that: linking them to non-existent pages is the doorway trap). The actual dead end was that the homepage area section had **no onward link at all**; it now links to `/service-areas/`.        | ✅  | ¼ d |
+| 2.4 | ✅ **Mostly pre-existing — the "zero" was stale.** Backlog §9.2 resolved this in wave 4; only `/contact/` had none. It now carries three descriptive links, placed **below** the form so they don't compete with the primary conversion.                                               | ✅  | 1 d |
+| 2.5 | ✅ **Done.** `public/llms.txt` → `/llms.txt`. Omits every 🔶 claim and states the site carries no ratings, so an assistant cannot invent one.                                                                                                                                          | ✅  | ¼ d |
+| 2.6 | ✅ **Done.** `dateModified` in every page node from `routeUpdated`; service pages gained a `WebPage` node to carry it (`Service` has no date property); visible `עודכן:` line in an LTR-isolated `<time>`. The author half shipped 2026-09-06 as sprint 5.3 (`components/Byline.tsx`). | ✅  | ½ d |
+| 2.7 | ✅ **Done.** Whole snapshot layer deleted (1.2 MB `content/site.json` included), plus the starter SVGs, the `snapshot`/`enrich` npm scripts, and five dependencies only that layer used.                                                                                               | ✅  | ½ d |
+| 2.8 | ✅ **Done.** `scripts/check-titles.mjs` runs as `postbuild` — doubled brand, missing `<title>` and unexpected duplicates all fail `npm run build`. Proven by injecting a doubled brand into the export and watching it exit 1.                                                         | ✅  | ¼ d |
 
 **Exit gate:** `npm run lint && npm run typecheck && npm run format:check && npm run build` clean ·
 `/qa-build-gate` passes including the new title assertion · `seo-auditor` and `ts-react-reviewer` report
@@ -141,8 +150,9 @@ question-form `<h2>` · `aeo-geo-strategist` and `eeat-trust-auditor` clean · e
 **Goal:** own the place axis — the single largest untapped tier for a trade chosen by proximity.
 
 ✅ **1.1 answered and shipped.** Coverage is **גוש דן והמרכז**, 14 cities, all four surfaces agreeing.
-The gate this sprint waited on is closed; 4.1 below is already done. What remains is 2.1 and 2.3 from
-Sprint 2 — do those first, then build.
+The gate this sprint waited on is closed; 4.1 below is already done, and the typed `ServiceArea[]`
+(with Hebrew slugs, so the route must `decodeURIComponent` + NFC-normalise `params`) is in place.
+Nothing technical blocks 4.2 — only the stop rule below.
 
 | #   | Task                                                                                                                                                                                                                                                | Pri | Est    |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------ |
@@ -162,21 +172,21 @@ then it does not ship) · `local-seo-strategist` and `seo-auditor` clean · site
 
 ---
 
-## Sprint 5 — E-E-A-T & trust 🔒 (blocked on 1.2, 1.3, 1.5)
+## Sprint 5 — E-E-A-T & trust 🔒 (5.2 and 5.3 shipped; the rest blocked on 1.2, 1.5 and 1.6–1.8)
 
 **Goal:** fix the two letters that currently score **zero** — Experience and Authoritativeness. Expertise
 is already the site's strong suit; more expert copy will not move a site with no proof and no
 corroboration.
 
-| #   | Task                                                                                                                                                                             | Pri | Blocked by |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ---------- |
-| 5.1 | **Work gallery** — real photos with Hebrew `alt` and a technical caption (element, thickness, method). Faces, plates and unit numbers cropped. **Never stock, never generated.** | 🟠  | 1.2        |
-| 5.2 | ✅ **Done 2026-08-30.** אור שוורץ (בעלים) on `/about/` in his own words, plus a `Person` node (`#owner`). The photo slot renders an initial until 1.2 lands.                     | ✅  | —          |
-| 5.3 | **Author bylines + visible dates** on service pages and articles; `author` in the `Article` schema.                                                                              | 🟡  | 1.3, 2.6   |
-| 5.4 | **Populate `sameAs`** in the roster manifest — the GBP first, then any real directory or association profile.                                                                    | 🟠  | 1.5        |
-| 5.5 | **Two case studies** — the structure in [eeat-and-trust.md](eeat-and-trust.md) §5. Client consent, or anonymise the client and keep the technical detail.                        | 🟠  | 1.2        |
-| 5.6 | **Review acquisition, then display, then schema — in that order.** No `Review`/`AggregateRating` JSON-LD until real, publicly verifiable reviews exist.                          | 🟠  | 1.5        |
-| 5.7 | **Resolve 1.6–1.8** — substantiate or delete the insurance, project-count and founding claims.                                                                                   | 🟡  | 1.6–1.8    |
+| #   | Task                                                                                                                                                                                                                                                                                                                                                     | Pri | Blocked by |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ---------- |
+| 5.1 | **Work gallery** — real photos with Hebrew `alt` and a technical caption (element, thickness, method). Faces, plates and unit numbers cropped. **Never stock, never generated.**                                                                                                                                                                         | 🟠  | 1.2        |
+| 5.2 | ✅ **Done 2026-08-30.** אור שוורץ (בעלים) on `/about/` in his own words, plus a `Person` node (`#owner`). The photo slot renders an initial until 1.2 lands.                                                                                                                                                                                             | ✅  | —          |
+| 5.3 | ✅ **Done 2026-09-06.** `components/Byline.tsx` renders מאת אור שוורץ, בעלים · עודכן: on the five service pages; the `WebPage` node carries `author: {@id #owner}` and the `Person` node is emitted on the same page so the reference resolves in-page. Articles reuse the component and get `author` on their `Article` node when the hub exists (3.1). | ✅  | —          |
+| 5.4 | **Populate `sameAs`** in the roster manifest — the GBP first, then any real directory or association profile.                                                                                                                                                                                                                                            | 🟠  | 1.5        |
+| 5.5 | **Two case studies** — the structure in [eeat-and-trust.md](eeat-and-trust.md) §5. Client consent, or anonymise the client and keep the technical detail.                                                                                                                                                                                                | 🟠  | 1.2        |
+| 5.6 | **Review acquisition, then display, then schema — in that order.** No `Review`/`AggregateRating` JSON-LD until real, publicly verifiable reviews exist.                                                                                                                                                                                                  | 🟠  | 1.5        |
+| 5.7 | **Resolve 1.6–1.8** — substantiate or delete the insurance, project-count and founding claims.                                                                                                                                                                                                                                                           | 🟡  | 1.6–1.8    |
 
 **Exit gate:** `eeat-trust-auditor` reports zero unsourced claims · no fabricated testimonial (the build
 gate greps for the three removed names — any reappearance is a stop-ship) · every published photo is
@@ -190,14 +200,14 @@ this business's own work.
 means **Next generates no `srcset` at all** — dropping a gallery in as-is puts full-resolution JPEGs on
 mobile and destroys LCP on the exact pages meant to build trust.
 
-| #   | Task                                                                                                                                                                                    | Pri | Est |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
-| 6.1 | **Variant generation** — 400/800/1200/1600 px, AVIF + WebP + JPEG fallback, at or before build time. Or 🌩️ Cloudflare Images at the edge, if the owner prefers no binaries in the repo. | 🟠  | 1 d |
-| 6.2 | **Real `srcset` + `sizes`** reflecting actual layout width; `width`/`height` on every image (CLS).                                                                                      | 🟠  | ½ d |
-| 6.3 | **`loading="lazy"` + `decoding="async"`** below the fold; `fetchpriority="high"` and no lazy on any LCP image.                                                                          | 🟠  | ¼ d |
-| 6.4 | **Strip EXIF** — job photos carry GPS and device identifiers.                                                                                                                           | 🔴  | ¼ d |
-| 6.5 | **Re-baseline Core Web Vitals.** Confirm the LCP element per route type — it is the Hebrew `<h1>` today, and may change once a gallery exists.                                          | 🟠  | ¼ d |
-| 6.6 | ⚪ **Drop `Header` to a server component** (CSS/`<details>` disclosure instead of `useState`) — removes the nav tree from the client bundle on every route.                             | ⚪  | ½ d |
+| #   | Task                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Pri | Est |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | --- |
+| 6.1 | **Variant generation.** ⚠️ Largely an **adoption** task, not a build: the vendored `@ishub/site-kit` ships a `SiteImage` component and Cloudflare image transforms via the manifest's `images.mediaHost` (`imgquarry.com`), live-verified serving AVIF for this site's catalogued OG image. Adopt it (catalogue images in the roster `images` block, sync, wire call sites) — or pre-generate 400/800/1200/1600 AVIF/WebP/JPEG under `public/` if the owner prefers binaries in the repo. | 🟠  | ½ d |
+| 6.2 | **Real `srcset` + `sizes`** reflecting actual layout width; `width`/`height` on every image (CLS).                                                                                                                                                                                                                                                                                                                                                                                        | 🟠  | ½ d |
+| 6.3 | **`loading="lazy"` + `decoding="async"`** below the fold; `fetchpriority="high"` and no lazy on any LCP image.                                                                                                                                                                                                                                                                                                                                                                            | 🟠  | ¼ d |
+| 6.4 | **Strip EXIF** — job photos carry GPS and device identifiers.                                                                                                                                                                                                                                                                                                                                                                                                                             | 🔴  | ¼ d |
+| 6.5 | **Re-baseline Core Web Vitals.** Confirm the LCP element per route type — it is the Hebrew `<h1>` today, and may change once a gallery exists.                                                                                                                                                                                                                                                                                                                                            | 🟠  | ¼ d |
+| 6.6 | ⚪ **Drop `Header` to a server component** (CSS/`<details>` disclosure instead of `useState`) — removes the nav tree from the client bundle on every route.                                                                                                                                                                                                                                                                                                                               | ⚪  | ½ d |
 
 **Exit gate:** [performance-guidelines.md](performance-guidelines.md) §1 budgets met on a throttled
 mobile profile · Lighthouse mobile ≥ 90 on `/`, one service page and `/contact/` · `perf-a11y-auditor`
@@ -205,20 +215,23 @@ clean on both verdicts.
 
 ---
 
-## Sprint 7 — Measurement & consent 🔒 (blocked on 1.4)
+## Sprint 7 — Measurement & consent 🔧 (unblocked; 7.1, 7.2, 7.7 done 2026-09-06)
 
-**Goal:** stop flying blind. The container is live and every event is wired, but with no GA4 measurement
-ID **we are currently collecting nothing.**
+**Goal:** stop flying blind. The property exists and the live container routes `betonplus.co.il` to
+`G-VMVP7XQKMG`, so **page views are collected**. What is not collected is everything that matters for
+a lead-gen site: the container has **no GA4 event tag, no custom-event trigger and no click trigger**,
+so `lead_submit`, `lead_fallback`, `form_error` and `data-cta` clicks never reach GA4. Only the
+`/thank-you/` page view can be a conversion today.
 
-| #   | Task                                                                                                                                                                                                      | Pri | Blocked by |
-| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ---------- |
-| 7.1 | **Record `G-VMVP7XQKMG` in the roster manifest** (`analytics.ga4MeasurementId`) and sync. ⚠️ Record-keeping only — **nothing in the repo reads it**; GA4 is configured entirely inside the GTM container. | 🔴  | 1.4        |
-| 7.2 | **Verify hostname routing inside `GTM-KWGGH438`** — one shared fleet container serves every IL site; the hostname condition is what keeps properties separate.                                            | 🔴  | 1.4        |
-| 7.3 | **Mark `lead_submit` and the `/thank-you/` pageview as conversions**; link GA4 ↔ Search Console.                                                                                                          | 🟠  | 7.1        |
-| 7.4 | 🌩️ **Enable Cloudflare Web Analytics** — cookieless, consent-free, gives real traffic and CWV field data independent of GA4.                                                                              | 🟠  | owner      |
-| 7.5 | **Consent Mode for GA4** if a banner is added; Cloudflare Web Analytics runs unconditionally either way.                                                                                                  | 🟡  | 7.1        |
-| 7.6 | **Verify end to end** — GTM Preview _and_ GA4 DebugView. A tag that fires in Preview but not DebugView is a routing failure, not a success.                                                               | 🔴  | 7.1        |
-| 7.7 | **Audit `dataLayer` for PII.** No name, phone, email or message body, ever. Inspect it directly, don't assume.                                                                                            | 🔴  | —          |
+| #   | Task                                                                                                                                                                                                                                                                                                                                                                                                                     | Pri | Blocked by |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ---------- |
+| 7.1 | ✅ **Done.** `G-VMVP7XQKMG` recorded in the roster 2026-08-30; `ops/sync-manifest.ps1 -Confirm` run 2026-09-06, so `site.config.json` carries it (and the `_needsConfirmation` notes moved to `docs/manifest-assumptions.md` instead of the client bundle). Record-keeping only — nothing in the repo reads it.                                                                                                          | ✅  | —          |
+| 7.2 | ✅ **Verified 2026-09-06** from the live `gtm.js`: the shared container maps `(^\|\.)betonplus\.co\.il$` to the property. Re-verify after any container publish.                                                                                                                                                                                                                                                         | ✅  | —          |
+| 7.3 | **Add the missing tags in `GTM-KWGGH438`** (GTM UI access): a GA4 Event tag on Custom Event triggers `lead_submit`, `lead_fallback`, `form_error` (all pushed by `ContactForm` since 2026-09-06, PII-free), plus a link-click trigger with an Auto-Event Variable reading `data-cta` for `cta_click`; publish; then in GA4 mark `lead_submit` and the `/thank-you/` page view as **key events** and link Search Console. | 🔴  | 7.1        |
+| 7.4 | 🌩️ **Enable Cloudflare Web Analytics** — cookieless, consent-free, gives real traffic and CWV field data independent of GA4.                                                                                                                                                                                                                                                                                             | 🟠  | owner      |
+| 7.5 | **Consent Mode for GA4** if a banner is added; Cloudflare Web Analytics runs unconditionally either way.                                                                                                                                                                                                                                                                                                                 | 🟡  | 7.1        |
+| 7.6 | **Verify end to end** — GTM Preview _and_ GA4 DebugView. A tag that fires in Preview but not DebugView is a routing failure, not a success.                                                                                                                                                                                                                                                                              | 🔴  | 7.1        |
+| 7.7 | ✅ **Verified 2026-09-06.** The only pushes are `lead_submit {form}`, `lead_fallback {form, reason}` and `form_error {form, field}` — no name, phone, email or message ever enters `dataLayer`. Re-inspect after any form change.                                                                                                                                                                                        | ✅  | —          |
 
 **Container-ID rule:** whenever an ID changes, assert `https://www.googletagmanager.com/gtm.js?id=<ID>`
 returns **200**. Two fabricated IDs once cost the fleet 18 days of zero analytics across every site.
@@ -230,13 +243,13 @@ returns **200**. Two fabricated IDs once cost the fleet 18 days of zero analytic
 
 ## Sprint 8 — Security close-out 🔧 (unblocked; sequence after Sprint 7)
 
-| #   | Task                                                                                                                                                           | Pri | Est   |
-| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ----- |
-| 8.1 | **Collect CSP violation reports** for a full traffic cycle in report-only mode.                                                                                | 🟡  | —     |
-| 8.2 | **Replace `'unsafe-inline'` with a build-time hash** of the GTM snippet — a nonce cannot work without a server.                                                | 🟡  | ½ d   |
-| 8.3 | **Promote to enforcing `Content-Security-Policy`.** Promoting early breaks GTM silently and takes analytics down with it — which is why this follows Sprint 7. | 🟡  | ¼ d   |
-| 8.4 | 🌩️ **Tighten `Access-Control-Allow-Origin: *`** at the zone.                                                                                                   | ⚪  | owner |
-| 8.5 | **Re-check `/privacy/` against actual data flow** after every Sprint 7 change.                                                                                 | 🟠  | ¼ d   |
+| #   | Task                                                                                                                                                                                                                                                                                                                                                                                                                             | Pri | Est         |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ----------- |
+| 8.1 | **Collect CSP violation reports** for a full traffic cycle. ⚠️ **Blocked on an endpoint:** the live report-only policy has **no `report-to`/`report-uri`** and no `Reporting-Endpoints` header, so nothing is collected today. Choose a collector (third-party report endpoint, or a Cloudflare Worker — owner account), add the directive to `public/_headers`, deploy, then observe.                                           | 🟡  | owner + ¼ d |
+| 8.2 | **Replace `'unsafe-inline'`.** A single GTM-snippet hash is **not enough**: the static export ships ~28 inline scripts per page (Next's RSC payload pushes). Either a `postbuild` step that hashes every inline script per route and emits per-path `_headers` rules (regenerated every build; mind the Pages rule limit), or keep `'unsafe-inline'` for `script-src` and harden the other directives. Decide before estimating. | 🟡  | ½–1 d       |
+| 8.3 | **Promote to enforcing `Content-Security-Policy`.** Promoting early breaks GTM silently and takes analytics down with it — which is why this follows Sprint 7.                                                                                                                                                                                                                                                                   | 🟡  | ¼ d         |
+| 8.4 | ✅ **Done in repo 2026-09-06 — live after the next deploy.** `! Access-Control-Allow-Origin` under `/*` in `public/_headers` detaches the Pages default wildcard (it was misfiled as a zone change). Verify post-deploy with `curl -sSI`.                                                                                                                                                                                        | ✅  | —           |
+| 8.5 | **Re-check `/privacy/` against actual data flow** after every Sprint 7 change. Partial: it names Web3Forms correctly but still hedges analytics ("ייתכן … כגון Google Analytics") and never names Google Tag Manager, which is unconditionally live. Once 7.3/7.6 confirm the tags, state GTM + GA4 definitively (cookies, purpose, opt-out).                                                                                    | 🟠  | ¼ d         |
 
 **Exit gate:** `security-auditor` clean · CSP enforcing with no console violations on `/`, a service
 page, `/contact/` and `/thank-you/` · GTM and the form still work under enforcement.
@@ -261,7 +274,7 @@ page, `/contact/` and `/thank-you/` · GTM and the form still work under enforce
 1. ✅ **Sprint 1 questions sent** — 1.1, 1.3 and 1.4 answered; **1.2 (photos) and 1.5 (GBP) still open
    and still blocking sprints 5 and 6.** Chase those two.
 2. ✅ **Sprint 2 shipped in full 2026-08-31** — typed areas, header one-hop, `llms.txt`, the date
-   signal, the title guard, and 1.2 MB of dead code gone. Awaiting deploy approval.
+   signal, the title guard, and 1.2 MB of dead code gone. Deployed the same day.
 3. **Sprint 3.1–3.2 — the guides hub and the first two articles.** Now the largest ranking and AEO
    gain available without the owner, and the next thing to start.
 
