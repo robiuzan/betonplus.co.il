@@ -1,5 +1,5 @@
 /**
- * Typed block model for the knowledge hub (`/מדריכים/`), per the `new-article` skill.
+ * Typed block model for the knowledge hub (`/guides/`), per the `new-article` skill.
  *
  * Why typed blocks rather than MDX: no new dependency, no second build step in a repo whose
  * build is already the release gate, strict TS stays meaningful — and, the real reason, the

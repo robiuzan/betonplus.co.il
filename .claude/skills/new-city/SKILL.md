@@ -1,6 +1,6 @@
 ---
 name: new-city
-description: Build or extend the location silo that doesn't exist yet — serviceAreas in lib/site.ts is already a typed ServiceArea[] (14 entries, Hebrew slug reserved for /locations/[city]/, kind and prefixed for schema and grammar); author genuinely unique per-city content, then add the route so schema, links and the sitemap follow. Use when expanding local coverage or when asked for city pages. Triggers: "add a city", "new location page", "cover <city>", "city pages", "doorway", "local landing pages".
+description: Build or extend the location silo that doesn't exist yet — serviceAreas in lib/site.ts is already a typed ServiceArea[] (14 entries; the slug must become ASCII before /locations/[city]/ exists — Next 16 static export aborts on Hebrew params; kind and prefixed for schema and grammar); author genuinely unique per-city content, then add the route so schema, links and the sitemap follow. Use when expanding local coverage or when asked for city pages. Triggers: "add a city", "new location page", "cover <city>", "city pages", "doorway", "local landing pages".
 ---
 
 # Build or extend the location silo

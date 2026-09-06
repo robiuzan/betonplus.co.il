@@ -1,5 +1,5 @@
 /**
- * The knowledge hub registry (`/מדריכים/`). One file per article under lib/articles/, all
+ * The knowledge hub registry (`/guides/`). One file per article under lib/articles/, all
  * registered here so `generateStaticParams`, the hub index, the sitemap, the service-page
  * cross-links and the schema derive from a single list — the same discipline as
  * `services` and `staticRoutes` in lib/site.ts.
