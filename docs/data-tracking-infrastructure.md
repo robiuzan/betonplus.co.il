@@ -24,22 +24,60 @@ Static HTML (Cloudflare Pages)
    +-- form POST -> api.web3forms.com -> email to info@betonplus.co.il   [the actual lead delivery]
 ```
 
-| Component             | State                                                                                                   |
-| --------------------- | ------------------------------------------------------------------------------------------------------- |
-| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                         |
-| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts)    |
-| GA4 property          | 🔴 **`analytics.ga4MeasurementId` is `null` in the roster** — the container fires into nothing          |
-| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                             |
-| Sitemap               | ✅ `/sitemap.xml` submitted to Search Console 2026-09-03 — 14 URLs, 0 errors, 0 warnings, 0 indexed yet |
-| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                               |
-| Lead event            | ✅ `lead_submit` on confirmed delivery, then `/thank-you/`                                              |
-| Server-side analytics | ❌ none                                                                                                 |
-| CRM                   | ❌ none — leads arrive as email                                                                         |
+| Component             | State                                                                                                                                                     |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                                                                           |
+| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts)                                                      |
+| GA4 property          | 🔴 **`analytics.ga4MeasurementId` is `null` in the roster** — the container fires into nothing                                                            |
+| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                                                                               |
+| Sitemap               | ✅ `/sitemap.xml` submitted to Search Console 2026-09-03 — 14 URLs, 0 errors, 0 warnings; re-fetched 09-04                                                |
+| Indexing              | 🟠 **1/14 indexed** (2026-09-06). Only `/` is in the index (crawled 08-22); the other 13 are discovered via the sitemap but **not yet crawled** — see §1a |
+| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                                                                                 |
+| Lead event            | ✅ `lead_submit` on confirmed delivery, then `/thank-you/`                                                                                                |
+| Server-side analytics | ❌ none                                                                                                                                                   |
+| CRM                   | ❌ none — leads arrive as email                                                                                                                           |
 
 **The single most important fact on this page: we are not currently collecting any analytics data.**
 The container is live and the events are wired, but with no GA4 measurement ID they land nowhere. Every
 "did it work?" question in [seo-geo-aeo-strategy.md](seo-geo-aeo-strategy.md) §7 is unanswerable until
 the owner creates the property.
+
+---
+
+## 1a. Indexing status — the sitemap is not the bottleneck
+
+`/sitemap.xml` was submitted 2026-09-03 and accepted cleanly (14 URLs, 0 errors, 0 warnings); Google
+re-fetched it on 09-04. **Discovery is working — the sitemap is the recorded discovery source for the
+pages Google knows about.**
+
+What the URL Inspection API showed on 2026-09-06:
+
+| State                                | Count | Meaning                                          |
+| ------------------------------------ | ----- | ------------------------------------------------ |
+| `Submitted and indexed`              | 1     | `/` only — last crawled 2026-08-22               |
+| `Discovered - currently not indexed` | 6–13  | Google knows the URL, **has not fetched it yet** |
+| `URL is unknown to Google`           | 0–7   | not yet registered in this replica               |
+
+The split between the last two **flip-flopped between consecutive API calls minutes apart** — GSC was
+returning inconsistent snapshots because it was actively processing the sitemap. Do not treat either
+number as settled. The fact that held across every call: **`lastCrawlTime` was absent on all 13
+non-homepage routes — none of them has been crawled even once.**
+
+Two consequences worth internalising:
+
+- This is **not** `Crawled - currently not indexed`. Google has not judged these pages and found them
+  wanting; it simply has not fetched them. The fix is not more on-page SEO.
+- Internal linking is **not** the cause either — every one of the 13 routes is linked from the
+  homepage (verified against `out/index.html`; 1–3 links each, zero orphans).
+
+The real constraint is crawl scheduling on a new, low-authority domain. What moves it: external
+authority (a live Google עסק שלי listing, real citations, genuine inbound links) and time. What does
+not move it: re-submitting the sitemap, or editing metadata that is already correct.
+
+⚠️ **Google's Indexing API cannot be used here** — it accepts only `JobPosting` and `BroadcastEvent`
+pages. Per-URL "Request Indexing" is a manual action in the Search Console UI, not scriptable. If the
+owner wants to prioritise, the highest-value manual requests are `/services/` and the five service
+pages.
 
 ---
 
