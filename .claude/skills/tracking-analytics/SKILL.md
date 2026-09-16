@@ -111,9 +111,10 @@ grep -rn 'href={telHref}\|href={whatsappHref}' components app | grep -v 'data-ct
   which would double every lead. `lead_submit` counts Once per event; `contact_click` Once per
   session, because one person taps call several times. Neither carries a default monetary value: no
   lead value is confirmed, and GA4's dialog defaults to US Dollar for a shekel business.
-- **Still open on the GA4 side** (not container work, not repo work): register `cta_id`, `form`,
-  `reason` and `field` as **event-scoped custom dimensions** — until that is done GA4 receives them
-  but no report can show them; and link Search Console.
+- **GA4 side completed 2026-09-16:** the four custom dimensions (`cta_id`, `form`, `reason`,
+  `field`, event scope) are registered and Search Console is linked. Custom dimensions do **not**
+  backfill, so anything collected before that date reports as "(not set)". None of this is verifiable
+  from the repo — the proof is a report built on `cta_id` that shows button names.
 - ⚠️ **GA4's "Create an event" dialog cannot derive an event from an arbitrary existing event.** Its
   "Create without code" path only offers Google's own no-code templates (`page_view` with a URL rule,
   `form_submit`), so `cta_click` never appears in that dropdown. For an event already sent by the

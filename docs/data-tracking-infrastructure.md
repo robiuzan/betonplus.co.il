@@ -49,7 +49,7 @@ Container **v7** (2026-09-16) adds a third tag, `contact_click`, firing on a cal
 excludes the two on the thank-you page, the three that merely open the form, the email link, the 404
 home link and the delivery-failure WhatsApp fallback. It is a key event; raw `cta_click` is not.
 
-What is **not** yet true: the three lead events have not been observed from a real submit; GA4-side work is all that remains: mark `lead_submit` and the `/thank-you/` page view as key events, register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions (until then they are transmitted but appear in no report), and link GA4 to Search Console.
+What is **not** yet true: the three lead events have not been observed from a real submit, because nobody has submitted the form since the tag went live. Everything else in the chain is confirmed, and the GA4-side settings (key events, custom dimensions, Search Console link) were completed on 2026-09-16.
 
 _(Read the container, never this page, when the two disagree. On 2026-09-06 this file said the id was
 `null`; before that it said the property did not exist. Both were stale.)_
@@ -110,9 +110,10 @@ pages.
 5. ✅ **Key events marked 2026-09-16:** `lead_submit` (Once per event) and `contact_click` (Once per
    session). The `/thank-you/` page view is deliberately **not** one — it fires for the same lead as
    `lead_submit` and would double every conversion. Neither carries a default monetary value.
-6. 🔴 Register `cta_id`, `form`, `reason` and `field` as **custom dimensions** (event scope).
-   Until this is done GA4 receives them but no report can display them.
-7. 🔴 Link GA4 ↔ Search Console.
+6. ✅ **Custom dimensions registered 2026-09-16** (event scope) for `cta_id`, `form`, `reason` and
+   `field`. They apply from that date forward and do not backfill, so anything collected before then
+   reports as "(not set)".
+7. ✅ **GA4 ↔ Search Console linked 2026-09-16.**
 8. Verify end to end with GTM Preview **and** GA4 DebugView — a tag that fires in Preview but not in
    DebugView is a routing failure, not a success. Record the date and result in §8.
 

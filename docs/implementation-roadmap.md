@@ -216,13 +216,22 @@ clean on both verdicts.
 
 ---
 
-## Sprint 7 — Measurement & consent ✅ tagging DONE (container v5, 2026-09-16) · GA4 settings open
+## Sprint 7 — Measurement & consent ✅ DONE (2026-09-16)
 
 **Goal:** stop flying blind. Done: the property is routed by hostname, and container **version 5**
 adds a `cta_click` tag plus one GA4 Event tag covering `lead_submit`, `lead_fallback` and
 `form_error`. GA4 DebugView confirmed `page_view` and `cta_click` on 2026-09-16.
 
-Key events are marked (`lead_submit` and `contact_click`, container v7, 2026-09-16). Two GA4-side settings remain: register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions — until then they are transmitted but appear in no report — and link GA4 to Search Console. Until the custom dimensions exist, the parameters arrive but no report can show them.
+Container **v7** adds `contact_click` for call and WhatsApp taps. Key events are `lead_submit`
+(Once per event) and `contact_click` (Once per session). The owner reported the remaining GA4-side
+settings done on 2026-09-16: the four custom dimensions registered and Search Console linked.
+
+⚠️ **Those last two cannot be verified from this repo** — they live only in the GA4 interface. The
+check that proves them is a report: build one with `cta_id` as the dimension and confirm it shows
+button names rather than "(not set)". Do that before trusting any breakdown by button.
+
+**What is still genuinely unproven:** no real `lead_submit` has been observed yet, because no lead
+has been submitted since the tag went live. The first real one confirms the whole path.
 
 | #   | Task                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Pri | Blocked by |
 | --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ---------- |
@@ -237,11 +246,14 @@ Key events are marked (`lead_submit` and `contact_click`, container v7, 2026-09-
 **Container-ID rule:** whenever an ID changes, assert `https://www.googletagmanager.com/gtm.js?id=<ID>`
 returns **200**. Two fabricated IDs once cost the fleet 18 days of zero analytics across every site.
 
-| 7.8 | 🟡 **Half done 2026-09-16.** Key events marked: `lead_submit` (Once per event — the submit button disables during send and the page navigates away, so one visit is one lead) and `contact_click` (Once per session — one person taps call repeatedly). Neither carries a default monetary value: no confirmed lead value exists, and the dialog defaults to US Dollar for a shekel business. **Still open:** register `cta_id`/`form`/`reason`/`field` as event-scoped custom dimensions, and link Search Console. The `/thank-you/` page view is deliberately **not** a key event — it would double-count every lead alongside `lead_submit`. | 🟡 | — |
+| 7.8 | ✅ **Done 2026-09-16** (owner-reported; GA4-side, not verifiable from the repo). Key events: `lead_submit` (Once per event — the submit button disables during send and the page navigates away, so one visit is one lead) and `contact_click` (Once per session — one person taps call repeatedly). Neither carries a default monetary value: no confirmed lead value exists, and the dialog defaults to US Dollar for a shekel business. Custom dimensions registered for `cta_id`/`form`/`reason`/`field`; Search Console linked. The `/thank-you/` page view is deliberately **not** a key event — it would double-count every lead alongside `lead_submit`. | ✅ | — |
 | 7.9 | 🌩️ **Untick BOTH "Full Matches Only" AND "Enable Capture Groups and Replace Functionality"** on the container's `GA4 Measurement ID` RegEx Table, then republish. The keys are written `(^\|\.)<domain>$` for an unanchored apex-or-sub-domain match; full matching adds anchors that cancel the prefix, so `www.<domain>` resolves to nothing. Unticking full matching **alone is worse** — with capture groups still on the variable returns `input.replace(...)`, yielding `wwwG-VMVP7XQKMG`, which fails the Google tag's `^G-` guard and hands the event tags a malformed id. Verified by reimplementing GTM's `__remm`. Fleet-wide: 9 of 11 sites serve `www` on 200. | 🟠 | — |
 
-**Exit gate:** a real `lead_submit` appears in GA4 DebugView · `/thank-you/` counts as a key event ·
-`dataLayer` verified PII-free · `cta_id` resolves to the attribute value, not the button label.
+**Exit gate:** ✅ `cta_click` and `contact_click` confirmed arriving · `dataLayer` verified PII-free ·
+key events marked · custom dimensions registered. ⏳ **One item outstanding:** a real `lead_submit`
+from an actual form submission has not been observed yet. Confirm it on the first live lead, and at
+the same time check that `cta_id` resolves to the attribute value rather than the button's Hebrew
+label.
 
 ---
 
