@@ -70,7 +70,7 @@ canonical, any doubled `<title>`, any `Review`/`AggregateRating` without a verif
 **any fabricated testimonial** (the three that once shipped were removed 2026-08-17 and the gate greps
 for their names on every build — a hit is an unconditional stop).
 
-The next deploy takes live (staged 2026-09-06, not yet shipped): the `/guides/` guides hub and its
+Shipped 2026-09-16 (`5bb6943a.betonplus.pages.dev`, gate 205 files): the `/guides/` guides hub and its
 first four articles (5 new routes, sitemap 14 → 19), the service-page bylines with `author` on the
 `WebPage` node, the `lead_fallback`/`form_error` dataLayer events, the detached
 `Access-Control-Allow-Origin` wildcard, the synced `site.config.json` (GA4 id present, internal notes

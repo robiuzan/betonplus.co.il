@@ -54,7 +54,7 @@ Sprint 2 shipped 2026-08-31, so Sprint 4 has no remaining technical dependency.
 > Sprint 8.4 done in `public/_headers` (live after the next deploy); every remaining `🔶` literal for
 > the 2005 claim marked and the claim removed from `/about/`'s meta description; CLAUDE.md, the
 > registers and the `.claude` toolkit corrected to the post-Sprint-2 state (they had described deleted
-> files, 16 areas, font preloads and a null GA4 id). **Not deployed** — see Standing rule 2.
+> files, 16 areas, font preloads and a null GA4 id). ✅ **Deployed 2026-09-16** (`5bb6943a.betonplus.pages.dev`, gate passed at 205 files) and live-verified: `/guides/` + 4 articles 200 with `Article`/`author`/`Person`/`FAQPage`, bylines and the מדריכים block on service pages, sitemap 19, no `Access-Control-Allow-Origin` on the origin response, all standing checks green.
 
 ---
 
@@ -125,7 +125,7 @@ no new findings · zero orphans and zero dead-end links.
 
 ---
 
-## Sprint 3 — AEO & the guides hub ✅ 3.1–3.4 DONE (2026-09-06, not yet deployed)
+## Sprint 3 — AEO & the guides hub ✅ 3.1–3.4 DONE (2026-09-06) · DEPLOYED 2026-09-16
 
 **Goal:** own the question axis. This is the highest-value _content_ work available without the owner,
 and it is what makes the site citable by AI assistants.
@@ -248,7 +248,7 @@ returns **200**. Two fabricated IDs once cost the fleet 18 days of zero analytic
 | 8.1 | **Collect CSP violation reports** for a full traffic cycle. ⚠️ **Blocked on an endpoint:** the live report-only policy has **no `report-to`/`report-uri`** and no `Reporting-Endpoints` header, so nothing is collected today. Choose a collector (third-party report endpoint, or a Cloudflare Worker — owner account), add the directive to `public/_headers`, deploy, then observe.                                           | 🟡  | owner + ¼ d |
 | 8.2 | **Replace `'unsafe-inline'`.** A single GTM-snippet hash is **not enough**: the static export ships ~28 inline scripts per page (Next's RSC payload pushes). Either a `postbuild` step that hashes every inline script per route and emits per-path `_headers` rules (regenerated every build; mind the Pages rule limit), or keep `'unsafe-inline'` for `script-src` and harden the other directives. Decide before estimating. | 🟡  | ½–1 d       |
 | 8.3 | **Promote to enforcing `Content-Security-Policy`.** Promoting early breaks GTM silently and takes analytics down with it — which is why this follows Sprint 7.                                                                                                                                                                                                                                                                   | 🟡  | ¼ d         |
-| 8.4 | ✅ **Done in repo 2026-09-06 — live after the next deploy.** `! Access-Control-Allow-Origin` under `/*` in `public/_headers` detaches the Pages default wildcard (it was misfiled as a zone change). Verify post-deploy with `curl -sSI`.                                                                                                                                                                                        | ✅  | —           |
+| 8.4 | ✅ **Done 2026-09-06, live 2026-09-16 (verified: no ACAO header on the origin response).** `! Access-Control-Allow-Origin` under `/*` in `public/_headers` detaches the Pages default wildcard (it was misfiled as a zone change). Verify post-deploy with `curl -sSI`.                                                                                                                                                          | ✅  | —           |
 | 8.5 | **Re-check `/privacy/` against actual data flow** after every Sprint 7 change. Partial: it names Web3Forms correctly but still hedges analytics ("ייתכן … כגון Google Analytics") and never names Google Tag Manager, which is unconditionally live. Once 7.3/7.6 confirm the tags, state GTM + GA4 definitively (cookies, purpose, opt-out).                                                                                    | 🟠  | ¼ d         |
 
 **Exit gate:** `security-auditor` clean · CSP enforcing with no console violations on `/`, a service
@@ -276,7 +276,7 @@ page, `/contact/` and `/thank-you/` · GTM and the form still work under enforce
 2. ✅ **Sprint 2 shipped in full 2026-08-31** — typed areas, header one-hop, `llms.txt`, the date
    signal, the title guard, and 1.2 MB of dead code gone. Deployed the same day.
 3. ✅ **Sprint 3.1–3.4 shipped 2026-09-06** — the hub and four articles. Next: deploy, resubmit the
-   sitemap (19 URLs), then the remaining Tier-3 topics. _(Was:)_ the guides hub and the first two articles — the largest ranking and AEO
+   sitemap (19 URLs) — deployed 2026-09-16; then the remaining Tier-3 topics. _(Was:)_ the guides hub and the first two articles — the largest ranking and AEO
    gain available without the owner, and the next thing to start.
 
 Do **not** start the location silo in that week. It is the biggest opportunity on the site and the

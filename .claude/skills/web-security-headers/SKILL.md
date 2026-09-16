@@ -22,7 +22,7 @@ Verified against `https://betonplus.co.il/` on 2026-09-06 (cache-busted, UA-bear
 | `referrer-policy: strict-origin-when-cross-origin` | ✅                                                                                                        |
 | `permissions-policy`                               | ✅ camera, microphone, geolocation, browsing-topics, payment, usb, serial, midi, display-capture all `()` |
 | `content-security-policy-report-only`              | ✅ present — **no `report-to`/`report-uri`**, so nothing collects its reports                             |
-| `access-control-allow-origin`                      | ⚠️ `*` (Pages default) — `! Access-Control-Allow-Origin` added 2026-09-06, live after the next deploy     |
+| `access-control-allow-origin`                      | ✅ absent — detached via `! Access-Control-Allow-Origin` in `_headers`, live-verified 2026-09-16          |
 | `/_next/static/*` `cache-control`                  | ✅ `public, max-age=31536000, immutable`                                                                  |
 | `/opengraph-image` `content-type`                  | ✅ `image/png` (extensionless file, typed by `_headers`)                                                  |
 
