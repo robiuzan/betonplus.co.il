@@ -24,69 +24,30 @@ Static HTML (Cloudflare Pages)
    +-- form POST -> api.web3forms.com -> email to info@betonplus.co.il   [the actual lead delivery]
 ```
 
-| Component             | State                                                                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                                                                                                                                          |
-| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts)                                                                                                                     |
-| GA4 property          | 🟡 `G-VMVP7XQKMG` — in the roster (2026-08-30), synced to `site.config.json` 2026-09-06; the live container routes hostname `betonplus.co.il` → this property, so **page views flow**. **No event tags yet** (§2 step 4) |
-| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                                                                                                                                              |
-| Sitemap               | ✅ `/sitemap.xml` submitted to Search Console 2026-09-03 — 14 URLs, 0 errors, 0 warnings; re-fetched 09-04                                                                                                               |
-| Indexing              | 🟠 **1/14 indexed** (2026-09-06). Only `/` is in the index (crawled 08-22); the other 13 are discovered via the sitemap but **not yet crawled** — see §1a                                                                |
-| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                                                                                                                                                |
-| Lead event            | ✅ `lead_submit` on confirmed delivery, then `/thank-you/`                                                                                                                                                               |
-| Server-side analytics | ❌ none                                                                                                                                                                                                                  |
-| CRM                   | ❌ none — leads arrive as email                                                                                                                                                                                          |
+| Component             | State                                                                                                                                                                               |
+| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                                                                                                     |
+| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts)                                                                                |
+| GA4 property          | ✅ `G-VMVP7XQKMG` — routed by hostname in the container; **event tags live since container v5 (2026-09-16)**. DebugView confirmed `page_view` and `cta_click` arriving the same day |
+| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                                                                                                         |
+| Sitemap               | ✅ `/sitemap.xml` submitted to Search Console 2026-09-03 — 14 URLs, 0 errors, 0 warnings; re-fetched 09-04                                                                          |
+| Indexing              | 🟠 **1/14 indexed** (2026-09-06). Only `/` is in the index (crawled 08-22); the other 13 are discovered via the sitemap but **not yet crawled** — see §1a                           |
+| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                                                                                                           |
+| Lead event            | ✅ `lead_submit` on confirmed delivery → `/thank-you/`, plus `lead_fallback` and `form_error`; one GA4 Event tag on a Custom Event trigger matching all three                       |
+| Server-side analytics | ❌ none                                                                                                                                                                             |
+| CRM                   | ❌ none — leads arrive as email                                                                                                                                                     |
 
-**The single most important fact on this page: page views are collected, leads are not.** The
-property exists and the container routes this hostname to it (verified 2026-09-06 from the live
-`gtm.js`: it carries both `G-VMVP7XQKMG` and a `betonplus\.co\.il# Data & tracking infrastructure
+**The single most important fact on this page: the measurement chain is closed end to end.**
+Container **version 5** (published 2026-09-16) carries the Google tag routed by hostname, a
+`cta_click` GA4 Event tag reading `cta_id` from the `data-cta` attribute, and one GA4 Event tag
+whose event name is `{{Event}}` firing on a Custom Event trigger matching
+`^(lead_submit|lead_fallback|form_error)$` with `form`, `reason` and `field` as parameters. GA4
+DebugView confirmed `page_view` and `cta_click` arriving on 2026-09-16.
 
-How this site is measured without slowing it down or collecting anything it shouldn't. Mechanics live
-in the `/tracking-analytics` skill; this file is the **architecture and the contract**.
+What is **not** yet true: the three lead events have not been observed from a real submit; GA4-side work is all that remains: mark `lead_submit` and the `/thank-you/` page view as key events, register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions (until then they are transmitted but appear in no report), and link GA4 to Search Console.
 
----
-
-## 1. The stack as it stands
-
-```
-Static HTML (Cloudflare Pages)
-   |
-   +-- <head>  inline GTM loader  -> gtm.js  (container GTM-KWGGH438, shared IL fleet container)
-   |                                   |
-   |                                   +-- GA4 tag, routed by hostname inside the container
-   |                                          -> measurement ID for betonplus.co.il: NOT SET
-   |
-   +-- <body>  <noscript> GTM iframe
-   |
-   +-- data-cta="..."  on every conversion element  -> click triggers in the container
-   +-- trackEvent("lead_submit")  from @ishub/site-kit/analytics  -> dataLayer
-   +-- navigation to /thank-you/   -> URL-based conversion
-   |
-   +-- form POST -> api.web3forms.com -> email to info@betonplus.co.il   [the actual lead delivery]
-```
-
-| Component             | State                                                                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| GTM container         | ✅ `GTM-KWGGH438` — verified HTTP 200, live in production, loaded from `<head>`                                                                                                                                          |
-| GTM placement         | ✅ In `<head>` via an explicit `<head>` in `app/layout.tsx` (React 19 does not hoist inline scripts)                                                                                                                     |
-| GA4 property          | 🟡 `G-VMVP7XQKMG` — in the roster (2026-08-30), synced to `site.config.json` 2026-09-06; the live container routes hostname `betonplus.co.il` → this property, so **page views flow**. **No event tags yet** (§2 step 4) |
-| Search Console        | ✅ Token in the roster manifest, read from the manifest in `app/layout.tsx`                                                                                                                                              |
-| Sitemap               | ✅ `/sitemap.xml` submitted to Search Console 2026-09-03 — 14 URLs, 0 errors, 0 warnings; re-fetched 09-04                                                                                                               |
-| Indexing              | 🟠 **1/14 indexed** (2026-09-06). Only `/` is in the index (crawled 08-22); the other 13 are discovered via the sitemap but **not yet crawled** — see §1a                                                                |
-| CTA instrumentation   | ✅ Full `data-cta` coverage ([ux-cro-security.md](ux-cro-security.md) §4)                                                                                                                                                |
-| Lead event            | ✅ `lead_submit` on confirmed delivery, then `/thank-you/`                                                                                                                                                               |
-| Server-side analytics | ❌ none                                                                                                                                                                                                                  |
-| CRM                   | ❌ none — leads arrive as email                                                                                                                                                                                          |
-
-hostname match). But the
-container holds **one** tag — the Google tag on `gtm.init` — and **no GA4 event tag, custom-event
-trigger, click trigger or `data-cta` variable**. So every `lead_submit`, `lead_fallback`,
-`form_error` push and every CTA click stops at `dataLayer`. Until §2 step 4 is done, the only
-conversion GA4 can see is the `/thank-you/` page view, and every "is it converting?" question in
-[seo-geo-aeo-strategy.md](seo-geo-aeo-strategy.md) §7 is answerable only from that one signal.
-
-_(Until 2026-09-06 this page said the id was `null` and "we are not collecting anything". Both halves
-were stale — the roster had carried the id since 2026-08-30. Verify the container, not the docs.)_
+_(Read the container, never this page, when the two disagree. On 2026-09-06 this file said the id was
+`null`; before that it said the property did not exist. Both were stale.)_
 
 ---
 
@@ -136,14 +97,25 @@ pages.
 3. ✅ Inside the shared container the Google tag is routed **by hostname** — verified 2026-09-06 in the
    live `gtm.js`. That is how one container serves the whole IL fleet without cross-contaminating
    properties. Re-verify after every container publish.
-4. 🔴 **Add the event tags** (GTM UI): a GA4 Event tag on Custom Event triggers `lead_submit`,
-   `lead_fallback` and `form_error`; a link-click trigger with an Auto-Event Variable reading
-   `data-cta` for `cta_click`. Publish a new container version. **Without this step nothing below
-   can happen.**
-5. Mark `lead_submit` and the `/thank-you/` page view as **key events** in GA4.
-6. Link GA4 ↔ Search Console.
-7. Verify end to end with GTM Preview **and** GA4 DebugView — a tag that fires in Preview but not in
+4. ✅ **The event tags shipped** in container **v5** (2026-09-16): one GA4 Event tag on a Custom
+   Event trigger matching `^(lead_submit|lead_fallback|form_error)$` with the event name set to
+   `{{Event}}`, and the `cta_click` tag on an all-elements click trigger scoped to
+   `[data-cta], [data-cta] *`, whose `cta_id` comes from a Custom JavaScript variable walking
+   `closest("[data-cta]")` so a click on an icon inside a button still resolves.
+5. 🔴 Mark `lead_submit` and the `/thank-you/` page view as **key events** in GA4.
+6. 🔴 Register `cta_id`, `form`, `reason` and `field` as **custom dimensions** (event scope).
+   Until this is done GA4 receives them but no report can display them.
+7. 🔴 Link GA4 ↔ Search Console.
+8. Verify end to end with GTM Preview **and** GA4 DebugView — a tag that fires in Preview but not in
    DebugView is a routing failure, not a success. Record the date and result in §8.
+
+> ⚠️ **Two container-side items are still open, and the first affects the whole fleet.** The
+> hostname lookup table has **Full matching ticked**, which GTM implements as an anchored match of the
+> key alone and therefore cancels the `(^|\.)` sub-domain prefix every row relies on — so
+> `www.<domain>` resolves to no measurement id and collects nothing. betonplus still serves `www` on
+> 200 (backlog §1.8), as do most fleet sites. Unticking that one checkbox and republishing fixes it
+> everywhere. Separately, the container holds a second, unreferenced copy of the `data-cta` Custom
+> JavaScript variable — clutter, not a defect.
 
 > **Container-ID rule, from a fleet incident: a GTM snippet in the HTML proves nothing.** Whenever a
 > container ID changes, assert that `https://www.googletagmanager.com/gtm.js?id=<ID>` returns **200**.
@@ -177,7 +149,13 @@ _Status 2026-09-06: `lead_submit`, `lead_fallback` and `form_error` are pushed b
 - **The event name is the contract; the container owns the interpretation.** Do not encode GA4-specific
   parameters in component code.
 - Events are pushed through `trackEvent` from `@ishub/site-kit/analytics` — never `window.dataLayer.push`
-  written by hand in a component.
+  written by hand in a component. `trackEvent` pushes `{ event, ...params }` **flat**, which is what
+  the container's Data Layer Variables read.
+- **Every push carries the full parameter shape.** GTM merges pushes into one persistent model, so a
+  key set by an earlier event survives until something overwrites it: a `form_error` with
+  `field: "phone"` followed by a successful `lead_submit` would attach that field to the conversion.
+  `components/ContactForm.tsx` routes all three events through a local `trackFormEvent` helper that
+  always sends `form`, `reason` and `field`, passing `undefined` where a key does not apply.
 
 ---
 
@@ -275,7 +253,8 @@ Run after any tracking change, and after every deploy that touches `app/layout.t
 3. GTM Preview: click one CTA of **each** `data-cta` family; each fires exactly once.
 4. Submit the form with a real number; confirm `lead_submit` fires **once**, on the confirmed response,
    and that `/thank-you/` registers.
-5. GA4 DebugView shows the same events (property `G-VMVP7XQKMG`; `page_view` today, the custom
-   events only after §2 step 4).
+5. GA4 DebugView shows the same events (property `G-VMVP7XQKMG`). Confirmed for `page_view` and
+   `cta_click` on 2026-09-16; confirm `lead_submit` the first time a real lead is submitted.
+   Check `cta_id` reads an id such as `header-call`, not the button's Hebrew label.
 6. `dataLayer` contains **no** name, phone, email or message text — inspect it directly.
 7. Search Console: the verification meta tag is still present and the property still verified.

@@ -211,7 +211,9 @@ Non-negotiable properties of the export. `/qa-build-gate` asserts each one:
 | Are we ranking locally?         | Search Console queries filtered to `ב<city>` patterns; GBP insights once it exists                             |
 | Is intent converting?           | `lead_submit` + `/thank-you/` conversions ([data-tracking-infrastructure.md](data-tracking-infrastructure.md)) |
 
-⚠️ **GA4 receives page views only.** `G-VMVP7XQKMG` is in the roster (synced 2026-09-06) and the live
-container routes this hostname to it — but the container has no event tags, so `lead_submit` and CTA
-clicks never arrive ([data-tracking-infrastructure.md](data-tracking-infrastructure.md) §2 step 4).
-Until that tag exists, "is intent converting?" is answerable only from the `/thank-you/` page view.
+✅ **GA4 measures intent as of 2026-09-16.** Container v5 tags `cta_click` (carrying the `data-cta`
+id) and `lead_submit` / `lead_fallback` / `form_error`
+([data-tracking-infrastructure.md](data-tracking-infrastructure.md) §2). `page_view` and `cta_click`
+are confirmed arriving. Two caveats before trusting a report: the parameters are not yet registered as
+custom dimensions, so they display nowhere; and `www` currently collects nothing because of the
+container's Full-matching setting (roadmap 7.9).

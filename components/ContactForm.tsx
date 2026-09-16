@@ -27,6 +27,7 @@ interface FieldErrors {
  * dataLayer contract (docs/data-tracking-infrastructure.md §3): `form_error` when validation
  * blocks a submit (which field, never its value), `lead_fallback` when delivery failed and the
  * WhatsApp fallback is shown, `lead_submit` only on confirmed delivery. No PII in any of them.
+ * All three go through `trackFormEvent` below, which sends the full parameter shape every time.
  */
 const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 const WEB3FORMS_KEY = site.formAccessKey ?? process.env.NEXT_PUBLIC_WEB3FORMS_KEY ?? "";
@@ -41,6 +42,26 @@ function normalizeIsraeliPhone(raw: string): string | null {
   if (digits.startsWith("+972")) digits = `0${digits.slice(4)}`;
   else if (digits.startsWith("972")) digits = `0${digits.slice(3)}`;
   return /^0\d{8,9}$/.test(digits) ? digits : null;
+}
+
+/**
+ * Push one of the three form events with the FULL parameter shape, every time.
+ *
+ * GTM merges each dataLayer push into a single persistent model, so a key set by an earlier
+ * event survives until something overwrites it. Sending only the keys that apply would attach a
+ * previous `form_error`'s `field: "phone"` to a later successful `lead_submit` — the conversion
+ * still counts, but its parameters silently describe a different event. Passing `undefined` for
+ * the keys that do not apply overwrites the stale value, and GA4 omits undefined parameters
+ * rather than reporting them as empty.
+ *
+ * Verified against container GTM-KWGGH438 v5, whose GA4 event tag reads `form`, `reason` and
+ * `field` as Data Layer Variables with no default value.
+ */
+function trackFormEvent(
+  event: "lead_submit" | "lead_fallback" | "form_error",
+  params: { reason?: "delivery" | "no_key"; field?: "name" | "phone" } = {},
+): void {
+  trackEvent(event, { form: "lead", reason: undefined, field: undefined, ...params });
 }
 
 export default function ContactForm() {
@@ -68,7 +89,7 @@ export default function ContactForm() {
     setErrors(nextErrors);
     if (nextErrors.name || nextErrors.phone) {
       (nextErrors.name ? nameRef : phoneRef).current?.focus();
-      trackEvent("form_error", { form: "lead", field: nextErrors.name ? "name" : "phone" });
+      trackFormEvent("form_error", { field: nextErrors.name ? "name" : "phone" });
       return;
     }
 
@@ -100,7 +121,7 @@ export default function ContactForm() {
         return;
       }
       setStatus("error");
-      trackEvent("lead_fallback", { form: "lead", reason: "no_key" });
+      trackFormEvent("lead_fallback", { reason: "no_key" });
       return;
     }
 
@@ -122,13 +143,13 @@ export default function ContactForm() {
       const result: { success?: boolean } = await res.json();
       if (!res.ok || !result.success) throw new Error("request failed");
       // GTM conversion hook: fires only on a CONFIRMED send. No PII in dataLayer.
-      trackEvent("lead_submit", { form: "lead" });
+      trackFormEvent("lead_submit");
       router.push("/thank-you/");
     } catch {
       // Delivery failed → the WhatsApp fallback renders below. Counted separately from
       // lead_submit so a delivery outage shows up as a spike here, not as silence.
       setStatus("error");
-      trackEvent("lead_fallback", { form: "lead", reason: "delivery" });
+      trackFormEvent("lead_fallback", { reason: "delivery" });
     }
   }
 

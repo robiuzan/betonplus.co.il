@@ -14,22 +14,8 @@ container by a RegEx table on `{{Page Hostname}}`. Consequences:
   trigger or variable to fix one site — add a hostname condition.
 - betonplus's GA4 property is resolved in the container, not in this repo. `analytics.ga4MeasurementId`
   (`G-VMVP7XQKMG`, in the roster and synced to `site.config.json`) is record-keeping — nothing in the
-  repo reads it. The live `gtm.js` maps `betonplus\.co\.il---
-  name: tracking-analytics
-  description: GTM, GA4 and conversion events for betonplus on the shared Israeli fleet container GTM-KWGGH438 — head placement, hostname-based GA4 routing inside the container, the data-cta inventory and its gaps, lead_submit, thank-you-URL conversions, Search Console verification drift, and the mandatory gtm.js 200-check whenever a container id changes. Use when turning on analytics or when conversions are not being recorded. Triggers: "set up GTM", "GA4", "track calls", "conversion tracking not firing", "Search Console", "container id".
-
----
-
-# Tracking & analytics
-
-## The container is shared — this changes everything
-
-`GTM-KWGGH438` is **one container for all ~10 Israeli fleet domains**, with GA4 resolved _inside_ the
-container by a RegEx table on `{{Page Hostname}}`. Consequences:
-
-- Changing container config affects **every fleet site**, not just betonplus. Never edit a shared
-  trigger or variable to fix one site — add a hostname condition.
-  → that property (verified 2026-09-06).
+  repo reads it. The live `gtm.js` maps the `betonplus.co.il` hostname to that property
+  (re-verified 2026-09-16 on container version 5).
 - The container id lives in the **roster manifest**, not `site.config.json` directly.
 
 ## The 200-check — non-negotiable
@@ -108,11 +94,22 @@ grep -rn 'href={telHref}\|href={whatsappHref}' components app | grep -v 'data-ct
 
 - **GA4 property** for betonplus.co.il: `G-VMVP7XQKMG` — in the roster since 2026-08-30, synced to
   `site.config.json` 2026-09-06, and routed by hostname in the live container, so **page views flow**.
-- **The container has no event tags** (verified 2026-09-06): no GA4 Event tag, no Custom Event trigger,
-  no click trigger, no `data-cta` variable. `lead_submit`, `lead_fallback`, `form_error` (all pushed by
-  `ContactForm`) and every CTA click stop at `dataLayer`. Add: a GA4 Event tag on Custom Event triggers
-  for the three events, and a link-click trigger + Auto-Event Variable reading `data-cta` for
-  `cta_click`; publish; then mark `lead_submit` and the `/thank-you/` page view as **Key events**.
+- **The event tags shipped in container v5** (2026-09-16). Two GA4 Event tags:
+  `cta_click`, on an all-elements click trigger scoped to `[data-cta], [data-cta] *`, sending
+  `cta_id` from a Custom JavaScript variable that walks `closest("[data-cta]")` — so a click on an
+  icon inside a button still resolves to the button's id; and one tag whose event name is
+  `{{Event}}`, on a Custom Event trigger matching `^(lead_submit|lead_fallback|form_error)$`,
+  sending `form`, `reason` and `field` from Data Layer Variables. DebugView confirmed `page_view`
+  and `cta_click` the same day.
+- **Still open on the GA4 side** (not container work, not repo work): mark `lead_submit` and the
+  `/thank-you/` page view as **Key events**; register `cta_id`, `form`, `reason` and `field` as
+  **event-scoped custom dimensions** — until that is done GA4 receives them but no report can show
+  them; and link Search Console.
+- 🌩️ **Still open in the container, and it affects every fleet site:** the hostname lookup table has
+  **Full matching** ticked. GTM anchors the key when that is on, which cancels the `(^|\.)`
+  sub-domain prefix every row uses, so `www.<domain>` resolves to no measurement id and collects
+  nothing. Untick it and republish. The container also holds a second, unreferenced copy of the
+  `data-cta` Custom JavaScript variable — clutter, not a defect.
 - **Search Console:** resolved 2026-08-17 — the token lives in the roster manifest
   (`analytics.googleSiteVerification`), synced to `site.config.json`, read from the manifest in
   `app/layout.tsx` (renders nothing when null, so clones don't inherit it). Sitemap submitted
@@ -135,11 +132,26 @@ grep -rn 'href={telHref}\|href={whatsappHref}' components app | grep -v 'data-ct
 - [ ] `lead_submit` fires only on confirmed success.
 - [ ] No PII in `dataLayer`.
 - [ ] Container edits are hostname-scoped so other fleet sites are unaffected.
-- [ ] GA4 key events marked; Search Console token in the manifest; sitemap submitted.
+- [ ] GA4 key events marked; custom dimensions registered for `cta_id`/`form`/`reason`/`field`;
+      Search Console token in the manifest and the property linked; sitemap submitted.
+- [ ] `cta_id` in DebugView reads the attribute value (`header-call`), not the button's Hebrew label.
+- [ ] Every form event pushes the **full** parameter shape — see the Gotchas.
 
 ## Gotchas
 
 - Editing `site.config.json` directly is wrong — the id syncs from the roster.
 - A shared container means a broken trigger is a **fleet-wide** outage. Test in Preview first.
-- Client-side route changes don't apply here (static export, full page loads), so a History Change
-  trigger is not needed and will not fire.
+- **Client-side route changes DO happen here.** The lead form calls `router.push("/thank-you/")`, an
+  App Router navigation with no document load, so there is no fresh `gtm.js` event for that page. The
+  `/thank-you/` page view exists only through GA4 Enhanced Measurement's history-change tracking —
+  confirm it appears in DebugView before marking it a key event. (This bullet previously said the
+  opposite; a static export still ships a client-side router.)
+- **GTM keeps dataLayer values between events.** Each push is merged into one persistent model, so a
+  key set by an earlier event survives until something overwrites it — a `form_error` with
+  `field: "phone"` followed by a successful `lead_submit` would attach that field to the conversion.
+  `components/ContactForm.tsx` therefore routes all three events through a `trackFormEvent` helper
+  that always sends `form`, `reason` and `field`, passing `undefined` where a key does not apply.
+  Keep that property when adding an event.
+- **Do not add Click URL to the `cta_click` tag.** The WhatsApp delivery-failure fallback link carries
+  the visitor's own name, phone and message in its query string; sending `cta_id` alone keeps that out
+  of GA4.

@@ -97,6 +97,10 @@ Every conversion element is instrumented today. Keep this table true — a new C
 
 26 unique values, each used exactly once in source (`grep -rhoE 'data-cta="[^"]+"' app components \| sort -u`).
 
+⚠️ **Since 2026-09-16 these values are a live GA4 reporting dimension.** The container's `cta_click`
+tag sends the attribute as `cta_id`, so renaming one orphans its history exactly as renaming an event
+would. Add new values freely; rename an existing one only with a reason, and note it here.
+
 `components/ui.tsx` `Button` accepts `data-cta` as a first-class prop. Use it; do not wrap a raw `<a>`.
 
 ---

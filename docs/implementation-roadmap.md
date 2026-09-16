@@ -215,29 +215,32 @@ clean on both verdicts.
 
 ---
 
-## Sprint 7 — Measurement & consent 🔧 (unblocked; 7.1, 7.2, 7.7 done 2026-09-06)
+## Sprint 7 — Measurement & consent ✅ tagging DONE (container v5, 2026-09-16) · GA4 settings open
 
-**Goal:** stop flying blind. The property exists and the live container routes `betonplus.co.il` to
-`G-VMVP7XQKMG`, so **page views are collected**. What is not collected is everything that matters for
-a lead-gen site: the container has **no GA4 event tag, no custom-event trigger and no click trigger**,
-so `lead_submit`, `lead_fallback`, `form_error` and `data-cta` clicks never reach GA4. Only the
-`/thank-you/` page view can be a conversion today.
+**Goal:** stop flying blind. Done: the property is routed by hostname, and container **version 5**
+adds a `cta_click` tag plus one GA4 Event tag covering `lead_submit`, `lead_fallback` and
+`form_error`. GA4 DebugView confirmed `page_view` and `cta_click` on 2026-09-16.
 
-| #   | Task                                                                                                                                                                                                                                                                                                                                                                                                                     | Pri | Blocked by |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | --- | ---------- |
-| 7.1 | ✅ **Done.** `G-VMVP7XQKMG` recorded in the roster 2026-08-30; `ops/sync-manifest.ps1 -Confirm` run 2026-09-06, so `site.config.json` carries it (and the `_needsConfirmation` notes moved to `docs/manifest-assumptions.md` instead of the client bundle). Record-keeping only — nothing in the repo reads it.                                                                                                          | ✅  | —          |
-| 7.2 | ✅ **Verified 2026-09-06** from the live `gtm.js`: the shared container maps `(^\|\.)betonplus\.co\.il$` to the property. Re-verify after any container publish.                                                                                                                                                                                                                                                         | ✅  | —          |
-| 7.3 | **Add the missing tags in `GTM-KWGGH438`** (GTM UI access): a GA4 Event tag on Custom Event triggers `lead_submit`, `lead_fallback`, `form_error` (all pushed by `ContactForm` since 2026-09-06, PII-free), plus a link-click trigger with an Auto-Event Variable reading `data-cta` for `cta_click`; publish; then in GA4 mark `lead_submit` and the `/thank-you/` page view as **key events** and link Search Console. | 🔴  | 7.1        |
-| 7.4 | 🌩️ **Enable Cloudflare Web Analytics** — cookieless, consent-free, gives real traffic and CWV field data independent of GA4.                                                                                                                                                                                                                                                                                             | 🟠  | owner      |
-| 7.5 | **Consent Mode for GA4** if a banner is added; Cloudflare Web Analytics runs unconditionally either way.                                                                                                                                                                                                                                                                                                                 | 🟡  | 7.1        |
-| 7.6 | **Verify end to end** — GTM Preview _and_ GA4 DebugView. A tag that fires in Preview but not DebugView is a routing failure, not a success.                                                                                                                                                                                                                                                                              | 🔴  | 7.1        |
-| 7.7 | ✅ **Verified 2026-09-06.** The only pushes are `lead_submit {form}`, `lead_fallback {form, reason}` and `form_error {form, field}` — no name, phone, email or message ever enters `dataLayer`. Re-inspect after any form change.                                                                                                                                                                                        | ✅  | —          |
+GA4-side work is all that remains: mark `lead_submit` and the `/thank-you/` page view as key events, register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions (until then they are transmitted but appear in no report), and link GA4 to Search Console. Until the custom dimensions exist, the parameters arrive but no report can show them.
+
+| #   | Task                                                                                                                                                                                                                                                                                                                                                                        | Pri | Blocked by |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ---------- |
+| 7.1 | ✅ **Done.** `G-VMVP7XQKMG` recorded in the roster 2026-08-30; `ops/sync-manifest.ps1 -Confirm` run 2026-09-06, so `site.config.json` carries it (and the `_needsConfirmation` notes moved to `docs/manifest-assumptions.md` instead of the client bundle). Record-keeping only — nothing in the repo reads it.                                                             | ✅  | —          |
+| 7.2 | ✅ **Verified 2026-09-06** from the live `gtm.js`: the shared container maps `(^\|\.)betonplus\.co\.il$` to the property. Re-verify after any container publish.                                                                                                                                                                                                            | ✅  | —          |
+| 7.3 | ✅ **Done 2026-09-16 — container v5.** One GA4 Event tag with event name `{{Event}}` on a Custom Event trigger matching the three lead event names, parameters `form`/`reason`/`field` from Data Layer Variables; plus the `cta_click` tag reading `cta_id` from a Custom JavaScript variable over `closest("[data-cta]")`. Remaining GA4-side settings are tracked in 7.8. | ✅  | —          |
+| 7.4 | 🌩️ **Enable Cloudflare Web Analytics** — cookieless, consent-free, gives real traffic and CWV field data independent of GA4.                                                                                                                                                                                                                                                | 🟠  | owner      |
+| 7.5 | **Consent Mode for GA4** if a banner is added; Cloudflare Web Analytics runs unconditionally either way.                                                                                                                                                                                                                                                                    | 🟡  | 7.1        |
+| 7.6 | 🟡 **Half verified 2026-09-16.** GA4 DebugView showed `page_view` and `cta_click` arriving on the live domain. Still to confirm on the next real submit: `lead_submit`, and that a `page_view` for `/thank-you/` registers — the form navigates with `router.push`, so that view exists only through Enhanced Measurement's history-change tracking.                        | 🟡  | —          |
+| 7.7 | ✅ **Verified 2026-09-16.** The only pushes are `lead_submit`, `lead_fallback` and `form_error`, carrying `form`/`reason`/`field` only — no name, phone, email or message ever enters `dataLayer`. Since 2026-09-16 every push sends the full parameter shape, so a stale key cannot ride along on the conversion. Re-inspect after any form change.                        | ✅  | —          |
 
 **Container-ID rule:** whenever an ID changes, assert `https://www.googletagmanager.com/gtm.js?id=<ID>`
 returns **200**. Two fabricated IDs once cost the fleet 18 days of zero analytics across every site.
 
-**Exit gate:** a real `lead_submit` appears in GA4 DebugView · `/thank-you/` counts as a conversion ·
-`dataLayer` verified PII-free.
+| 7.8 | **Finish the GA4 settings** (GA4 UI): mark `lead_submit` and the `/thank-you/` page view as key events; register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions; link Search Console. None of this is container or repo work. | 🟠 | 7.3 |
+| 7.9 | 🌩️ **Untick "Full matching" on the container's hostname lookup table** and republish. GTM anchors the key when full matching is on, which cancels the sub-domain prefix every row uses, so `www.<domain>` resolves to no measurement id and collects nothing — on betonplus and on most of the fleet. One checkbox, fleet-wide effect. | 🟠 | — |
+
+**Exit gate:** a real `lead_submit` appears in GA4 DebugView · `/thank-you/` counts as a key event ·
+`dataLayer` verified PII-free · `cta_id` resolves to the attribute value, not the button label.
 
 ---
 
