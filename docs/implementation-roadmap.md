@@ -237,7 +237,7 @@ GA4-side work is all that remains: mark `lead_submit` and the `/thank-you/` page
 returns **200**. Two fabricated IDs once cost the fleet 18 days of zero analytics across every site.
 
 | 7.8 | **Finish the GA4 settings** (GA4 UI): mark `lead_submit` and the `/thank-you/` page view as key events; register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions; link Search Console. None of this is container or repo work. | 🟠 | 7.3 |
-| 7.9 | 🌩️ **Untick "Full matching" on the container's hostname lookup table** and republish. GTM anchors the key when full matching is on, which cancels the sub-domain prefix every row uses, so `www.<domain>` resolves to no measurement id and collects nothing — on betonplus and on most of the fleet. One checkbox, fleet-wide effect. | 🟠 | — |
+| 7.9 | 🌩️ **Untick BOTH "Full Matches Only" AND "Enable Capture Groups and Replace Functionality"** on the container's `GA4 Measurement ID` RegEx Table, then republish. The keys are written `(^\|\.)<domain>$` for an unanchored apex-or-sub-domain match; full matching adds anchors that cancel the prefix, so `www.<domain>` resolves to nothing. Unticking full matching **alone is worse** — with capture groups still on the variable returns `input.replace(...)`, yielding `wwwG-VMVP7XQKMG`, which fails the Google tag's `^G-` guard and hands the event tags a malformed id. Verified by reimplementing GTM's `__remm`. Fleet-wide: 9 of 11 sites serve `www` on 200. | 🟠 | — |
 
 **Exit gate:** a real `lead_submit` appears in GA4 DebugView · `/thank-you/` counts as a key event ·
 `dataLayer` verified PII-free · `cta_id` resolves to the attribute value, not the button label.

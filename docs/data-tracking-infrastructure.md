@@ -109,13 +109,27 @@ pages.
 8. Verify end to end with GTM Preview **and** GA4 DebugView — a tag that fires in Preview but not in
    DebugView is a routing failure, not a success. Record the date and result in §8.
 
-> ⚠️ **Two container-side items are still open, and the first affects the whole fleet.** The
-> hostname lookup table has **Full matching ticked**, which GTM implements as an anchored match of the
-> key alone and therefore cancels the `(^|\.)` sub-domain prefix every row relies on — so
-> `www.<domain>` resolves to no measurement id and collects nothing. betonplus still serves `www` on
-> 200 (backlog §1.8), as do most fleet sites. Unticking that one checkbox and republishing fixes it
-> everywhere. Separately, the container holds a second, unreferenced copy of the `data-cta` Custom
-> JavaScript variable — clutter, not a defect.
+> ⚠️ **Two container-side items are still open, and the first affects the whole fleet.**
+>
+> **`www` collects nothing, and the fix needs TWO checkboxes, not one.** GTM's RegEx Table
+> (`__remm`) does `if (fullMatch) key = "^" + key + "$"`, then `regex.test(input)`, then — only when
+> capture groups are enabled — `String(input).replace(regex, output)`. The table's keys are written
+> `(^|\.)<domain>$`, designed for an unanchored "apex or any sub-domain" match. With **Full Matches
+> Only** ticked the extra anchors cancel that prefix, so `www.<domain>` matches no row and returns
+> no measurement id.
+>
+> Unticking **Full Matches Only** on its own is **worse, not better**: with **Enable Capture Groups
+> and Replace Functionality** still ticked, the variable returns `input.replace(...)`, which keeps
+> the unmatched prefix — `www.betonplus.co.il` yields the string `wwwG-VMVP7XQKMG`. That fails the
+> Google tag's `^G-` guard, so page views stay dead, and it hands the two event tags a malformed id.
+>
+> **Untick both** (verified by reimplementing `__remm`: apex and `www` then both return
+> `G-VMVP7XQKMG`, and an unlisted host such as a `*.pages.dev` preview still returns nothing).
+> Neither flag is load-bearing here — no output value contains a `$1` back-reference. betonplus
+> still serves `www` on 200 (backlog §1.8), as do most fleet sites, so this is fleet-wide.
+>
+> Separately, the container holds a second, unreferenced copy of the `data-cta` Custom JavaScript
+> variable — clutter, not a defect.
 
 > **Container-ID rule, from a fleet incident: a GTM snippet in the HTML proves nothing.** Whenever a
 > container ID changes, assert that `https://www.googletagmanager.com/gtm.js?id=<ID>` returns **200**.

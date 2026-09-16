@@ -215,5 +215,5 @@ Non-negotiable properties of the export. `/qa-build-gate` asserts each one:
 id) and `lead_submit` / `lead_fallback` / `form_error`
 ([data-tracking-infrastructure.md](data-tracking-infrastructure.md) §2). `page_view` and `cta_click`
 are confirmed arriving. Two caveats before trusting a report: the parameters are not yet registered as
-custom dimensions, so they display nowhere; and `www` currently collects nothing because of the
-container's Full-matching setting (roadmap 7.9).
+custom dimensions, so they display nowhere; and `www` currently collects nothing because of two
+settings on the container's hostname lookup table (roadmap 7.9).

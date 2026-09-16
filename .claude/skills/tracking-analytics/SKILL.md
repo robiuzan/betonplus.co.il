@@ -105,11 +105,17 @@ grep -rn 'href={telHref}\|href={whatsappHref}' components app | grep -v 'data-ct
   `/thank-you/` page view as **Key events**; register `cta_id`, `form`, `reason` and `field` as
   **event-scoped custom dimensions** — until that is done GA4 receives them but no report can show
   them; and link Search Console.
-- 🌩️ **Still open in the container, and it affects every fleet site:** the hostname lookup table has
-  **Full matching** ticked. GTM anchors the key when that is on, which cancels the `(^|\.)`
-  sub-domain prefix every row uses, so `www.<domain>` resolves to no measurement id and collects
-  nothing. Untick it and republish. The container also holds a second, unreferenced copy of the
-  `data-cta` Custom JavaScript variable — clutter, not a defect.
+- 🌩️ **Still open in the container, and it affects every fleet site.** The `GA4 Measurement ID`
+  RegEx Table returns nothing for `www.<domain>`, so those hostnames collect no analytics at all.
+  GTM's `__remm` does `if (fullMatch) key = "^" + key + "$"`, then `test()`, then — only with
+  capture groups on — `String(input).replace(regex, output)`. The keys are `(^|\.)<domain>$`,
+  written for an **unanchored** apex-or-sub-domain match, and full matching cancels that prefix.
+  **Untick BOTH "Full Matches Only" and "Enable Capture Groups and Replace Functionality", then
+  republish.** Unticking full matching alone is _worse_: replace-mode keeps the unmatched prefix and
+  returns `wwwG-VMVP7XQKMG`, which fails the Google tag's `^G-` guard and hands the event tags a
+  malformed id. Neither flag is load-bearing — no output contains a `$1` back-reference. The
+  container also holds a second, unreferenced copy of the `data-cta` Custom JavaScript variable —
+  clutter, not a defect.
 - **Search Console:** resolved 2026-08-17 — the token lives in the roster manifest
   (`analytics.googleSiteVerification`), synced to `site.config.json`, read from the manifest in
   `app/layout.tsx` (renders nothing when null, so clones don't inherit it). Sitemap submitted
