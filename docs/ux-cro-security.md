@@ -97,9 +97,13 @@ Every conversion element is instrumented today. Keep this table true — a new C
 
 26 unique values, each used exactly once in source (`grep -rhoE 'data-cta="[^"]+"' app components \| sort -u`).
 
-⚠️ **Since 2026-09-16 these values are a live GA4 reporting dimension.** The container's `cta_click`
-tag sends the attribute as `cta_id`, so renaming one orphans its history exactly as renaming an event
-would. Add new values freely; rename an existing one only with a reason, and note it here.
+⚠️ **Since 2026-09-16 these values drive a conversion, not just a report.** The container sends the
+attribute as `cta_id` on `cta_click`, and a second tag, `contact_click`, fires only when the value
+**ends in `-call` or `-whatsapp`** and does not contain `thankyou` — and that one is a key event.
+So the suffix is load-bearing: a new call or WhatsApp button that does not end in `-call` or
+`-whatsapp` will silently not be counted as a contact. Keep the `{location}-{action}` convention,
+add new values freely, and rename an existing one only with a reason, since renaming orphans its
+history exactly as renaming an event would.
 
 `components/ui.tsx` `Button` accepts `data-cta` as a first-class prop. Use it; do not wrap a raw `<a>`.
 

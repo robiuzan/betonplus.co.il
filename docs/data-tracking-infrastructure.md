@@ -44,6 +44,11 @@ whose event name is `{{Event}}` firing on a Custom Event trigger matching
 `^(lead_submit|lead_fallback|form_error)$` with `form`, `reason` and `field` as parameters. GA4
 DebugView confirmed `page_view` and `cta_click` arriving on 2026-09-16.
 
+Container **v7** (2026-09-16) adds a third tag, `contact_click`, firing on a call or WhatsApp tap:
+`cta_id` matches `-(call|whatsapp)$` and does not contain `thankyou`, which covers 17 buttons and
+excludes the two on the thank-you page, the three that merely open the form, the email link, the 404
+home link and the delivery-failure WhatsApp fallback. It is a key event; raw `cta_click` is not.
+
 What is **not** yet true: the three lead events have not been observed from a real submit; GA4-side work is all that remains: mark `lead_submit` and the `/thank-you/` page view as key events, register `cta_id`, `form`, `reason` and `field` as event-scoped custom dimensions (until then they are transmitted but appear in no report), and link GA4 to Search Console.
 
 _(Read the container, never this page, when the two disagree. On 2026-09-06 this file said the id was
@@ -102,7 +107,9 @@ pages.
    `{{Event}}`, and the `cta_click` tag on an all-elements click trigger scoped to
    `[data-cta], [data-cta] *`, whose `cta_id` comes from a Custom JavaScript variable walking
    `closest("[data-cta]")` so a click on an icon inside a button still resolves.
-5. 🔴 Mark `lead_submit` and the `/thank-you/` page view as **key events** in GA4.
+5. ✅ **Key events marked 2026-09-16:** `lead_submit` (Once per event) and `contact_click` (Once per
+   session). The `/thank-you/` page view is deliberately **not** one — it fires for the same lead as
+   `lead_submit` and would double every conversion. Neither carries a default monetary value.
 6. 🔴 Register `cta_id`, `form`, `reason` and `field` as **custom dimensions** (event scope).
    Until this is done GA4 receives them but no report can display them.
 7. 🔴 Link GA4 ↔ Search Console.

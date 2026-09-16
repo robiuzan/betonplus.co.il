@@ -101,10 +101,24 @@ grep -rn 'href={telHref}\|href={whatsappHref}' components app | grep -v 'data-ct
   `{{Event}}`, on a Custom Event trigger matching `^(lead_submit|lead_fallback|form_error)$`,
   sending `form`, `reason` and `field` from Data Layer Variables. DebugView confirmed `page_view`
   and `cta_click` the same day.
-- **Still open on the GA4 side** (not container work, not repo work): mark `lead_submit` and the
-  `/thank-you/` page view as **Key events**; register `cta_id`, `form`, `reason` and `field` as
-  **event-scoped custom dimensions** — until that is done GA4 receives them but no report can show
-  them; and link Search Console.
+- **`contact_click` shipped in container v7** (2026-09-16) as a third GA4 Event tag: a Click–All
+  Elements trigger where `cta - data-cta` **matches RegEx** `-(call|whatsapp)$` **and does not
+  contain** `thankyou`, sending `cta_id`. It counts the 17 real call and WhatsApp buttons and skips
+  the two on `/thank-you/` (already converted), the three form-openers, the email link, the 404 home
+  link and the delivery-failure WhatsApp fallback (already recorded as `lead_fallback`).
+- **Key events are `lead_submit` and `contact_click`** — never raw `cta_click` (it includes
+  form-openers and the 404 home link), and never a `/thank-you/` page view alongside `lead_submit`,
+  which would double every lead. `lead_submit` counts Once per event; `contact_click` Once per
+  session, because one person taps call several times. Neither carries a default monetary value: no
+  lead value is confirmed, and GA4's dialog defaults to US Dollar for a shekel business.
+- **Still open on the GA4 side** (not container work, not repo work): register `cta_id`, `form`,
+  `reason` and `field` as **event-scoped custom dimensions** — until that is done GA4 receives them
+  but no report can show them; and link Search Console.
+- ⚠️ **GA4's "Create an event" dialog cannot derive an event from an arbitrary existing event.** Its
+  "Create without code" path only offers Google's own no-code templates (`page_view` with a URL rule,
+  `form_submit`), so `cta_click` never appears in that dropdown. For an event already sent by the
+  container, choose **"Create with code"**, which registers the name only. Anything derived from
+  another event belongs in GTM, as `contact_click` is.
 - 🌩️ **Still open in the container, and it affects every fleet site.** The `GA4 Measurement ID`
   RegEx Table returns nothing for `www.<domain>`, so those hostnames collect no analytics at all.
   GTM's `__remm` does `if (fullMatch) key = "^" + key + "$"`, then `test()`, then — only with
