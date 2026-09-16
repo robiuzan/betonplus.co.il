@@ -169,7 +169,8 @@ _Status 2026-09-06: `lead_submit`, `lead_fallback` and `form_error` are pushed b
   key set by an earlier event survives until something overwrites it: a `form_error` with
   `field: "phone"` followed by a successful `lead_submit` would attach that field to the conversion.
   `components/ContactForm.tsx` routes all three events through a local `trackFormEvent` helper that
-  always sends `form`, `reason` and `field`, passing `undefined` where a key does not apply.
+  always sends `form`, `reason` and `field`, passing `undefined` where a key does not apply. Live since
+  the 2026-09-16 deploy — confirmed in the production bundle.
 
 ---
 

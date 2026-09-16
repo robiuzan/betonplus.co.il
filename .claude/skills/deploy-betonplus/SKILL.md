@@ -70,12 +70,12 @@ canonical, any doubled `<title>`, any `Review`/`AggregateRating` without a verif
 **any fabricated testimonial** (the three that once shipped were removed 2026-08-17 and the gate greps
 for their names on every build — a hit is an unconditional stop).
 
-Shipped 2026-09-16 (`5bb6943a.betonplus.pages.dev`, gate 205 files): the `/guides/` guides hub and its
-first four articles (5 new routes, sitemap 14 → 19), the service-page bylines with `author` on the
-`WebPage` node, the `lead_fallback`/`form_error` dataLayer events, the detached
-`Access-Control-Allow-Origin` wildcard, the synced `site.config.json` (GA4 id present, internal notes
-gone from the bundle), and the `/about/` meta description without the 🔶 founding claim. Everything
-before that (Sprint 2, the audit tiers 1–4) went live 2026-08-31 / 2026-09-01.
+Two deploys shipped 2026-09-16. The first (`5bb6943a`, gate 205 files) took live the `/guides/` hub
+and its four articles (sitemap 14 → 19), the service-page bylines with `author` on the `WebPage`
+node, the `lead_fallback`/`form_error` dataLayer events, the detached `Access-Control-Allow-Origin`
+wildcard, the synced `site.config.json` and the `/about/` meta description without the 🔶 founding
+claim. The second (`bec05b5e`) took live the `trackFormEvent` helper, so every form event now sends
+the full `form`/`reason`/`field` shape and a stale key cannot ride along on a conversion.
 
 ## After you deploy
 
